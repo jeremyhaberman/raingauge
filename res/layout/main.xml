@@ -4,22 +4,32 @@
     android:layout_height="fill_parent" >
 
     <TextView
+        android:id="@+id/header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Past 7 days: " />
+    
+    <TextView
         android:id="@+id/rainfall"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Rainfall this week: " />
+        android:layout_below="@id/header"
+        android:layout_marginLeft="8dp"
+        android:text="Rainfall: " />
 
     <TextView
         android:id="@+id/watering"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/rainfall"
-        android:text="Watering this week: " />
+        android:layout_marginLeft="8dp"
+        android:text="Watering: " />
 
     <TextView
         android:id="@+id/balance"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
         android:layout_below="@id/watering"
         android:text="Balance: " />
 

@@ -39,6 +39,10 @@
                 <action android:name="com.jeremyhaberman.raingauge.ACTION_SCHEDULE_LOG_MAINTENANCE" />
             </intent-filter>
         </receiver>
+
+        <provider
+            android:name=".provider.RainGaugeProvider"
+            android:authorities="com.jeremyhaberman.raingauge.raingaugeprovider" />
     </application>
 
 </manifest>
