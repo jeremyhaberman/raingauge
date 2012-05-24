@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TextView
+        android:id="@+id/rainfall"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Rainfall this week: " />
+
+    <TextView
+        android:id="@+id/watering"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rainfall"
+        android:text="Watering this week: " />
+
+    <TextView
+        android:id="@+id/balance"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/watering"
+        android:text="Balance: " />
+
+    <EditText
+        android:id="@+id/watering_amount"
+        android:layout_width="88dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/balance"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:singleLine="true" >
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/add_manual_watering"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/watering_amount"
+        android:layout_toRightOf="@id/watering_amount"
+        android:text="Water" />
+
+</RelativeLayout>
