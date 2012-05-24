@@ -17,6 +17,7 @@ public class Weather {
 	private static final String TAG = Weather.class.getSimpleName();
 	public static final String WEEKLY_RAINFALL = "com.jeremyhaberman.raingauge.WEEKLY_RAINFALL";
 	public static final String WEEKLY_WATERING= "com.jeremyhaberman.raingauge.WEEKLY_WATERING";
+	public static final String ZIP_CODE = "com.jeremyhaberman.raingauge.ZIP_CODE";
 
 	public double getTodaysRainfall(int zip) throws Exception {
 

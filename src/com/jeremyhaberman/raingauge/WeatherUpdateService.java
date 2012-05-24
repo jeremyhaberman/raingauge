@@ -13,7 +13,7 @@ import android.util.Log;
 public class WeatherUpdateService extends IntentService {
 
 	private static final String TAG = null;
-	
+
 	private static final int WATER_NOTIFICATION_ID = 42;
 
 	public WeatherUpdateService() {
@@ -26,26 +26,29 @@ public class WeatherUpdateService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		
+
 		Weather weather = new Weather();
-		
+
 		int zip = getCurrentZip();
-		
-		double rainfall = 0.0;
-		try {
-			rainfall = weather.getTodaysRainfall(zip);
-		} catch (Exception e) {
-			Log.e(TAG, "Error getting rainfall", e);
+
+		if (zip > 0) {
+
+			double rainfall = 0.0;
+			try {
+				rainfall = weather.getTodaysRainfall(zip);
+			} catch (Exception e) {
+				Log.e(TAG, "Error getting rainfall", e);
+			}
+
+			handleDailyRainfall(rainfall);
 		}
-		
-		handleDailyRainfall(rainfall);
-		
+
 	}
 
 	private void handleDailyRainfall(double rainfall) {
-//		if (rainfall < 0.1) {
-			showNotification(rainfall);
-//		}
+		// if (rainfall < 0.1) {
+		showNotification(rainfall);
+		// }
 		updateWeeklyTotal(rainfall);
 	}
 
@@ -58,9 +61,9 @@ public class WeatherUpdateService extends IntentService {
 
 	private void showNotification(double rainfall) {
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		
+
 		Notification notification = buildNotification(rainfall);
-		
+
 		notificationManager.notify(WATER_NOTIFICATION_ID, notification);
 	}
 
@@ -80,7 +83,8 @@ public class WeatherUpdateService extends IntentService {
 	}
 
 	private int getCurrentZip() {
-		return 55417;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		return prefs.getInt(Weather.ZIP_CODE, 0);
 	}
 
 }

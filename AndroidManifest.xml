@@ -22,10 +22,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SetupActivity"
+            android:label="@string/app_name" >
+        </activity>
+
         <service
             android:name=".WeatherUpdateService"
             android:enabled="true" >
         </service>
+
         <receiver
             android:name=".WeatherUpdateScheduler"
             android:enabled="true" >

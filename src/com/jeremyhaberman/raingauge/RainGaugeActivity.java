@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -32,9 +33,11 @@ public class RainGaugeActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		
-//		KinveySettings settings = new KinveySettings("kid1692", "c1c676def2f94ba59c0af08c4ddec92b");
-//		mKinvey = KCSClient.getInstance(this.getApplicationContext(), settings);
+
+		// KinveySettings settings = new KinveySettings("kid1692",
+		// "c1c676def2f94ba59c0af08c4ddec92b");
+		// mKinvey = KCSClient.getInstance(this.getApplicationContext(),
+		// settings);
 
 		mRainfallText = (TextView) findViewById(R.id.rainfall);
 		mWateringText = (TextView) findViewById(R.id.watering);
@@ -63,12 +66,21 @@ public class RainGaugeActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 
-		loadRainfall();
-		loadWatering();
-		showBalance();
-		
-		mBalance = calculateBalance();
-		showBalance();
+		if (!hasZip()) {
+			startActivityForResult(new Intent(this, SetupActivity.class), SetupActivity.CONFIGURE_ZIP);
+		} else {
+			loadRainfall();
+			loadWatering();
+			showBalance();
+			mBalance = calculateBalance();
+			showBalance();
+		}
+	}
+
+	private boolean hasZip() {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		int zip = prefs.getInt(Weather.ZIP_CODE, 0);
+		return zip != 0;
 	}
 
 	private void showBalance() {
