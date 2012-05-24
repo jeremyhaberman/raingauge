@@ -1,10 +1,9 @@
 package com.jeremyhaberman.raingauge;
 
-import java.util.prefs.Preferences;
-
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -66,13 +65,16 @@ public class WeatherUpdateService extends IntentService {
 	}
 
 	private Notification buildNotification(double rainfall) {
-		int icon = R.drawable.ic_launcher;
-		CharSequence contentText = "Rainfall: " + rainfall;
+		int icon = R.drawable.status_bar_icon;
+		CharSequence contentText = "Yesterday's Rainfall: " + rainfall + " in";
 		long when = System.currentTimeMillis();
 		Notification notification = new Notification(icon, contentText, when);
-		notification.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
+		notification.flags = Notification.FLAG_AUTO_CANCEL;
 		CharSequence title = getString(R.string.app_name);
-		notification.setLatestEventInfo(this, title, contentText, null);
+		Intent notificationIntent = new Intent(this, RainGaugeActivity.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+				PendingIntent.FLAG_CANCEL_CURRENT);
+		notification.setLatestEventInfo(this, title, contentText, contentIntent);
 		return notification;
 
 	}

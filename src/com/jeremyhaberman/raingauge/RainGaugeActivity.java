@@ -115,7 +115,7 @@ public class RainGaugeActivity extends Activity {
 	}
 
 	private String formatRainfall(float inches) {
-		return String.format("%.1f", inches) + " in";
+		return String.format("%.2f", inches) + " in";
 	}
 
 }
