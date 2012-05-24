@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:padding="10dp" >
 
     <TextView
         android:id="@+id/header"
+        style="@style/Text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Past 7 days: " />
-    
+
     <TextView
         android:id="@+id/rainfall"
+        style="@style/Text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/header"
@@ -19,6 +22,7 @@
 
     <TextView
         android:id="@+id/watering"
+        style="@style/Text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/rainfall"
@@ -27,31 +31,40 @@
 
     <TextView
         android:id="@+id/balance"
+        style="@style/Text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
         android:layout_below="@id/watering"
+        android:layout_marginLeft="8dp"
         android:text="Balance: " />
 
-    <EditText
-        android:id="@+id/watering_amount"
-        android:layout_width="88dp"
+    <RelativeLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/balance"
         android:layout_marginTop="10dp"
-        android:ems="10"
-        android:inputType="numberDecimal"
-        android:singleLine="true" >
+        android:gravity="center_vertical" >
 
-        <requestFocus />
-    </EditText>
+        <EditText
+            android:id="@+id/watering_amount"
+            style="@style/Text"
+            android:layout_width="88dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:singleLine="true" >
 
-    <Button
-        android:id="@+id/add_manual_watering"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/watering_amount"
-        android:layout_toRightOf="@id/watering_amount"
-        android:text="Water" />
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:id="@+id/add_manual_watering"
+            style="@style/Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_toRightOf="@id/watering_amount"
+            android:text="Water" />
+    </RelativeLayout>
 
 </RelativeLayout>

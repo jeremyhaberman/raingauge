@@ -50,6 +50,7 @@ public class RainGaugeActivity extends Activity {
 
 					public void run() {
 						water(Float.parseFloat(mManualWateringAmoutEditText.getText().toString()));
+						mManualWateringAmoutEditText.setText("");
 						loadWatering();
 						calculateBalance();
 						showBalance();

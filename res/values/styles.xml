@@ -1,0 +1,11 @@
+<resources>
+
+    <style name="RainGaugeTheme" parent="@android:style/Theme.Light">
+
+    </style>
+    
+    <style name="Text">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+</resources>
