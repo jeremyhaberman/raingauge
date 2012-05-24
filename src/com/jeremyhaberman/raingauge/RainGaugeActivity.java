@@ -31,6 +31,7 @@ public class RainGaugeActivity extends Activity {
 	private double mRainfall;
 	private double mWatering;
 	private double mBalance;
+	private TextView mForecastText;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,7 @@ public class RainGaugeActivity extends Activity {
 		mRainfallText = (TextView) findViewById(R.id.rainfall);
 		mWateringText = (TextView) findViewById(R.id.watering);
 		mBalanceText = (TextView) findViewById(R.id.balance);
+		mForecastText = (TextView) findViewById(R.id.forecast);
 
 		mManualWateringAmoutEditText = (EditText) findViewById(R.id.watering_amount);
 		Button addManualWatering = (Button) findViewById(R.id.add_manual_watering);
@@ -74,7 +76,14 @@ public class RainGaugeActivity extends Activity {
 			showBalance();
 			mBalance = calculateBalance();
 			showBalance();
+			showForecast();
 		}
+	}
+
+	private void showForecast() {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		String forecast =  prefs.getString(Weather.TODAYS_FORECAST, "unknown");
+		mForecastText.setText(forecast);
 	}
 
 	private boolean hasZip() {

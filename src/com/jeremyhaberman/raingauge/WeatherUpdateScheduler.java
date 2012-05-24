@@ -28,6 +28,8 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 	private Calendar mNextRainfulUpdateTime;
 	private Calendar mNextRainForecastTime;
 
+	private Calendar mNextForecastUpdateTime;
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
 
@@ -38,24 +40,8 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 
 					Log.d(TAG, "Starting LogMaintenanceManager and scheduling daily checks");
 
-					Intent weatherUpdateService = new Intent(context, WeatherUpdateService.class);
-					PendingIntent updateRainfallPendingIntent = PendingIntent.getService(context,
-							0, weatherUpdateService, 0);
-
-					AlarmManager alarmManager = (AlarmManager) context
-							.getSystemService(Context.ALARM_SERVICE);
-
-					long nextRainfallUpdateTime = intent.getLongExtra(
-							EXTRA_NEXT_RAINFALL_UPDATE_TIME, getNextRainfallUpdateTime(23, 55)
-									.getTimeInMillis());
-
-					Calendar cal = Calendar.getInstance();
-					cal.setTimeInMillis(nextRainfallUpdateTime);
-					Log.d(TAG, "Next rainfall update scheduled to run at "
-							+ cal.getTime().toString());
-
-					alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, nextRainfallUpdateTime,
-							DAILY_INTERVAL, updateRainfallPendingIntent);
+					scheduleRainfallUpdate(context, intent);
+					scheduleForecastUpdate(context);
 
 					mScheduled = true;
 				}
@@ -65,6 +51,44 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 		}
 	}
 
+	private void scheduleForecastUpdate(Context context) {
+		Intent weatherUpdateService = new Intent(context, WeatherUpdateService.class);
+		weatherUpdateService.setAction(WeatherUpdateService.ACTION_GET_FORECAST);
+		PendingIntent updateRainfallPendingIntent = PendingIntent.getService(context, 0,
+				weatherUpdateService, 0);
+
+		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+		long nextForecastUpdateTime = getNextForecastUpdateTime(5, 0).getTimeInMillis();
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(nextForecastUpdateTime);
+		Log.d(TAG, "Next forecast update scheduled to run at " + cal.getTime().toString());
+
+		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, nextForecastUpdateTime, DAILY_INTERVAL,
+				updateRainfallPendingIntent);
+
+	}
+
+	private void scheduleRainfallUpdate(Context context, Intent intent) {
+		Intent weatherUpdateService = new Intent(context, WeatherUpdateService.class);
+		weatherUpdateService.setAction(WeatherUpdateService.ACTION_GET_RAINFALL);
+		PendingIntent updateRainfallPendingIntent = PendingIntent.getService(context, 0,
+				weatherUpdateService, 0);
+
+		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+		long nextRainfallUpdateTime = intent.getLongExtra(EXTRA_NEXT_RAINFALL_UPDATE_TIME,
+				getNextRainfallUpdateTime(23, 55).getTimeInMillis());
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(nextRainfallUpdateTime);
+		Log.d(TAG, "Next rainfall update scheduled to run at " + cal.getTime().toString());
+
+		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, nextRainfallUpdateTime, DAILY_INTERVAL,
+				updateRainfallPendingIntent);
+	}
+
 	private Calendar getNextRainfallUpdateTime(int hour, int minute) {
 
 		if (mNextRainfulUpdateTime == null) {
@@ -72,6 +96,15 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 		}
 
 		return mNextRainfulUpdateTime;
+	}
+	
+	private Calendar getNextForecastUpdateTime(int hour, int minute) {
+
+		if (mNextForecastUpdateTime == null) {
+			mNextForecastUpdateTime = getDefaultNextTime(hour, minute);
+		}
+
+		return mNextForecastUpdateTime;
 	}
 
 	private Calendar getDefaultNextTime(int hour, int minute) {
@@ -83,7 +116,7 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 		date.set(Calendar.MILLISECOND, 0);
 
 		// next day
-//		date.add(Calendar.DAY_OF_MONTH, 1);
+		// date.add(Calendar.DAY_OF_MONTH, 1);
 
 		return date;
 	}

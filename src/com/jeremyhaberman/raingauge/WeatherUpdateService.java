@@ -24,6 +24,9 @@ public class WeatherUpdateService extends IntentService {
 
 	private static final int WATER_NOTIFICATION_ID = 42;
 
+	public static final String ACTION_GET_FORECAST = "com.jeremyhaberman.raingauge.ACTION_GET_FORECAST";
+	public static final String ACTION_GET_RAINFALL = "com.jeremyhaberman.raingauge.ACTION_GET_RAINFALL";
+
 	public WeatherUpdateService() {
 		this("WeatherUpdateService");
 	}
@@ -41,14 +44,31 @@ public class WeatherUpdateService extends IntentService {
 
 		if (zip > 0) {
 
-			double rainfall = 0.0;
-			try {
-				rainfall = weather.getTodaysRainfall(zip);
-			} catch (Exception e) {
-				Log.e(TAG, "Error getting rainfall", e);
-			}
+			if (intent.getAction().equalsIgnoreCase(ACTION_GET_RAINFALL)) {
 
-			handleDailyRainfall(rainfall);
+				double rainfall = 0.0;
+				try {
+					rainfall = weather.getTodaysRainfall(zip);
+				} catch (Exception e) {
+					Log.e(TAG, "Error getting rainfall", e);
+				}
+
+				handleDailyRainfall(rainfall);
+			} else if (intent.getAction().equalsIgnoreCase(ACTION_GET_FORECAST)) {
+				
+				String forecast = null;
+				try {
+					forecast = weather.getTodaysForecast(zip);
+				} catch (Exception e) {
+					Log.e(TAG, "Error getting forecast", e);
+				}
+				
+				if (forecast != null) {
+					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+					prefs.edit().putString(Weather.TODAYS_FORECAST, forecast).commit();
+				}
+				
+			}
 		}
 
 	}
@@ -58,8 +78,9 @@ public class WeatherUpdateService extends IntentService {
 		ContentValues values = new ContentValues();
 		values.put(RainfallTable.TIMESTAMP, System.currentTimeMillis());
 		values.put(RainfallTable.RAINFALL, rainfall);
-		Uri uri = getContentResolver().insert(RainGaugeProviderContract.RainfallTable.CONTENT_ID_URI_BASE, values);
-		
+		Uri uri = getContentResolver().insert(
+				RainGaugeProviderContract.RainfallTable.CONTENT_ID_URI_BASE, values);
+
 		Log.d(TAG, "inserted rainfall: " + uri.toString());
 
 		// if (rainfall < 0.1) {
@@ -107,7 +128,7 @@ public class WeatherUpdateService extends IntentService {
 		date.set(Calendar.SECOND, 0);
 		date.set(Calendar.MILLISECOND, 0);
 
-		 date.add(Calendar.DAY_OF_MONTH, 1);
+		date.add(Calendar.DAY_OF_MONTH, 1);
 
 		return date.getTimeInMillis();
 	}

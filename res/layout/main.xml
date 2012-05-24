@@ -39,6 +39,7 @@
         android:text="Balance: " />
 
     <RelativeLayout
+        android:id="@+id/add_wrapper"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/balance"
@@ -66,5 +67,23 @@
             android:layout_toRightOf="@id/watering_amount"
             android:text="Water" />
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/forecast_label"
+        style="@style/Text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_wrapper"
+        android:layout_marginTop="12dp"
+        android:text="Today's Forecast: " />
+
+    <TextView
+        android:id="@+id/forecast"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/forecast_label"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:textSize="16sp" />
 
 </RelativeLayout>
