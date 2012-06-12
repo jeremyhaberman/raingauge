@@ -12,6 +12,7 @@ import android.test.IsolatedContext;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import com.jeremyhaberman.raingauge.rest.Method;
+import com.jeremyhaberman.raingauge.service.WeatherService.ResourceType;
 import com.jeremyhaberman.raingauge.service.WeatherServiceHelper.ServiceResultReceiver;
 import com.jeremyhaberman.raingauge.test.mock.MockWeatherService;
 
@@ -74,8 +75,8 @@ public class WeatherServiceHelperTest extends AndroidTestCase {
 		String method = extras.getString(WeatherService.METHOD_EXTRA);
 		assertEquals(Method.GET.toString(), method);
 		
-		int resourceType = extras.getInt(WeatherService.RESOURCE_TYPE_EXTRA);
-		assertEquals(WeatherService.RESOURCE_TYPE_RAINFALL, resourceType);
+		ResourceType resourceType = (ResourceType) extras.getSerializable(WeatherService.RESOURCE_TYPE_EXTRA);
+		assertEquals(WeatherService.ResourceType.RAINFALL, resourceType);
 		
 		ResultReceiver resultReceiver = (ResultReceiver) extras.getParcelable(SERVICE_CALLBACK_EXTRA);
 		assertNotNull(resultReceiver);

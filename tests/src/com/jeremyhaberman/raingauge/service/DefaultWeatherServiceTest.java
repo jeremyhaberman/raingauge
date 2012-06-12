@@ -4,11 +4,7 @@ import static com.jeremyhaberman.raingauge.service.WeatherService.EXTRA_PROCESSO
 import static com.jeremyhaberman.raingauge.service.WeatherService.METHOD_EXTRA;
 import static com.jeremyhaberman.raingauge.service.WeatherService.METHOD_GET;
 import static com.jeremyhaberman.raingauge.service.WeatherService.RESOURCE_TYPE_EXTRA;
-import static com.jeremyhaberman.raingauge.service.WeatherService.RESOURCE_TYPE_RAINFALL;
 import static com.jeremyhaberman.raingauge.service.WeatherService.SERVICE_CALLBACK_EXTRA;
-
-import java.lang.Thread.UncaughtExceptionHandler;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -18,10 +14,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
 import android.test.IsolatedContext;
-import android.test.MoreAsserts;
 import android.test.ServiceTestCase;
 import android.test.suitebuilder.annotation.MediumTest;
-import android.util.Log;
 
 import com.jeremyhaberman.raingauge.processor.ResourceProcessor;
 import com.jeremyhaberman.raingauge.processor.ResourceProcessorCallback;
@@ -60,7 +54,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		
 		Intent service = new Intent(getSystemContext(), DefaultWeatherService.class);
 		service.putExtra(METHOD_EXTRA, METHOD_GET);
-		service.putExtra(RESOURCE_TYPE_EXTRA, RESOURCE_TYPE_RAINFALL);
+		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.RAINFALL);
 		service.putExtra(EXTRA_PROCESSOR, processor);
 		service.putExtra(SERVICE_CALLBACK_EXTRA, receiver);
 		service.putExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, 1);
@@ -93,7 +87,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		
 		Intent service = new Intent(getSystemContext(), DefaultWeatherService.class);
 		service.putExtra(METHOD_EXTRA, METHOD_GET);
-		service.putExtra(RESOURCE_TYPE_EXTRA, RESOURCE_TYPE_RAINFALL);
+		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.RAINFALL);
 		service.putExtra(EXTRA_PROCESSOR, processor);
 		service.putExtra(SERVICE_CALLBACK_EXTRA, receiver);
 		service.putExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, expectedRequestId);
@@ -119,7 +113,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		Intent resultIntent = (Intent) actualResultData.get(WeatherService.ORIGINAL_INTENT_EXTRA);
 		
 		assertEquals(METHOD_GET, resultIntent.getStringExtra(METHOD_EXTRA));
-		assertEquals(RESOURCE_TYPE_RAINFALL, resultIntent.getIntExtra(RESOURCE_TYPE_EXTRA, -1));
+		assertEquals(WeatherService.ResourceType.RAINFALL, resultIntent.getSerializableExtra(RESOURCE_TYPE_EXTRA));
 		assertEquals(processor, resultIntent.getParcelableExtra(EXTRA_PROCESSOR));
 		assertEquals(expectedRequestId, resultIntent.getLongExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, -1));
 	}
@@ -137,7 +131,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		
 		Intent service = new Intent(getSystemContext(), DefaultWeatherService.class);
 		service.putExtra(METHOD_EXTRA, method);
-		service.putExtra(RESOURCE_TYPE_EXTRA, RESOURCE_TYPE_RAINFALL);
+		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.RAINFALL);
 		service.putExtra(EXTRA_PROCESSOR, processor);
 		service.putExtra(SERVICE_CALLBACK_EXTRA, receiver);
 		service.putExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, requestId);
@@ -158,7 +152,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		Intent resultIntent = (Intent) resultData.get(WeatherService.ORIGINAL_INTENT_EXTRA);
 		
 		assertEquals(method, resultIntent.getStringExtra(METHOD_EXTRA));
-		assertEquals(RESOURCE_TYPE_RAINFALL, resultIntent.getIntExtra(RESOURCE_TYPE_EXTRA, -1));
+		assertEquals(WeatherService.ResourceType.RAINFALL, resultIntent.getSerializableExtra(RESOURCE_TYPE_EXTRA));
 		assertEquals(processor, resultIntent.getParcelableExtra(EXTRA_PROCESSOR));
 		assertEquals(requestId, resultIntent.getLongExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, -1));
 	}
@@ -176,7 +170,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		
 		Intent service = new Intent(getSystemContext(), DefaultWeatherService.class);
 		service.putExtra(METHOD_EXTRA, method);
-		service.putExtra(RESOURCE_TYPE_EXTRA, RESOURCE_TYPE_RAINFALL);
+		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.RAINFALL);
 		service.putExtra(EXTRA_PROCESSOR, processor);
 		service.putExtra(SERVICE_CALLBACK_EXTRA, receiver);
 		service.putExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, requestId);
@@ -197,7 +191,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		Intent resultIntent = (Intent) resultData.get(WeatherService.ORIGINAL_INTENT_EXTRA);
 		
 		assertNull(resultIntent.getStringExtra(METHOD_EXTRA));
-		assertEquals(RESOURCE_TYPE_RAINFALL, resultIntent.getIntExtra(RESOURCE_TYPE_EXTRA, -1));
+		assertEquals(WeatherService.ResourceType.RAINFALL, resultIntent.getSerializableExtra(RESOURCE_TYPE_EXTRA));
 		assertEquals(processor, resultIntent.getParcelableExtra(EXTRA_PROCESSOR));
 		assertEquals(requestId, resultIntent.getLongExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, -1));
 	}
@@ -215,7 +209,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		
 		Intent service = new Intent(getSystemContext(), DefaultWeatherService.class);
 		service.putExtra(METHOD_EXTRA, method);
-		service.putExtra(RESOURCE_TYPE_EXTRA, RESOURCE_TYPE_RAINFALL);
+		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.RAINFALL);
 		service.putExtra(EXTRA_PROCESSOR, processor);
 		service.putExtra(SERVICE_CALLBACK_EXTRA, receiver);
 		service.putExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, requestId);
@@ -234,7 +228,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		Intent resultIntent = (Intent) resultData.get(WeatherService.ORIGINAL_INTENT_EXTRA);
 		
 		assertEquals(method, resultIntent.getStringExtra(METHOD_EXTRA));
-		assertEquals(RESOURCE_TYPE_RAINFALL, resultIntent.getIntExtra(RESOURCE_TYPE_EXTRA, -1));
+		assertEquals(WeatherService.ResourceType.RAINFALL, resultIntent.getSerializableExtra(RESOURCE_TYPE_EXTRA));
 		assertNull(resultIntent.getParcelableExtra(EXTRA_PROCESSOR));
 		assertEquals(requestId, resultIntent.getLongExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, -1));
 	}
@@ -252,7 +246,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		
 		Intent service = new Intent(getSystemContext(), DefaultWeatherService.class);
 		service.putExtra(METHOD_EXTRA, method);
-		service.putExtra(RESOURCE_TYPE_EXTRA, RESOURCE_TYPE_RAINFALL);
+		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.RAINFALL);
 		service.putExtra(EXTRA_PROCESSOR, processor);
 		service.putExtra(SERVICE_CALLBACK_EXTRA, receiver);
 		service.putExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, requestId);
@@ -271,7 +265,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		Intent resultIntent = (Intent) resultData.get(WeatherService.ORIGINAL_INTENT_EXTRA);
 		
 		assertEquals(method, resultIntent.getStringExtra(METHOD_EXTRA));
-		assertEquals(RESOURCE_TYPE_RAINFALL, resultIntent.getIntExtra(RESOURCE_TYPE_EXTRA, -1));
+		assertEquals(WeatherService.ResourceType.RAINFALL, resultIntent.getSerializableExtra(RESOURCE_TYPE_EXTRA));
 		assertEquals(processor, resultIntent.getParcelableExtra(EXTRA_PROCESSOR));
 		assertEquals(requestId, resultIntent.getLongExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, -1));
 	}
@@ -289,7 +283,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		
 		Intent service = new Intent(getSystemContext(), DefaultWeatherService.class);
 		service.putExtra(METHOD_EXTRA, method);
-		service.putExtra(RESOURCE_TYPE_EXTRA, RESOURCE_TYPE_RAINFALL);
+		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.RAINFALL);
 		service.putExtra(EXTRA_PROCESSOR, processor);
 		service.putExtra(SERVICE_CALLBACK_EXTRA, receiver);
 		service.putExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, requestId);

@@ -10,8 +10,10 @@ public interface WeatherService {
 	public static final String SERVICE_CALLBACK_EXTRA = "mn.aug.restfulandroid.service.SERVICE_CALLBACK";
 	public static final String ORIGINAL_INTENT_EXTRA = "mn.aug.restfulandroid.service.ORIGINAL_INTENT_EXTRA";
 	public static final String EXTRA_REQUEST_PARAMETERS = "mn.aug.restfulandroid.service.REQUEST_PARAMS_EXTRA";
-
-	public static final int RESOURCE_TYPE_RAINFALL = 1;
+	
+	public enum ResourceType {
+		RAINFALL
+	};
 
 	public static final String METHOD_GET = Method.GET.toString();
 	

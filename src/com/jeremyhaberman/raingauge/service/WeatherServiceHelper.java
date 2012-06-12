@@ -3,7 +3,6 @@ package com.jeremyhaberman.raingauge.service;
 import static com.jeremyhaberman.raingauge.service.WeatherService.METHOD_EXTRA;
 import static com.jeremyhaberman.raingauge.service.WeatherService.METHOD_GET;
 import static com.jeremyhaberman.raingauge.service.WeatherService.RESOURCE_TYPE_EXTRA;
-import static com.jeremyhaberman.raingauge.service.WeatherService.RESOURCE_TYPE_RAINFALL;
 import static com.jeremyhaberman.raingauge.service.WeatherService.SERVICE_CALLBACK_EXTRA;
 
 import java.util.ArrayList;
@@ -64,7 +63,7 @@ public final class WeatherServiceHelper {
 
 		Intent intent = new Intent(mAppContext, mWeatherServiceClass);
 		intent.putExtra(METHOD_EXTRA, METHOD_GET);
-		intent.putExtra(RESOURCE_TYPE_EXTRA, RESOURCE_TYPE_RAINFALL);
+		intent.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.RAINFALL);
 		intent.putExtra(SERVICE_CALLBACK_EXTRA, mServiceCallback);
 		intent.putExtra(EXTRA_REQUEST_ID, requestId);
 		

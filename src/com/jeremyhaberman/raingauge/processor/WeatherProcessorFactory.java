@@ -1,20 +1,25 @@
 package com.jeremyhaberman.raingauge.processor;
 
-import com.jeremyhaberman.raingauge.service.WeatherService;
-
 import android.content.Context;
+
+import com.jeremyhaberman.raingauge.service.WeatherService.ResourceType;
 
 public class WeatherProcessorFactory {
 
 	private static WeatherProcessorFactory mSingleton;
 	private Context mContext;
 
-	public ResourceProcessor getProcessor(int resourceType) {
+	public ResourceProcessor getProcessor(ResourceType resourceType) {
+		
+		if (resourceType == null) {
+			throw new IllegalArgumentException("resourceType is null");
+		}
+		
 		switch (resourceType) {
-		case WeatherService.RESOURCE_TYPE_RAINFALL:
+		case RAINFALL:
 			return new WeatherProcessor(mContext);
 		default:
-			throw new IllegalArgumentException("Unknown resource type: " + resourceType);
+			throw new IllegalArgumentException("No processor for resource type: " + resourceType);
 		}
 
 	}
