@@ -105,7 +105,7 @@ public class WeatherUpdateService extends IntentService {
 	}
 
 	private Notification buildNotification(double rainfall) {
-		int icon = R.drawable.status_bar_icon;
+		int icon = R.drawable.status_bar_icon_23;
 		CharSequence contentText = "Yesterday's Rainfall: " + rainfall + " in";
 		long when = getNextNotificationTime();
 		Notification notification = new Notification(icon, contentText, when);

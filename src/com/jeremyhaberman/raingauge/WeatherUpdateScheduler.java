@@ -79,7 +79,7 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
 		long nextRainfallUpdateTime = intent.getLongExtra(EXTRA_NEXT_RAINFALL_UPDATE_TIME,
-				getNextRainfallUpdateTime(23, 55).getTimeInMillis());
+				getNextRainfallUpdateTime(0, 55).getTimeInMillis());
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(nextRainfallUpdateTime);
