@@ -19,8 +19,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.RainfallTable;
+import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.WateringsTable;
+import com.jeremyhaberman.raingauge.rest.resource.Observations;
 
 public class RainGaugeActivity extends Activity {
 	private static final String TAG = null;
@@ -82,13 +83,13 @@ public class RainGaugeActivity extends Activity {
 
 	private void showForecast() {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		String forecast =  prefs.getString(Weather.TODAYS_FORECAST, "unknown");
+		String forecast =  prefs.getString(Observations.TODAYS_FORECAST, "unknown");
 		mForecastText.setText(forecast);
 	}
 
 	private boolean hasZip() {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		int zip = prefs.getInt(Weather.ZIP_CODE, 0);
+		int zip = prefs.getInt(Observations.ZIP_CODE, 0);
 		return zip != 0;
 	}
 
@@ -110,8 +111,8 @@ public class RainGaugeActivity extends Activity {
 	private double loadRainfall() {
 
 		ContentResolver resolver = getContentResolver();
-		Cursor rainfallCursor = resolver.query(RainfallTable.CONTENT_URI,
-				new String[] { RainfallTable.RAINFALL }, null, null, RainfallTable.TIMESTAMP
+		Cursor rainfallCursor = resolver.query(ObservationsTable.CONTENT_URI,
+				new String[] { ObservationsTable.RAINFALL }, null, null, ObservationsTable.TIMESTAMP
 						+ " DESC LIMIT 7");
 
 		double recentRainfall = 0.0;

@@ -11,13 +11,17 @@ public interface WeatherService {
 	public static final String ORIGINAL_INTENT_EXTRA = "mn.aug.restfulandroid.service.ORIGINAL_INTENT_EXTRA";
 	public static final String EXTRA_REQUEST_PARAMETERS = "mn.aug.restfulandroid.service.REQUEST_PARAMS_EXTRA";
 	
+	public static final int REQUEST_INVALID = -1;
+	public static final String EXTRA_STATUS_CODE = "status_code";
+	
 	public enum ResourceType {
-		RAINFALL
+		OBSERVATIONS
 	};
 
 	public static final String METHOD_GET = Method.GET.toString();
 	
 	public static final String ZIP_CODE = "zipCode";
 	
-	public static final int REQUEST_INVALID = -1;
+	
+	
 }

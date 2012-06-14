@@ -16,7 +16,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract;
-import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.RainfallTable;
+import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
+import com.jeremyhaberman.raingauge.rest.resource.Observations;
 
 public class WeatherUpdateService extends IntentService {
 
@@ -38,7 +39,7 @@ public class WeatherUpdateService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 
-		Weather weather = new Weather();
+//		Observations weather = new Observations();
 
 		int zip = getCurrentZip();
 
@@ -48,7 +49,7 @@ public class WeatherUpdateService extends IntentService {
 
 				double rainfall = 0.0;
 				try {
-					rainfall = weather.getTodaysRainfall(zip);
+//					rainfall = weather.getTodaysRainfall(zip);
 				} catch (Exception e) {
 					Log.e(TAG, "Error getting rainfall", e);
 				}
@@ -58,14 +59,14 @@ public class WeatherUpdateService extends IntentService {
 				
 				String forecast = null;
 				try {
-					forecast = weather.getTodaysForecast(zip);
+//					forecast = weather.getTodaysForecast(zip);
 				} catch (Exception e) {
 					Log.e(TAG, "Error getting forecast", e);
 				}
 				
 				if (forecast != null) {
 					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-					prefs.edit().putString(Weather.TODAYS_FORECAST, forecast).commit();
+					prefs.edit().putString(Observations.TODAYS_FORECAST, forecast).commit();
 				}
 				
 			}
@@ -76,10 +77,10 @@ public class WeatherUpdateService extends IntentService {
 	private void handleDailyRainfall(double rainfall) {
 
 		ContentValues values = new ContentValues();
-		values.put(RainfallTable.TIMESTAMP, System.currentTimeMillis());
-		values.put(RainfallTable.RAINFALL, rainfall);
+		values.put(ObservationsTable.TIMESTAMP, System.currentTimeMillis());
+		values.put(ObservationsTable.RAINFALL, rainfall);
 		Uri uri = getContentResolver().insert(
-				RainGaugeProviderContract.RainfallTable.CONTENT_ID_URI_BASE, values);
+				RainGaugeProviderContract.ObservationsTable.CONTENT_ID_URI_BASE, values);
 
 		Log.d(TAG, "inserted rainfall: " + uri.toString());
 
@@ -91,9 +92,9 @@ public class WeatherUpdateService extends IntentService {
 
 	private void updateWeeklyTotal(double rainfall) {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-		float weeklyTotal = preferences.getFloat(Weather.WEEKLY_RAINFALL, 0.0f);
+		float weeklyTotal = preferences.getFloat(Observations.WEEKLY_RAINFALL, 0.0f);
 		weeklyTotal += rainfall;
-		preferences.edit().putFloat(Weather.WEEKLY_RAINFALL, weeklyTotal).commit();
+		preferences.edit().putFloat(Observations.WEEKLY_RAINFALL, weeklyTotal).commit();
 	}
 
 	private void scheduleNotification(double rainfall) {
@@ -135,7 +136,7 @@ public class WeatherUpdateService extends IntentService {
 
 	private int getCurrentZip() {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		return prefs.getInt(Weather.ZIP_CODE, 0);
+		return prefs.getInt(Observations.ZIP_CODE, 0);
 	}
 
 }

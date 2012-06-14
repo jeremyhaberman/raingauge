@@ -76,7 +76,7 @@ public class WeatherServiceHelperTest extends AndroidTestCase {
 		assertEquals(Method.GET.toString(), method);
 		
 		ResourceType resourceType = (ResourceType) extras.getSerializable(WeatherService.RESOURCE_TYPE_EXTRA);
-		assertEquals(WeatherService.ResourceType.RAINFALL, resourceType);
+		assertEquals(WeatherService.ResourceType.OBSERVATIONS, resourceType);
 		
 		ResultReceiver resultReceiver = (ResultReceiver) extras.getParcelable(SERVICE_CALLBACK_EXTRA);
 		assertNotNull(resultReceiver);

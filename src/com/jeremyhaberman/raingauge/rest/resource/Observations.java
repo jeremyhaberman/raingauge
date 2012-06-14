@@ -1,4 +1,4 @@
-package com.jeremyhaberman.raingauge;
+package com.jeremyhaberman.raingauge.rest.resource;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -13,31 +13,22 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-public class Weather {
+public class Observations implements Resource {
 
-	private static final String TAG = Weather.class.getSimpleName();
+	private static final String TAG = Observations.class.getSimpleName();
 	public static final String WEEKLY_RAINFALL = "com.jeremyhaberman.raingauge.WEEKLY_RAINFALL";
 	public static final String WEEKLY_WATERING= "com.jeremyhaberman.raingauge.WEEKLY_WATERING";
 	public static final String ZIP_CODE = "com.jeremyhaberman.raingauge.ZIP_CODE";
 	public static final String TODAYS_FORECAST = "todaysForecast";
-
-	public double getTodaysRainfall(int zip) throws Exception {
-
-		URL url = null;
-		try {
-			url = buildUrl(zip);
-		} catch (MalformedURLException e) {
-			throw new Exception(e);
-		}
-
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		InputStream stream = connection.getInputStream();
-		String body = getBody(stream);
-
-		Log.d(TAG, body);
-		
-		JSONObject obj = new JSONObject(body);
-		return obj.getDouble("rainDaily");
+	
+	private double mRainfall;
+	
+	private Observations(double rainfall) {
+		mRainfall = rainfall;
+	}
+	
+	public static Observations createObservations(double rain) {
+		return new Observations(rain);
 	}
 	
 	public String getTodaysForecast(int zip) throws Exception {
@@ -94,5 +85,11 @@ public class Weather {
 
 		return new URL(builder.toString());
 	}
+
+	public double getRainfall() {
+		return mRainfall;
+	}
+
+	
 
 }

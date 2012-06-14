@@ -63,7 +63,7 @@ public final class WeatherServiceHelper {
 
 		Intent intent = new Intent(mAppContext, mWeatherServiceClass);
 		intent.putExtra(METHOD_EXTRA, METHOD_GET);
-		intent.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.RAINFALL);
+		intent.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.OBSERVATIONS);
 		intent.putExtra(SERVICE_CALLBACK_EXTRA, mServiceCallback);
 		intent.putExtra(EXTRA_REQUEST_ID, requestId);
 		

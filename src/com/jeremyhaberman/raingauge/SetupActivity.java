@@ -1,5 +1,7 @@
 package com.jeremyhaberman.raingauge;
 
+import com.jeremyhaberman.raingauge.rest.resource.Observations;
+
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -34,7 +36,7 @@ public class SetupActivity extends Activity {
 
 	protected void saveZip(String zip) {
 		SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-		editor.putInt(Weather.ZIP_CODE, Integer.parseInt(zip)).commit();
+		editor.putInt(Observations.ZIP_CODE, Integer.parseInt(zip)).commit();
 	}
 	
 	

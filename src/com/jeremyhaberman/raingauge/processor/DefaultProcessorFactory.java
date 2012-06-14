@@ -4,11 +4,12 @@ import android.content.Context;
 
 import com.jeremyhaberman.raingauge.service.WeatherService.ResourceType;
 
-public class WeatherProcessorFactory {
+public class DefaultProcessorFactory implements ProcessorFactory {
 
-	private static WeatherProcessorFactory mSingleton;
+	private static ProcessorFactory mSingleton;
 	private Context mContext;
 
+	@Override
 	public ResourceProcessor getProcessor(ResourceType resourceType) {
 		
 		if (resourceType == null) {
@@ -16,22 +17,22 @@ public class WeatherProcessorFactory {
 		}
 		
 		switch (resourceType) {
-		case RAINFALL:
-			return new WeatherProcessor(mContext);
+		case OBSERVATIONS:
+			return ObservationsProcessor.createProcessor(mContext);
 		default:
 			throw new IllegalArgumentException("No processor for resource type: " + resourceType);
 		}
 
 	}
 
-	public static WeatherProcessorFactory getInstance(Context context) {
+	public static ProcessorFactory getInstance(Context context) {
 		if (mSingleton == null) {
-			mSingleton = new WeatherProcessorFactory(context.getApplicationContext());
+			mSingleton = new DefaultProcessorFactory(context.getApplicationContext());
 		}
 		return mSingleton;
 	}
 
-	private WeatherProcessorFactory(Context context) {
+	private DefaultProcessorFactory(Context context) {
 		mContext = context;
 	};
 

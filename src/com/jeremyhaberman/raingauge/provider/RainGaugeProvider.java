@@ -15,7 +15,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 
-import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.RainfallTable;
+import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.WateringsTable;
 
 public class RainGaugeProvider extends ContentProvider {
@@ -49,11 +49,11 @@ public class RainGaugeProvider extends ContentProvider {
 		// Build up URI matcher
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-		uriMatcher.addURI(RainGaugeProviderContract.AUTHORITY, RainfallTable.TABLE_NAME,
+		uriMatcher.addURI(RainGaugeProviderContract.AUTHORITY, ObservationsTable.TABLE_NAME,
 				MATCHER_RAINFALL);
 
 		uriMatcher.addURI(RainGaugeProviderContract.AUTHORITY,
-				RainfallTable.TABLE_NAME + "/#", MATCHER_RAINFALL_ID);
+				ObservationsTable.TABLE_NAME + "/#", MATCHER_RAINFALL_ID);
 		
 		uriMatcher.addURI(RainGaugeProviderContract.AUTHORITY, WateringsTable.TABLE_NAME, MATCHER_WATERINGS);
 		
@@ -65,7 +65,7 @@ public class RainGaugeProvider extends ContentProvider {
 		// usually equal, but we need this structure
 		// later, down in .query()
 		rainfallProjectionMap = new HashMap<String, String>();
-		for (String column : RainfallTable.ALL_COLUMNS) {
+		for (String column : ObservationsTable.ALL_COLUMNS) {
 			rainfallProjectionMap.put(column, column);
 		}
 		
@@ -96,14 +96,14 @@ public class RainGaugeProvider extends ContentProvider {
 
 			case MATCHER_RAINFALL:
 				// Perform the update and return the number of rows updated.
-				tableName = RainfallTable.TABLE_NAME;
+				tableName = ObservationsTable.TABLE_NAME;
 				break;
 
 			case MATCHER_RAINFALL_ID:
-				tableName = RainfallTable.TABLE_NAME;
+				tableName = ObservationsTable.TABLE_NAME;
 				String id = uri.getPathSegments()
-						.get(RainfallTable.RAINFALL_ID_PATH_POSITION);
-				finalWhere = RainfallTable._ID + " = " + id;
+						.get(ObservationsTable.RAINFALL_ID_PATH_POSITION);
+				finalWhere = ObservationsTable._ID + " = " + id;
 
 				// if we were passed a 'where' arg, add that to our 'finalWhere'
 				if (whereClause != null) {
@@ -170,8 +170,8 @@ public class RainGaugeProvider extends ContentProvider {
 			switch (uriMatcher.match(uri)) {
 
 			case MATCHER_RAINFALL:
-				insertTable = RainfallTable.TABLE_NAME;
-				baseUri = RainfallTable.CONTENT_ID_URI_BASE;
+				insertTable = ObservationsTable.TABLE_NAME;
+				baseUri = ObservationsTable.CONTENT_ID_URI_BASE;
 				break;
 				
 			case MATCHER_WATERINGS:
@@ -212,7 +212,7 @@ public class RainGaugeProvider extends ContentProvider {
 		// pattern-matching.
 		switch (uriMatcher.match(uri)) {
 		case MATCHER_RAINFALL:
-			qb.setTables(RainfallTable.TABLE_NAME);
+			qb.setTables(ObservationsTable.TABLE_NAME);
 			qb.setProjectionMap(rainfallProjectionMap);
 			break;
 
@@ -221,11 +221,11 @@ public class RainGaugeProvider extends ContentProvider {
 			 * but add a where clause to only return the one cat picture
 			 */
 		case MATCHER_RAINFALL_ID:
-			qb.setTables(RainfallTable.TABLE_NAME);
+			qb.setTables(ObservationsTable.TABLE_NAME);
 			qb.setProjectionMap(rainfallProjectionMap);
 			// Find the cat picture ID itself in the incoming URI
-			String catPicId = uri.getPathSegments().get(RainfallTable.RAINFALL_ID_PATH_POSITION);
-			qb.appendWhere(RainfallTable._ID + "=" + catPicId);
+			String catPicId = uri.getPathSegments().get(ObservationsTable.RAINFALL_ID_PATH_POSITION);
+			qb.appendWhere(ObservationsTable._ID + "=" + catPicId);
 			break;
 		case MATCHER_WATERINGS:
 			qb.setTables(WateringsTable.TABLE_NAME);
@@ -276,14 +276,14 @@ public class RainGaugeProvider extends ContentProvider {
 
 			case MATCHER_RAINFALL:
 				// Perform the update and return the number of rows updated.
-				tableName = RainfallTable.TABLE_NAME;
+				tableName = ObservationsTable.TABLE_NAME;
 				break;
 
 			case MATCHER_RAINFALL_ID:
-				tableName = RainfallTable.TABLE_NAME;
+				tableName = ObservationsTable.TABLE_NAME;
 				String id = uri.getPathSegments()
-						.get(RainfallTable.RAINFALL_ID_PATH_POSITION);
-				finalWhere = RainfallTable._ID + " = " + id;
+						.get(ObservationsTable.RAINFALL_ID_PATH_POSITION);
+				finalWhere = ObservationsTable._ID + " = " + id;
 
 				// if we were passed a 'where' arg, add that to our 'finalWhere'
 				if (whereClause != null) {

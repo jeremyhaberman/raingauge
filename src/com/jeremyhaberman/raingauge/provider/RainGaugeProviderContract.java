@@ -6,7 +6,7 @@ public final class RainGaugeProviderContract {
 
 	public static final String AUTHORITY = "com.jeremyhaberman.raingauge.raingaugeprovider";
 
-	public static final class RainfallTable implements ResourceTable {
+	public static final class ObservationsTable implements ResourceTable {
 
 		public static final String TABLE_NAME = "rainfalls";
 		
@@ -14,9 +14,9 @@ public final class RainGaugeProviderContract {
 
 		static {
 			ALL_COLUMNS = new String[] {
-					RainfallTable._ID,
-					RainfallTable.TIMESTAMP,
-					RainfallTable.RAINFALL
+					ObservationsTable._ID,
+					ObservationsTable.TIMESTAMP,
+					ObservationsTable.RAINFALL
 				};
 		}
 
@@ -45,7 +45,7 @@ public final class RainGaugeProviderContract {
 		public static final String RAINFALL = "rainfall";
 
 		// Prevent instantiation of this class
-		private RainfallTable() {
+		private ObservationsTable() {
 		}
 	}
 	

@@ -3,5 +3,8 @@
 
     <string name="hello">Hello World, RainGaugeActivity!</string>
     <string name="app_name">RainGauge</string>
+    
+    <!-- Implementations -->
+    <string name="rest_method_factory_class">com.jeremyhaberman.raingauge.rest.method.DefaultRestMethodFactory</string>
 
 </resources>

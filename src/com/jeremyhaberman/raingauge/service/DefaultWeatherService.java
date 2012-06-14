@@ -12,6 +12,7 @@ import com.jeremyhaberman.raingauge.util.Logger;
 public class DefaultWeatherService extends IntentService implements WeatherService {
 
 	private static final String TAG = DefaultWeatherService.class.getSimpleName();
+	private static final int NULL_STATUS_CODE = 0;
 
 	public DefaultWeatherService() {
 		super("DefaultWeatherService");
@@ -26,15 +27,16 @@ public class DefaultWeatherService extends IntentService implements WeatherServi
 		Bundle parameters = requestIntent.getBundleExtra(EXTRA_REQUEST_PARAMETERS);
 		ResultReceiver serviceHelperCallback = requestIntent
 				.getParcelableExtra(SERVICE_CALLBACK_EXTRA);
-		ResourceProcessor processor = (ResourceProcessor) requestIntent.getParcelableExtra(EXTRA_PROCESSOR);
-		
+		ResourceProcessor processor = (ResourceProcessor) requestIntent
+				.getParcelableExtra(EXTRA_PROCESSOR);
+
 		if (serviceHelperCallback == null) {
 			Logger.error(TAG, "Service callback is null");
 		}
-		
+
 		if (processor == null || method == null || parameters == null) {
 			if (serviceHelperCallback != null) {
-				serviceHelperCallback.send(REQUEST_INVALID, bundleOriginalIntent(requestIntent));
+				serviceHelperCallback.send(REQUEST_INVALID, createResultData(requestIntent));
 			}
 			return;
 		}
@@ -42,11 +44,10 @@ public class DefaultWeatherService extends IntentService implements WeatherServi
 		ResourceProcessorCallback processorCallback = createProcessorCallback(requestIntent,
 				serviceHelperCallback);
 
-		
 		if (method.equalsIgnoreCase(METHOD_GET)) {
 			processor.getResource(processorCallback, parameters);
 		} else if (serviceHelperCallback != null) {
-			serviceHelperCallback.send(REQUEST_INVALID, bundleOriginalIntent(requestIntent));
+			serviceHelperCallback.send(REQUEST_INVALID, createResultData(requestIntent));
 		}
 	}
 
@@ -56,20 +57,26 @@ public class DefaultWeatherService extends IntentService implements WeatherServi
 		ResourceProcessorCallback callback = new ResourceProcessorCallback() {
 
 			@Override
-			public void send(int resultCode, String resourceId) {
+			public void send(int resultCode, int statusCode) {
 				if (serviceHelperCallback != null) {
-					serviceHelperCallback.send(resultCode, bundleOriginalIntent(originalIntent));
+					serviceHelperCallback.send(resultCode,
+							createResultData(originalIntent, statusCode));
 				}
 			}
 		};
 		return callback;
 	}
 
-	private Bundle bundleOriginalIntent(Intent originalIntent) {
-
-		Bundle originalRequest = new Bundle();
-		originalRequest.putParcelable(ORIGINAL_INTENT_EXTRA, originalIntent);
-		return originalRequest;
+	protected Bundle createResultData(Intent originalIntent) {
+		return createResultData(originalIntent, NULL_STATUS_CODE);
 	}
 
+	protected Bundle createResultData(Intent originalIntent, int statusCode) {
+		Bundle resultData = new Bundle();
+		resultData.putParcelable(ORIGINAL_INTENT_EXTRA, originalIntent);
+		if (statusCode != NULL_STATUS_CODE) {
+			resultData.putInt(WeatherService.EXTRA_STATUS_CODE, statusCode);
+		}
+		return resultData;
+	}
 }
