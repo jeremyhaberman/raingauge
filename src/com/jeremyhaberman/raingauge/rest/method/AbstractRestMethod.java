@@ -8,7 +8,6 @@ import com.jeremyhaberman.raingauge.rest.resource.Resource;
 import com.jeremyhaberman.raingauge.util.Logger;
 
 import java.net.URI;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +30,7 @@ public abstract class AbstractRestMethod<T extends Resource> implements RestMeth
 	/**
 	 * Subclasses can overwrite for full control, eg. need to do special
 	 * inspection of response headers, etc.
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 */
@@ -55,50 +54,19 @@ public abstract class AbstractRestMethod<T extends Resource> implements RestMeth
 
 	protected abstract URI getURI();
 
-	protected String buildQueryString(Map<String, String> params) {
-
-		StringBuilder queryStringBuilder = new StringBuilder();
-
-		Iterator<String> paramKeyIter = params.keySet().iterator();
-
-		if (paramKeyIter.hasNext()) {
-			queryStringBuilder.append(getKeyValuePair(params, paramKeyIter.next()));
-		}
-
-		while (paramKeyIter.hasNext()) {
-			queryStringBuilder.append("&" + getKeyValuePair(params, paramKeyIter.next()));
-		}
-
-		return queryStringBuilder.toString();
-	}
-
-	private String getKeyValuePair(Map<String, String> params, String key) {
-		return key + "=" + params.get(key);
-	}
-
 	/**
 	 * Returns the log tag for the class extending AbstractRestMethod
-	 * 
+	 *
 	 * @return log tag
 	 */
 	protected abstract String getLogTag();
 
 	/**
 	 * Build the {@link Request}.
-	 * 
+	 *
 	 * @return Request for this REST method
 	 */
 	protected abstract Request buildRequest();
-
-	/**
-	 * Determines whether the REST method requires authentication
-	 * 
-	 * @return <code>true</code> if authentication is required,
-	 *         <code>false</code> otherwise
-	 */
-	protected boolean requiresAuthorization() {
-		return true;
-	}
 
 	protected abstract T parseResponseBody(String responseBody) throws Exception;
 

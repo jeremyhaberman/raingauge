@@ -1,6 +1,7 @@
 package com.jeremyhaberman.raingauge.rest.method;
 
 import android.test.InstrumentationTestCase;
+import android.test.suitebuilder.annotation.LargeTest;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
 import com.jeremyhaberman.raingauge.R;
@@ -41,7 +42,7 @@ public class GetObservationsRestMethodTest extends InstrumentationTestCase {
 		assertNotNull(mRestClient);
 	}
 
-	@MediumTest
+	@LargeTest
 	public void testExecute() {
 		RestMethod<Observations> method =
 				GetObservationsRestMethod.newInstance(getInstrumentation().getTargetContext(),
@@ -66,8 +67,7 @@ public class GetObservationsRestMethodTest extends InstrumentationTestCase {
 				"http://i.wxbug.net/REST/Direct/GetObs.ashx?zip=" + zip + "&units=0&ic=1&api_key=" +
 						apiKey;
 
-		assertEquals(expectedUri, method.getURI().toString());
-
+		assertEquals(URI.create(expectedUri).toString(), method.getURI().toString());
 	}
 
 	@SmallTest
@@ -84,12 +84,14 @@ public class GetObservationsRestMethodTest extends InstrumentationTestCase {
 				GetObservationsRestMethod.newInstance(getInstrumentation().getTargetContext(), zip);
 		Request request = method.buildRequest();
 
-		URI expectedUri = URI.create(
+		URI expectedURI = URI.create(
 				"http://i.wxbug.net/REST/Direct/GetObs.ashx?zip=" + zip + "&units=0&ic=1&api_key=" +
 						mApiKey);
 
 		assertEquals(Method.GET, request.getMethod());
-		assertEquals(expectedUri.toString(), request.getRequestUri().toString());
+
+		assertEquals(expectedURI.toString(), method.getURI().toString());
+
 		assertNull(request.getHeaders());
 		assertNull(request.getBody());
 	}
@@ -113,10 +115,5 @@ public class GetObservationsRestMethodTest extends InstrumentationTestCase {
 		Observations expectedObservations = Observations.createObservations(2.1);
 
 		assertEquals(expectedObservations, actualObservations);
-	}
-
-	@SmallTest
-	public void testRequiresAuthorization() {
-		assertFalse(mMethod.requiresAuthorization());
 	}
 }

@@ -70,11 +70,6 @@ public class GetObservationsRestMethod extends AbstractRestMethod<Observations> 
 	}
 
 	@Override
-	protected boolean requiresAuthorization() {
-		return false;
-	}
-
-	@Override
 	protected String getLogTag() {
 		return TAG;
 	}
