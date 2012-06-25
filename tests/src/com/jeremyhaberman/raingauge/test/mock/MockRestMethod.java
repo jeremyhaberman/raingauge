@@ -8,17 +8,15 @@ public class MockRestMethod implements RestMethod {
 
 	private Resource mResource;
 	private int mStatusCode;
-	private String mStatusMessage;
 
-	public MockRestMethod(int statusCode, String statusMessage, Resource resource) {
+	public MockRestMethod(int statusCode, Resource resource) {
 		mStatusCode = statusCode;
-		mStatusMessage = statusMessage;
 		mResource = resource;
 	}
 	
 	@Override
 	public RestMethodResult execute() {
-		return new RestMethodResult<Resource>(mStatusCode, mStatusMessage, mResource);
+		return new RestMethodResult<Resource>(mStatusCode, mResource);
 	}
 
 }

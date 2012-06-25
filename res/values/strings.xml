@@ -3,6 +3,9 @@
 
     <string name="hello">Hello World, RainGaugeActivity!</string>
     <string name="app_name">RainGauge</string>
+
+    <!-- WeatherBug API Key -->
+    <string name="api_key">qxktcbwgncg9acgwbk45d9jb</string>
     
     <!-- Implementations -->
     <string name="rest_method_factory_class">com.jeremyhaberman.raingauge.rest.method.DefaultRestMethodFactory</string>

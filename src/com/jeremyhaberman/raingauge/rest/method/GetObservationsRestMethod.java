@@ -1,14 +1,13 @@
 package com.jeremyhaberman.raingauge.rest.method;
 
-import java.net.URI;
-
-import org.json.JSONObject;
-
 import android.content.Context;
-
+import com.jeremyhaberman.raingauge.R;
 import com.jeremyhaberman.raingauge.rest.Method;
 import com.jeremyhaberman.raingauge.rest.Request;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
+import org.json.JSONObject;
+
+import java.net.URI;
 
 public class GetObservationsRestMethod extends AbstractRestMethod<Observations> {
 
@@ -24,7 +23,10 @@ public class GetObservationsRestMethod extends AbstractRestMethod<Observations> 
 
 	private URI mUri;
 
-	public GetObservationsRestMethod(Context context, String zipCode) {
+	// WeatherBug API key
+	private String mApiKey;
+
+	private GetObservationsRestMethod(Context context, String zipCode) {
 		
 		if (context == null) {
 			throw new IllegalArgumentException("context is null");
@@ -35,8 +37,13 @@ public class GetObservationsRestMethod extends AbstractRestMethod<Observations> 
 		}
 		
 		mContext = context.getApplicationContext();
+		mApiKey = context.getString(R.string.api_key);
 		mZipCode = zipCode;
 		mUri = buildUri();
+	}
+
+	public static GetObservationsRestMethod newInstance(Context context, String zipCode) {
+		return new GetObservationsRestMethod(context, zipCode);
 	}
 
 	@Override
@@ -49,7 +56,7 @@ public class GetObservationsRestMethod extends AbstractRestMethod<Observations> 
 		StringBuilder uriStringBuilder = new StringBuilder(BASE_URI);
 		uriStringBuilder.append("?");
 		uriStringBuilder.append("zip=").append(mZipCode);
-		uriStringBuilder.append("&units=0&ic=1&api_key=qxktcbwgncg9acgwbk45d9jb");
+		uriStringBuilder.append("&units=0&ic=1&api_key=" + mApiKey);
 		return URI.create(uriStringBuilder.toString());
 	}
 
@@ -60,11 +67,6 @@ public class GetObservationsRestMethod extends AbstractRestMethod<Observations> 
 		double rainDaily = obj.getDouble(JSON_KEY_RAIN_DAILY);
 		
 		return Observations.createObservations(rainDaily);
-	}
-
-	@Override
-	protected Context getContext() {
-		return mContext;
 	}
 
 	@Override

@@ -1,18 +1,16 @@
 package com.jeremyhaberman.raingauge.rest.method;
 
-import java.net.URI;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import android.content.Context;
-
 import com.jeremyhaberman.raingauge.rest.DefaultRestClient;
 import com.jeremyhaberman.raingauge.rest.Request;
 import com.jeremyhaberman.raingauge.rest.Response;
 import com.jeremyhaberman.raingauge.rest.RestClient;
 import com.jeremyhaberman.raingauge.rest.resource.Resource;
 import com.jeremyhaberman.raingauge.util.Logger;
+
+import java.net.URI;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractRestMethod<T extends Resource> implements RestMethod<T> {
 
@@ -30,8 +28,6 @@ public abstract class AbstractRestMethod<T extends Resource> implements RestMeth
 		mRestClient = client;
 	}
 
-	protected abstract Context getContext();
-
 	/**
 	 * Subclasses can overwrite for full control, eg. need to do special
 	 * inspection of response headers, etc.
@@ -42,7 +38,6 @@ public abstract class AbstractRestMethod<T extends Resource> implements RestMeth
 	protected RestMethodResult<T> buildResult(Response response) {
 
 		int status = response.status;
-		String statusMsg = "";
 		String responseBody = null;
 		T resource = null;
 
@@ -53,10 +48,9 @@ public abstract class AbstractRestMethod<T extends Resource> implements RestMeth
 		} catch (Exception ex) {
 			// our own internal error code, not from service
 			// spec only defines up to 505
-			status = 506; 
-			statusMsg = ex.getMessage();
+			status = 506;
 		}
-		return new RestMethodResult<T>(status, statusMsg, resource);
+		return new RestMethodResult<T>(status, resource);
 	}
 
 	protected abstract URI getURI();

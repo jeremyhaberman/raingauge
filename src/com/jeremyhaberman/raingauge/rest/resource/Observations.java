@@ -1,17 +1,16 @@
 package com.jeremyhaberman.raingauge.rest.resource;
 
+import android.util.Log;
+import org.apache.http.util.ByteArrayBuffer;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import org.apache.http.util.ByteArrayBuffer;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import android.util.Log;
 
 public class Observations implements Resource {
 
@@ -90,6 +89,27 @@ public class Observations implements Resource {
 		return mRainfall;
 	}
 
-	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
+		Observations that = (Observations) o;
+
+		if (Double.compare(that.mRainfall, mRainfall) != 0) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		long temp = mRainfall != +0.0d ? Double.doubleToLongBits(mRainfall) : 0L;
+		return (int) (temp ^ (temp >>> 32));
+	}
 }
