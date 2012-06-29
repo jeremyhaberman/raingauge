@@ -1,40 +1,62 @@
 package com.jeremyhaberman.raingauge.util;
 
-import java.util.Set;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Set;
+
 /**
  * Utility class for logging
- * 
+ *
  * @author jeremy
- * 
  */
 public class Logger {
 
-	public static final int VERBOSE = Log.VERBOSE;
 	public static final int DEBUG = Log.DEBUG;
 	public static final int INFO = Log.INFO;
 	public static final int WARN = Log.WARN;
 	public static final int ERROR = Log.ERROR;
-	public static final int ASSERT = Log.ASSERT;
 
-	private static int mCurrentLevel = ASSERT;
+	private static int mCurrentLevel = DEBUG;
 
 	private static String mAppLogTag = "";
-	
-	private static final int MESSAGE_CACHE_SIZE = 10;
-	
+
+	private static final int MESSAGE_CACHE_SIZE = 50;
+
 	private static String[] sMessageCache = new String[MESSAGE_CACHE_SIZE];
 
+	// Prevent instantiation
+	private Logger() throws InvocationTargetException {
+		throw new InvocationTargetException(new InstantiationException("Instantiation forbidden"));
+	}
+
+	/**
+	 * Sets the TAG for all log messages
+	 *
+	 * @param appTag
+	 */
 	public static void setAppTag(String appTag) {
+
+		if (appTag == null) {
+			throw new IllegalArgumentException("appTag is null");
+		}
+
 		mAppLogTag = appTag;
 	}
 
+	/**
+	 * Sets the current log level.  Must be DEBUG, INFO, WARN or ERROR; otherwise, the level will
+	 * not be changed.
+	 *
+	 * @param level
+	 */
 	public static void setLevel(int level) {
-		mCurrentLevel = level;
+
+		if (level == DEBUG || level == INFO || level == WARN || level == ERROR) {
+			mCurrentLevel = level;
+		}
 	}
 
 	public static int getLevel() {
@@ -50,8 +72,8 @@ public class Logger {
 	}
 
 	private static String cache(String message) {
-		for (int i = 0; i < sMessageCache.length-1; i++) {
-			sMessageCache[i+1] = sMessageCache[i];
+		for (int i = sMessageCache.length - 1; i > 0; i--) {
+			sMessageCache[i] = sMessageCache[i - 1];
 		}
 		sMessageCache[0] = message;
 		return message;
@@ -62,7 +84,8 @@ public class Logger {
 	}
 
 	public static void debug(String tag, String message, Intent intent) {
-		debug(tag, cache("Intent action=" + intent.getAction()));
+		debug(tag, message);
+		debug(tag, "Intent action=" + intent.getAction());
 
 		// log extras
 
@@ -71,16 +94,10 @@ public class Logger {
 		if (extras != null) {
 			Set<String> keys = extras.keySet();
 
-			if (keys == null || (keys != null && keys.isEmpty())) {
-				debug(tag, "    extras: none");
-			} else {
+			debug(tag, "  extras:");
 
-				debug(tag, "    extras:");
-
-				for (String key : keys) {
-					debug(tag, "       " + key + "=" + extras.get(key));
-				}
-
+			for (String key : keys) {
+				debug(tag, "    " + key + "=" + extras.get(key));
 			}
 		}
 	}
@@ -107,11 +124,9 @@ public class Logger {
 
 	/**
 	 * Formats a log message
-	 * 
-	 * @param tag
-	 *            message prefix, typically the requesting class name
-	 * @param message
-	 *            message to write
+	 *
+	 * @param tag     message prefix, typically the requesting class name
+	 * @param message message to write
 	 * @return formatted string of the log message
 	 */
 	private static String formatMessage(String tag, String message) {
