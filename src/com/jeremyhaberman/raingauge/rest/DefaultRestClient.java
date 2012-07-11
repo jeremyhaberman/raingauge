@@ -11,17 +11,26 @@ import java.util.List;
 
 public class DefaultRestClient implements RestClient {
 
-	/* (non-Javadoc)
-	 * @see mn.aug.restfulandroid.rest.IRestClient#execute(mn.aug.restfulandroid.rest.Request)
-	 */
+	private DefaultRestClient() {
+	}
+
+	public static RestClient newInstance() {
+		return new DefaultRestClient();
+	}
+
 	@Override
 	public Response execute(Request request) {
+
+		if (request == null) {
+			throw new IllegalArgumentException("request is null");
+		}
+
 		HttpURLConnection conn = null;
 		Response response = null;
 		int status = -1;
 		try {
 
-			URL url = request.getRequestUri().toURL();
+			URL url = request.getUri().toURL();
 			conn = (HttpURLConnection) url.openConnection();
 			if (request.getHeaders() != null) {
 				for (String header : request.getHeaders().keySet()) {
@@ -31,19 +40,7 @@ public class DefaultRestClient implements RestClient {
 				}
 			}
 
-			switch (request.getMethod()) {
-			case GET:
-				conn.setDoOutput(false);
-				break;
-			case POST:
-				byte[] payload = request.getBody();
-				conn.setDoOutput(true);
-				conn.setFixedLengthStreamingMode(payload.length);
-				conn.getOutputStream().write(payload);
-				status = conn.getResponseCode();
-			default:
-				break;
-			}
+			conn.setDoOutput(false);
 
 			status = conn.getResponseCode();
 
@@ -52,20 +49,21 @@ public class DefaultRestClient implements RestClient {
 				byte[] body = readStream(in);
 				response = new Response(conn.getResponseCode(), conn.getHeaderFields(), body);
 			} else {
-				response = new Response(status, conn.getHeaderFields(), new byte[] {});
+				response = new Response(status, conn.getHeaderFields(), new byte[]{});
 			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if (conn != null)
+			if (conn != null) {
 				conn.disconnect();
+			}
 		}
-		
+
 		if (response == null) {
-			response = new Response(status, new HashMap<String, List<String>>(), new byte[] {});
+			response = new Response(status, new HashMap<String, List<String>>(), new byte[]{});
 		}
-		
+
 		return response;
 	}
 

@@ -2,7 +2,6 @@ package com.jeremyhaberman.raingauge.rest.method;
 
 import android.content.Context;
 import com.jeremyhaberman.raingauge.R;
-import com.jeremyhaberman.raingauge.rest.Method;
 import com.jeremyhaberman.raingauge.rest.Request;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
 import org.json.JSONObject;
@@ -48,7 +47,7 @@ public class GetObservationsRestMethod extends AbstractRestMethod<Observations> 
 
 	@Override
 	protected Request buildRequest() {
-		Request request = new Request(Method.GET, mUri, null, null);
+		Request request = new Request(mUri);
 		return request;
 	}
 

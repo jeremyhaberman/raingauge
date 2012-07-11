@@ -6,7 +6,6 @@ import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
 import com.jeremyhaberman.raingauge.R;
 import com.jeremyhaberman.raingauge.mock.MockRestClient;
-import com.jeremyhaberman.raingauge.rest.Method;
 import com.jeremyhaberman.raingauge.rest.Request;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
 import com.jeremyhaberman.raingauge.util.TestUtil;
@@ -88,12 +87,7 @@ public class GetObservationsRestMethodTest extends InstrumentationTestCase {
 				"http://i.wxbug.net/REST/Direct/GetObs.ashx?zip=" + zip + "&units=0&ic=1&api_key=" +
 						mApiKey);
 
-		assertEquals(Method.GET, request.getMethod());
-
 		assertEquals(expectedURI.toString(), method.getURI().toString());
-
-		assertNull(request.getHeaders());
-		assertNull(request.getBody());
 	}
 
 	@SmallTest

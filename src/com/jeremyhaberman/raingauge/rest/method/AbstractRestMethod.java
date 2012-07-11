@@ -36,12 +36,12 @@ public abstract class AbstractRestMethod<T extends Resource> implements RestMeth
 	 */
 	protected RestMethodResult<T> buildResult(Response response) {
 
-		int status = response.status;
+		int status = response.getStatus();
 		String responseBody = null;
 		T resource = null;
 
 		try {
-			responseBody = new String(response.body, getCharacterEncoding(response.headers));
+			responseBody = new String(response.getBody(), getCharacterEncoding(response.getHeaders()));
 			logResponse(status, responseBody);
 			resource = parseResponseBody(responseBody);
 		} catch (Exception ex) {
@@ -73,7 +73,7 @@ public abstract class AbstractRestMethod<T extends Resource> implements RestMeth
 	protected Response doRequest(Request request) {
 
 		if (mRestClient == null) {
-			mRestClient = new DefaultRestClient();
+			mRestClient = DefaultRestClient.newInstance();
 		}
 
 		logRequest(request);
@@ -86,8 +86,7 @@ public abstract class AbstractRestMethod<T extends Resource> implements RestMeth
 	}
 
 	private void logRequest(Request request) {
-		Logger.debug(getLogTag(), "Request: " + request.getMethod().toString() + " "
-				+ request.getRequestUri().toASCIIString());
+		Logger.debug(getLogTag(), "Request: " + request.getUri().toASCIIString());
 	}
 
 	private void logResponse(int status, String responseBody) {

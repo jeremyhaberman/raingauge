@@ -46,6 +46,7 @@
     <orderEntry type="jdk" jdkName="Android 4.0 Google APIs" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="RainGauge" />
+    <orderEntry type="library" name="commons-io-2.3" level="project" />
   </component>
 </module>
 

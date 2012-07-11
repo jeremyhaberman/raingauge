@@ -8,22 +8,39 @@ public class Response {
     /**
      * The HTTP status code
      */
-    public int status;
+    private int status;
     
     /**
      * The HTTP headers received in the response
      */
-    public  Map<String, List<String>> headers;
+    private  Map<String, List<String>> headers;
     
     /**
      * The response body, if any
      */
-    public byte[] body;
+    private byte[] body;
     
     public Response(int status,  Map<String, List<String>> headers, byte[] body) {
         this.status = status; 
         this.headers = headers; 
         this.body = body;
     }
+
+	public byte[] getBody() {
+		return body;
+	}
+
+	public Map<String, List<String>> getHeaders() {
+		return headers;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	@Override
+	public String toString() {
+		return "status=" + status + ", body=" + new String(body);
+	}
 }
 
