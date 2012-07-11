@@ -4,7 +4,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.MediumTest;
-
 import com.jeremyhaberman.raingauge.Service;
 import com.jeremyhaberman.raingauge.ServiceManager;
 import com.jeremyhaberman.raingauge.processor.ObservationsProcessor;

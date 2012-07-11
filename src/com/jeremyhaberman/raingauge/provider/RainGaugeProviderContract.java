@@ -8,7 +8,7 @@ public final class RainGaugeProviderContract {
 
 	public static final class ObservationsTable implements ResourceTable {
 
-		public static final String TABLE_NAME = "rainfalls";
+		public static final String TABLE_NAME = "observations";
 		
 		public static final String[] ALL_COLUMNS;
 
