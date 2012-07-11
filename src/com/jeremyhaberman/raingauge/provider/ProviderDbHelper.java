@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
+import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.WateringsTable;
 import com.jeremyhaberman.raingauge.util.Logger;
 
 /**
@@ -35,6 +36,7 @@ public class ProviderDbHelper extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL("DROP TABLE IF EXISTS " + ObservationsTable.TABLE_NAME + ";");
+		db.execSQL("DROP TABLE IF EXISTS " + WateringsTable.TABLE_NAME + ";");
 		createTables(db);
 	}
 
@@ -52,6 +54,18 @@ public class ProviderDbHelper extends SQLiteOpenHelper {
 		String sql = rainfallBuilder.toString();
 		Log.i(TAG, "Creating DB table with string: '" + sql + "'");
 		db.execSQL(sql);
+
+		/* Create waterings table */
+		StringBuilder wateringsBuilder = new StringBuilder();
+		wateringsBuilder.append("CREATE TABLE " + WateringsTable.TABLE_NAME + " (");
+		wateringsBuilder.append(WateringsTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, ");
+		wateringsBuilder.append(WateringsTable.TIMESTAMP + " INTEGER, ");
+		wateringsBuilder.append(WateringsTable.AMOUNT + " REAL");
+		wateringsBuilder.append(");");
+		sql = wateringsBuilder.toString();
+		Log.i(TAG, "Creating DB table with string: '" + sql + "'");
+		db.execSQL(sql);
+
 	}
 
 }
