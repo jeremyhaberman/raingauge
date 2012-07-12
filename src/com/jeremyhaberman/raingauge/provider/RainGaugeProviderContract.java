@@ -32,12 +32,6 @@ public final class RainGaugeProviderContract {
 		// content://mn.aug.restfulandroid.catpicturesprovider/catpictures
 		public static final Uri CONTENT_URI = Uri.parse(URI_PREFIX + URI_PATH_RAINFALL);
 
-		// content://mn.aug.restfulandroid.catpicturesprovider/catpictures/ -- used
-		// for content provider insert() call
-
-		public static final Uri CONTENT_ID_URI_BASE = Uri.parse(SCHEME + AUTHORITY
-				+ URI_PATH_RAINFALL);
-
 		// content://mn.aug.restfulandroid.catpicturesprovider/catpictures/#
 		public static final Uri CONTENT_ID_URI_PATTERN = Uri.parse(SCHEME + AUTHORITY
 				+ URI_PATH_RAINFALL + "#");

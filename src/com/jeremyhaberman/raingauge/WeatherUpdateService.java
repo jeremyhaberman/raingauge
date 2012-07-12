@@ -1,8 +1,5 @@
 package com.jeremyhaberman.raingauge;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -14,10 +11,11 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
-
-import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class WeatherUpdateService extends IntentService {
 
@@ -80,7 +78,7 @@ public class WeatherUpdateService extends IntentService {
 		values.put(ObservationsTable.TIMESTAMP, System.currentTimeMillis());
 		values.put(ObservationsTable.RAINFALL, rainfall);
 		Uri uri = getContentResolver().insert(
-				RainGaugeProviderContract.ObservationsTable.CONTENT_ID_URI_BASE, values);
+				ObservationsTable.CONTENT_URI, values);
 
 		Log.d(TAG, "inserted rainfall: " + uri.toString());
 

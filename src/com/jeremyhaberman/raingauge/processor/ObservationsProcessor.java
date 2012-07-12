@@ -1,21 +1,19 @@
 package com.jeremyhaberman.raingauge.processor;
 
-import java.io.IOException;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-
 import com.jeremyhaberman.raingauge.Service;
 import com.jeremyhaberman.raingauge.ServiceManager;
-import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.rest.Method;
 import com.jeremyhaberman.raingauge.rest.method.RestMethod;
 import com.jeremyhaberman.raingauge.rest.method.RestMethodFactory;
 import com.jeremyhaberman.raingauge.rest.method.RestMethodResult;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
+
+import java.io.IOException;
 
 public class ObservationsProcessor implements ResourceProcessor {
 
@@ -59,7 +57,7 @@ public class ObservationsProcessor implements ResourceProcessor {
 		values.put(ObservationsTable.TIMESTAMP, System.currentTimeMillis());
 		values.put(ObservationsTable.RAINFALL, observations.getRainfall());
 		Uri uri = mContext.getContentResolver().insert(
-				RainGaugeProviderContract.ObservationsTable.CONTENT_ID_URI_BASE, values);
+				ObservationsTable.CONTENT_URI, values);
 		
 		if (uri == null) {
 			throw new IOException("Error inserting Observations into ContentProvider");
