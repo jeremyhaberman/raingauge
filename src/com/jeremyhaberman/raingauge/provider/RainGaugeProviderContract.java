@@ -27,7 +27,7 @@ public final class RainGaugeProviderContract {
 		public static final String URI_PREFIX = SCHEME + AUTHORITY;
 		private static final String URI_PATH_RAINFALL = "/" + TABLE_NAME;
 
-		public static final int RAINFALL_ID_PATH_POSITION = 1;
+		public static final int OBSERVATIONS_ID_PATH_POSITION = 1;
 
 		// content://mn.aug.restfulandroid.catpicturesprovider/catpictures
 		public static final Uri CONTENT_URI = Uri.parse(URI_PREFIX + URI_PATH_RAINFALL);
@@ -37,8 +37,10 @@ public final class RainGaugeProviderContract {
 				+ URI_PATH_RAINFALL + "#");
 
 		public static final String TIMESTAMP = "timestamp";
-
 		public static final String RAINFALL = "rainfall";
+
+		public static final int TIMESTAMP_COLUMN_INDEX = 1;
+		public static final int RAINFALL_COLUMN_INDEX = 2;
 
 		// Prevent instantiation of this class
 		private ObservationsTable() throws InvocationTargetException {
@@ -77,8 +79,10 @@ public final class RainGaugeProviderContract {
 				+ URI_PATH_WATERINGS + "#");
 
 		public static final String TIMESTAMP = "timestamp";
-
 		public static final String AMOUNT = "amount";
+
+		public static final int TIMESTAMP_COLUMN_INDEX = 1;
+		public static final int AMOUNT_COLUMN_INDEX = 2;
 
 		// Prevent instantiation of this class
 		private WateringsTable() throws InvocationTargetException {

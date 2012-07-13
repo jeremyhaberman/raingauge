@@ -106,7 +106,7 @@ public class GetObservationsRestMethodTest extends InstrumentationTestCase {
 
 		Observations actualObservations = mMethod.parseResponseBody(responseBody);
 
-		Observations expectedObservations = Observations.createObservations(2.1);
+		Observations expectedObservations = Observations.createObservations(1340609580000L, 2.1);
 
 		assertEquals(expectedObservations, actualObservations);
 	}

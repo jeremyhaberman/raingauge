@@ -17,6 +17,7 @@ public class GetObservationsRestMethod extends AbstractRestMethod<Observations> 
 	private static final String BASE_URI = "http://i.wxbug.net/REST/Direct/GetObs.ashx";
 
 	private static final String JSON_KEY_RAIN_DAILY = "rainDaily";
+	private static final String JSON_KEY_DATE_TIME = "dateTime";
 
 	private String mZipCode;
 
@@ -24,6 +25,7 @@ public class GetObservationsRestMethod extends AbstractRestMethod<Observations> 
 
 	// WeatherBug API key
 	private String mApiKey;
+
 
 	private GetObservationsRestMethod(Context context, String zipCode) {
 		
@@ -62,10 +64,11 @@ public class GetObservationsRestMethod extends AbstractRestMethod<Observations> 
 	@Override
 	protected Observations parseResponseBody(String responseBody) throws Exception {
 		JSONObject obj = new JSONObject(responseBody);
-		
+
+		long dateTime = obj.getLong(JSON_KEY_DATE_TIME);
 		double rainDaily = obj.getDouble(JSON_KEY_RAIN_DAILY);
 		
-		return Observations.createObservations(rainDaily);
+		return Observations.createObservations(dateTime, rainDaily);
 	}
 
 	@Override

@@ -12,13 +12,14 @@ import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.Observati
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.WateringsTable;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class RainGaugeProvider extends ContentProvider {
 
 	public static final String TAG = RainGaugeProvider.class.getSimpleName();
 
 	// "projection" map of all the cat pictures table columns
-	private static HashMap<String, String> rainfallProjectionMap;
+	private static HashMap<String, String> observationsProjectionMap;
 
 	private static HashMap<String, String> wateringsProjectionMap;
 
@@ -63,12 +64,12 @@ public class RainGaugeProvider extends ContentProvider {
 		// This map returns a column name for a given string. The two are
 		// usually equal, but we need this structure
 		// later, down in .query()
-		rainfallProjectionMap = new HashMap<String, String>();
+		observationsProjectionMap = new LinkedHashMap<String, String>();
 		for (String column : ObservationsTable.ALL_COLUMNS) {
-			rainfallProjectionMap.put(column, column);
+			observationsProjectionMap.put(column, column);
 		}
 
-		wateringsProjectionMap = new HashMap<String, String>();
+		wateringsProjectionMap = new LinkedHashMap<String, String>();
 		for (String column : WateringsTable.ALL_COLUMNS) {
 			wateringsProjectionMap.put(column, column);
 		}
@@ -96,6 +97,10 @@ public class RainGaugeProvider extends ContentProvider {
 			case OBSERVATIONS_URI_CODE:
 				verifyObservationsValues(Function.INSERT, values);
 				tableName = ObservationsTable.TABLE_NAME;
+				break;
+			case WATERINGS_URI_CODE:
+				verifyWateringValues(Function.INSERT, values);
+				tableName = WateringsTable.TABLE_NAME;
 				break;
 			default:
 				break;
@@ -125,48 +130,30 @@ public class RainGaugeProvider extends ContentProvider {
 
 	@Override
 	public int delete(Uri uri, String whereClause, String[] whereValues) {
-		SQLiteDatabase db = this.mDbHelper.getWritableDatabase();
+		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		int deletedRowsCount;
-		String finalWhere;
+
 		String tableName = null;
 
 		db.beginTransaction();
-		// Perform the update based on the incoming URI's pattern
+
 		try {
 			switch (uriMatcher.match(uri)) {
 
 				case OBSERVATIONS_URI_CODE:
-					// Perform the update and return the number of rows updated.
 					tableName = ObservationsTable.TABLE_NAME;
 					break;
-
 				case OBSERVATIONS_ID_URI_CODE:
 					tableName = ObservationsTable.TABLE_NAME;
-					String id = uri.getPathSegments()
-							.get(ObservationsTable.RAINFALL_ID_PATH_POSITION);
-					finalWhere = ObservationsTable._ID + " = " + id;
-
-					// if we were passed a 'where' arg, add that to our 'finalWhere'
-					if (whereClause != null) {
-						finalWhere = finalWhere + " AND " + whereClause;
-					}
+					whereClause = appendWhereId(uri, ObservationsTable._ID, whereClause);
 					break;
-
 				case WATERINGS_URI_CODE:
 					// Perform the update and return the number of rows updated.
 					tableName = WateringsTable.TABLE_NAME;
 					break;
-
 				case WATERINGS_ID_URI_CODE:
 					tableName = WateringsTable.TABLE_NAME;
-					id = uri.getPathSegments()
-							.get(WateringsTable.WATERING_ID_PATH_POSITION);
-					finalWhere = WateringsTable._ID + " = " + id;
-
-					// if we were passed a 'where' arg, add that to our 'finalWhere'
-					if (whereClause != null) {
-						finalWhere = finalWhere + " AND " + whereClause;
-					}
+					whereClause = appendWhereId(uri, WateringsTable._ID, whereClause);
 					break;
 
 				default:
@@ -188,6 +175,21 @@ public class RainGaugeProvider extends ContentProvider {
 
 		// Returns the number of rows deleted.
 		return deletedRowsCount;
+	}
+
+	private String appendWhereId(Uri uri, String tableIdColumnName, String whereClause) {
+		String id = Long.toString(ContentUris.parseId(uri));
+
+		String where = tableIdColumnName + " = " + id;
+
+		// if we were passed a 'where' arg, add that to our 'finalWhere'
+		if (whereClause != null) {
+			whereClause += " AND " + where;
+		} else {
+			whereClause = where;
+		}
+
+		return whereClause;
 	}
 
 	private void verifyObservationsValues(Function function, ContentValues values) {
@@ -215,6 +217,31 @@ public class RainGaugeProvider extends ContentProvider {
 		}
 	}
 
+	private void verifyWateringValues(Function function, ContentValues values) {
+
+		String failureCause = null;
+
+		switch (function) {
+			case INSERT:
+				if (values == null) {
+					failureCause = "Values is null";
+				} else if (!values.containsKey(WateringsTable.TIMESTAMP)) {
+					failureCause = "Missing timestamp value";
+				} else if (!values.containsKey(WateringsTable.AMOUNT)) {
+					failureCause = "Missing amount value";
+				}
+				break;
+			case UPDATE:
+				break;
+			default:
+				break;
+		}
+
+		if (failureCause != null) {
+			throw new IllegalArgumentException(failureCause);
+		}
+	}
+
 	@Override
 	public Cursor query(Uri uri, String[] selectedColumns, String whereClause,
 						String[] whereValues, String sortOrder) {
@@ -225,7 +252,7 @@ public class RainGaugeProvider extends ContentProvider {
 		switch (uriMatcher.match(uri)) {
 			case OBSERVATIONS_URI_CODE:
 				qb.setTables(ObservationsTable.TABLE_NAME);
-				qb.setProjectionMap(rainfallProjectionMap);
+				qb.setProjectionMap(observationsProjectionMap);
 				break;
 
 			/*
@@ -234,11 +261,10 @@ public class RainGaugeProvider extends ContentProvider {
 			 */
 			case OBSERVATIONS_ID_URI_CODE:
 				qb.setTables(ObservationsTable.TABLE_NAME);
-				qb.setProjectionMap(rainfallProjectionMap);
-				// Find the cat picture ID itself in the incoming URI
-				String catPicId =
-						uri.getPathSegments().get(ObservationsTable.RAINFALL_ID_PATH_POSITION);
-				qb.appendWhere(ObservationsTable._ID + "=" + catPicId);
+				qb.setProjectionMap(observationsProjectionMap);
+				String observationsId =
+						uri.getPathSegments().get(ObservationsTable.OBSERVATIONS_ID_PATH_POSITION);
+				qb.appendWhere(ObservationsTable._ID + "=" + observationsId);
 				break;
 			case WATERINGS_URI_CODE:
 				qb.setTables(WateringsTable.TABLE_NAME);
@@ -264,7 +290,7 @@ public class RainGaugeProvider extends ContentProvider {
 				throw new IllegalArgumentException("Unknown URI " + uri);
 		}
 
-		SQLiteDatabase db = this.mDbHelper.getReadableDatabase();
+		SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
 		// the two nulls here are 'grouping' and 'filtering by group'
 		Cursor cursor = qb.query(db, selectedColumns, whereClause, whereValues, null, null,
@@ -279,9 +305,9 @@ public class RainGaugeProvider extends ContentProvider {
 	@Override
 	public int update(Uri uri, ContentValues updateValues, String whereClause,
 					  String[] whereValues) {
+
 		SQLiteDatabase db = this.mDbHelper.getWritableDatabase();
 		int updatedRowsCount;
-		String finalWhere = null;
 		String tableName = null;
 
 		db.beginTransaction();
@@ -296,14 +322,7 @@ public class RainGaugeProvider extends ContentProvider {
 
 				case OBSERVATIONS_ID_URI_CODE:
 					tableName = ObservationsTable.TABLE_NAME;
-					String id = uri.getPathSegments()
-							.get(ObservationsTable.RAINFALL_ID_PATH_POSITION);
-					finalWhere = ObservationsTable._ID + " = " + id;
-
-					// if we were passed a 'where' arg, add that to our 'finalWhere'
-					if (whereClause != null) {
-						finalWhere = finalWhere + " AND " + whereClause;
-					}
+					whereClause = appendWhereId(uri, ObservationsTable._ID, whereClause);
 					break;
 
 				case WATERINGS_URI_CODE:
@@ -313,14 +332,7 @@ public class RainGaugeProvider extends ContentProvider {
 
 				case WATERINGS_ID_URI_CODE:
 					tableName = WateringsTable.TABLE_NAME;
-					id = uri.getPathSegments()
-							.get(WateringsTable.WATERING_ID_PATH_POSITION);
-					finalWhere = WateringsTable._ID + " = " + id;
-
-					// if we were passed a 'where' arg, add that to our 'finalWhere'
-					if (whereClause != null) {
-						finalWhere = finalWhere + " AND " + whereClause;
-					}
+					whereClause = appendWhereId(uri, WateringsTable._ID, whereClause);
 					break;
 
 				default:
@@ -329,17 +341,17 @@ public class RainGaugeProvider extends ContentProvider {
 			}
 
 			updatedRowsCount = db.update(tableName, updateValues,
-					finalWhere, whereValues);
+					whereClause, whereValues);
 
 			if (updatedRowsCount > 0) {
 				db.setTransactionSuccessful();
 
 				/*
-								 * Gets a handle to the content resolver object for the current context,
-								 * and notifies it that the incoming URI changed. The object passes this
-								 * along to the resolver framework, and observers that have registered
-								 * themselves for the provider are notified.
-								 */
+				 * Gets a handle to the content resolver object for the current context,
+				 * and notifies it that the incoming URI changed. The object passes this
+				 * along to the resolver framework, and observers that have registered
+				 * themselves for the provider are notified.
+				 */
 				getContext().getContentResolver().notifyChange(uri, null);
 			}
 

@@ -15,7 +15,8 @@ public class MockRestMethodFactory implements RestMethodFactory {
 	public RestMethod<? extends Resource> getRestMethod(Uri resourceUri, Method method,
 														Bundle params) {
 
-		return new MockRestMethod(200, Observations.createObservations(.75));
+		return new MockRestMethod(200,
+				Observations.createObservations(System.currentTimeMillis(), .75));
 	}
 
 }
