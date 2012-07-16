@@ -3,6 +3,8 @@ package com.jeremyhaberman.raingauge.rest.resource;
 import android.content.ContentValues;
 import android.database.Cursor;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Observations implements Resource {
 
@@ -73,6 +75,18 @@ public class Observations implements Resource {
 		temp = mRainfall != +0.0d ? Double.doubleToLongBits(mRainfall) : 0L;
 		result = 31 * result + (int) (temp ^ (temp >>> 32));
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		JSONObject obj = new JSONObject();
+		try {
+			obj.put("timestamp", mTimestamp);
+			obj.put("rainfall", mRainfall);
+			return obj.toString();
+		} catch (JSONException e) {
+			return super.toString();
+		}
 	}
 
 	@Override

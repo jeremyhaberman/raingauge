@@ -376,7 +376,7 @@ public class RainGaugeProvider extends ContentProvider {
 			case WATERINGS_ID_URI_CODE:
 				return "vnd.android.cursor.dir/vnd.com.jeremyhaberman.raingauge.watering";
 			default:
-				throw new IllegalArgumentException("Unknown URI " + uri);
+				return null;
 		}
 	}
 }

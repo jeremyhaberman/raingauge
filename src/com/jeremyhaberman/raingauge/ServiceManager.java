@@ -1,9 +1,9 @@
 package com.jeremyhaberman.raingauge;
 
+import com.jeremyhaberman.raingauge.util.Logger;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.jeremyhaberman.raingauge.util.Logger;
 
 /**
  * ServiceManager is a repository of services used throughout the app. Services should be initialized at app start-up in
@@ -12,6 +12,10 @@ import com.jeremyhaberman.raingauge.util.Logger;
 public class ServiceManager {
 
 	private static final String TAG = ServiceManager.class.getSimpleName();
+
+	public interface Initializer {
+		public void initializeServiceManager();
+	}
 
 	@SuppressWarnings("rawtypes")
 	private Map services = new HashMap();
@@ -30,7 +34,7 @@ public class ServiceManager {
 	/**
 	 * Loads an instance of a ServiceLocator
 	 * 
-	 * @param locator
+	 * @param manager
 	 */
 	public static void load(ServiceManager manager) {
 		Logger.debug(TAG, "Loading service manager: " + manager);
@@ -51,18 +55,18 @@ public class ServiceManager {
 	}
 
 	/**
-	 * Retrieve a service by name. Static variables on ServiceLocator (e.g. {@link ServiceManager#USER_MANAGER}) can be
+	 * Retrieve a service by name. Static variables on ServiceLocator (e.g. {@link Service#REST_METHOD_FACTORY}) can be
 	 * used for ease and reliability.
 	 * 
 	 * @param key
 	 * @return the service
+	 * @throws IllegalArgumentException if no service for given key is found
 	 */
 	public static Object getService(Service key) {		
 		if (mSingleton != null && mSingleton.services != null) {
 			return mSingleton.services.get(key);
 		} else {
-			// TODO throw exception instead of returning null;
-			return null;
+			throw new IllegalArgumentException("No service for key: " + key);
 		}
 	}
 
@@ -75,4 +79,9 @@ public class ServiceManager {
 		return mSingleton;
 	}
 
+	public static void initialize(Initializer initializer) {
+		if (initializer != null) {
+			initializer.initializeServiceManager();
+		}
+	}
 }

@@ -1,6 +1,8 @@
 package com.jeremyhaberman.raingauge.rest.method;
 
 import com.jeremyhaberman.raingauge.rest.resource.Resource;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RestMethodResult<T extends Resource> {
 	
@@ -20,5 +22,16 @@ public class RestMethodResult<T extends Resource> {
 	public T getResource() {
 		return resource;
 	}
-	
+
+	@Override
+	public String toString() {
+		JSONObject obj = new JSONObject();
+		try {
+			obj.put("statusCode", statusCode);
+			obj.put("resource", resource);
+			return obj.toString();
+		} catch (JSONException e) {
+			return super.toString();
+		}
+	}
 }
