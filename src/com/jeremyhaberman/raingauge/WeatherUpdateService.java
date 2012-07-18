@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import com.jeremyhaberman.raingauge.activity.RainGaugeActivity;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
 
@@ -37,7 +38,7 @@ public class WeatherUpdateService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 
-//		Observations weather = new Observations();
+
 
 		int zip = getCurrentZip();
 

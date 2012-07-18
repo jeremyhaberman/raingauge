@@ -3,6 +3,7 @@
 
     <string name="hello">Hello World, RainGaugeActivity!</string>
     <string name="app_name">RainGauge</string>
+    <string name="setup_activity_label">RainGauge Setup</string>
 
     <!-- WeatherBug API Key -->
     <string name="api_key">qxktcbwgncg9acgwbk45d9jb</string>

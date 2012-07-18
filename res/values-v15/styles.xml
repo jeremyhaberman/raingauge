@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="RainGaugeTheme" parent="@android:style/Theme" />
+    <style name="RainGaugeTheme" parent="@android:style/Theme.Holo" />
     
     <style name="Text">
         <item name="android:textSize">22sp</item>

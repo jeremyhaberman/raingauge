@@ -1,7 +1,4 @@
-package com.jeremyhaberman.raingauge;
-
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+package com.jeremyhaberman.raingauge.activity;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -18,10 +15,13 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
+import com.jeremyhaberman.raingauge.R;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.WateringsTable;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class RainGaugeActivity extends Activity {
 	private static final String TAG = null;
