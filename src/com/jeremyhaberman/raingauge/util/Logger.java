@@ -21,7 +21,7 @@ public class Logger {
 
 	private static int mCurrentLevel = DEBUG;
 
-	private static String mAppLogTag = "";
+	private static final String APP_LOG_TAG = "RainGauge";
 
 	private static final int MESSAGE_CACHE_SIZE = 50;
 
@@ -30,20 +30,6 @@ public class Logger {
 	// Prevent instantiation
 	private Logger() throws InvocationTargetException {
 		throw new InvocationTargetException(new InstantiationException("Instantiation forbidden"));
-	}
-
-	/**
-	 * Sets the TAG for all log messages
-	 *
-	 * @param appTag
-	 */
-	public static void setAppTag(String appTag) {
-
-		if (appTag == null) {
-			throw new IllegalArgumentException("appTag is null");
-		}
-
-		mAppLogTag = appTag;
 	}
 
 	/**
@@ -68,7 +54,7 @@ public class Logger {
 	}
 
 	public static void debug(String tag, String message) {
-		Log.d(mAppLogTag, cache(formatMessage(tag, message)));
+		Log.d(APP_LOG_TAG, cache(formatMessage(tag, message)));
 	}
 
 	private static String cache(String message) {
@@ -80,7 +66,7 @@ public class Logger {
 	}
 
 	public static void debug(String tag, String message, Throwable throwable) {
-		Log.d(mAppLogTag, cache(formatMessage(tag, message)));
+		Log.d(APP_LOG_TAG, cache(formatMessage(tag, message)));
 	}
 
 	public static void debug(String tag, String message, Intent intent) {
@@ -103,23 +89,23 @@ public class Logger {
 	}
 
 	public static void info(String tag, String message) {
-		Log.i(mAppLogTag, cache(formatMessage(tag, message)));
+		Log.i(APP_LOG_TAG, cache(formatMessage(tag, message)));
 	}
 
 	public static void error(String tag, String error) {
-		Log.e(mAppLogTag, cache(formatMessage(tag, error)));
+		Log.e(APP_LOG_TAG, cache(formatMessage(tag, error)));
 	}
 
 	public static void error(String tag, String error, Throwable throwable) {
-		Log.e(mAppLogTag, cache(formatMessage(tag, error)), throwable);
+		Log.e(APP_LOG_TAG, cache(formatMessage(tag, error)), throwable);
 	}
 
 	public static void warn(String tag, String message) {
-		Log.w(mAppLogTag, cache(formatMessage(tag, message)));
+		Log.w(APP_LOG_TAG, cache(formatMessage(tag, message)));
 	}
 
 	public static void warn(String tag, String message, Throwable throwable) {
-		Log.w(mAppLogTag, cache(formatMessage(tag, message)), throwable);
+		Log.w(APP_LOG_TAG, cache(formatMessage(tag, message)), throwable);
 	}
 
 	/**

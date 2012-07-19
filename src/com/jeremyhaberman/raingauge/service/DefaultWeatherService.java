@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-
 import com.jeremyhaberman.raingauge.processor.ResourceProcessor;
 import com.jeremyhaberman.raingauge.processor.ResourceProcessorCallback;
 import com.jeremyhaberman.raingauge.util.Logger;
@@ -20,6 +19,10 @@ public class DefaultWeatherService extends IntentService implements WeatherServi
 
 	@Override
 	protected void onHandleIntent(Intent requestIntent) {
+
+		if (Logger.isEnabled(Logger.DEBUG)) {
+			Logger.debug(TAG, "onHandleIntent()", requestIntent);
+		}
 
 		// Get request data from Intent
 		int resourceType = requestIntent.getIntExtra(RESOURCE_TYPE_EXTRA, -1);
@@ -52,7 +55,7 @@ public class DefaultWeatherService extends IntentService implements WeatherServi
 	}
 
 	private ResourceProcessorCallback createProcessorCallback(final Intent originalIntent,
-			final ResultReceiver serviceHelperCallback) {
+															  final ResultReceiver serviceHelperCallback) {
 
 		ResourceProcessorCallback callback = new ResourceProcessorCallback() {
 

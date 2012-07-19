@@ -1,6 +1,5 @@
 package com.jeremyhaberman.raingauge.service;
 
-import static com.jeremyhaberman.raingauge.service.WeatherService.SERVICE_CALLBACK_EXTRA;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -10,11 +9,11 @@ import android.os.ResultReceiver;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
 import android.test.suitebuilder.annotation.SmallTest;
-
 import com.jeremyhaberman.raingauge.rest.Method;
-import com.jeremyhaberman.raingauge.service.WeatherService.ResourceType;
 import com.jeremyhaberman.raingauge.service.WeatherServiceHelper.ServiceResultReceiver;
 import com.jeremyhaberman.raingauge.test.mock.MockWeatherService;
+
+import static com.jeremyhaberman.raingauge.service.WeatherService.SERVICE_CALLBACK_EXTRA;
 
 /**
  * This is a simple framework for a test of an Application. See
@@ -75,8 +74,8 @@ public class WeatherServiceHelperTest extends AndroidTestCase {
 		String method = extras.getString(WeatherService.METHOD_EXTRA);
 		assertEquals(Method.GET.toString(), method);
 		
-		ResourceType resourceType = (ResourceType) extras.getSerializable(WeatherService.RESOURCE_TYPE_EXTRA);
-		assertEquals(WeatherService.ResourceType.OBSERVATIONS, resourceType);
+		int resourceType = extras.getInt(WeatherService.RESOURCE_TYPE_EXTRA);
+		assertEquals(WeatherService.RESOURCE_TYPE_OBSERVATIONS, resourceType);
 		
 		ResultReceiver resultReceiver = (ResultReceiver) extras.getParcelable(SERVICE_CALLBACK_EXTRA);
 		assertNotNull(resultReceiver);

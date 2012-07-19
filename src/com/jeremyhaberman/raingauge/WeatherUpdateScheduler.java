@@ -1,14 +1,17 @@
 package com.jeremyhaberman.raingauge;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+import com.jeremyhaberman.raingauge.android.AndroidAlarmManager;
+import com.jeremyhaberman.raingauge.rest.resource.Observations;
+import com.jeremyhaberman.raingauge.service.WeatherServiceHelper;
+import com.jeremyhaberman.raingauge.util.Logger;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Schedules log maintenance on a regular interval
@@ -17,13 +20,13 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 
 	public static final String TAG = WeatherUpdateScheduler.class.getSimpleName();
 
-	public static final String ACTION_SCHEDULE_WEATHER_UPDATES = "com.jeremyhaberman.raingauge.ACTION_SCHEDULE_LOG_MAINTENANCE";
+	public static final String ACTION_SCHEDULE_WEATHER_UPDATES = "com.jeremyhaberman.raingauge.ACTION_SCHEDULE_WEATHER_UPDATES";
 	private static final String EXTRA_NEXT_RAINFALL_UPDATE_TIME = "com.jeremyhaberman.raingauge.EXTRA_NEXT_RAINFALL_UPDATE_TIME";
 	private static final String EXTRA_NEXT_RAIN_FORECAST_UPDATE_TIME = "com.jeremyhaberman.raingauge.EXTRA_NEXT_RAIN_FORECAST_UPDATE_TIME";
 
 	private static final long DAILY_INTERVAL = 5184000l;
 
-	private static boolean mScheduled = false;
+	private boolean mScheduled = false;
 
 	private Calendar mNextRainfulUpdateTime;
 	private Calendar mNextRainForecastTime;
@@ -38,7 +41,9 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 			if (!mScheduled) {
 				if (intent.getAction().equalsIgnoreCase(ACTION_SCHEDULE_WEATHER_UPDATES)) {
 
-					Log.d(TAG, "Starting LogMaintenanceManager and scheduling daily checks");
+					if (Logger.isEnabled(Logger.DEBUG)) {
+						Logger.debug(TAG, "Scheduling rainfall and forecast updates");
+					}
 
 					scheduleRainfallUpdate(context, intent);
 					scheduleForecastUpdate(context);
@@ -46,7 +51,9 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 					mScheduled = true;
 				}
 			} else {
-				Log.d(TAG, "Rainfall updates already scheduled");
+				if (Logger.isEnabled(Logger.DEBUG)) {
+					Logger.debug(TAG, "Rainfall and forecast updates already scheduled");
+				}
 			}
 		}
 	}
@@ -63,7 +70,9 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(nextForecastUpdateTime);
-		Log.d(TAG, "Next forecast update scheduled to run at " + cal.getTime().toString());
+		if (Logger.isEnabled(Logger.DEBUG)) {
+			Logger.debug(TAG, "Next forecast update scheduled to run at " + cal.getTime().toString());
+		}
 
 		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, nextForecastUpdateTime, DAILY_INTERVAL,
 				updateRainfallPendingIntent);
@@ -71,19 +80,25 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 	}
 
 	private void scheduleRainfallUpdate(Context context, Intent intent) {
-		Intent weatherUpdateService = new Intent(context, WeatherUpdateService.class);
-		weatherUpdateService.setAction(WeatherUpdateService.ACTION_GET_RAINFALL);
-		PendingIntent updateRainfallPendingIntent = PendingIntent.getService(context, 0,
-				weatherUpdateService, 0);
 
-		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		WeatherServiceHelper helper = new WeatherServiceHelper(context);
+		Intent weatherUpdateServiceIntent = helper.getTodaysObservationsIntent(intent.getIntExtra(Observations.ZIP_CODE, 0));
+
+		PendingIntent updateRainfallPendingIntent = PendingIntent.getService(context, 0,
+				weatherUpdateServiceIntent, 0);
+
+		AndroidAlarmManager alarmManager =
+				(AndroidAlarmManager) ServiceManager.getService(context, Service.ALARM_SERVICE);
 
 		long nextRainfallUpdateTime = intent.getLongExtra(EXTRA_NEXT_RAINFALL_UPDATE_TIME,
-				getNextRainfallUpdateTime(0, 55).getTimeInMillis());
+				getNextRainfallUpdateTime(8, 39).getTimeInMillis());
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(nextRainfallUpdateTime);
-		Log.d(TAG, "Next rainfall update scheduled to run at " + cal.getTime().toString());
+
+		if (Logger.isEnabled(Logger.DEBUG)) {
+			Logger.debug(TAG, "Next rainfall update scheduled to run at " + cal.getTime().toString());
+		}
 
 		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, nextRainfallUpdateTime, DAILY_INTERVAL,
 				updateRainfallPendingIntent);

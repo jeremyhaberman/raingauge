@@ -13,7 +13,9 @@ public interface WeatherService {
 	
 	public static final int REQUEST_INVALID = -1;
 	public static final String EXTRA_STATUS_CODE = "status_code";
-	
+
+	public static final int RESOURCE_TYPE_OBSERVATIONS = 1;
+
 	public enum ResourceType {
 		OBSERVATIONS
 	};

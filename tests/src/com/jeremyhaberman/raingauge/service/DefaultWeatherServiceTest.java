@@ -1,10 +1,5 @@
 package com.jeremyhaberman.raingauge.service;
 
-import static com.jeremyhaberman.raingauge.service.WeatherService.EXTRA_PROCESSOR;
-import static com.jeremyhaberman.raingauge.service.WeatherService.METHOD_EXTRA;
-import static com.jeremyhaberman.raingauge.service.WeatherService.METHOD_GET;
-import static com.jeremyhaberman.raingauge.service.WeatherService.RESOURCE_TYPE_EXTRA;
-import static com.jeremyhaberman.raingauge.service.WeatherService.SERVICE_CALLBACK_EXTRA;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,10 +11,11 @@ import android.os.ResultReceiver;
 import android.test.IsolatedContext;
 import android.test.ServiceTestCase;
 import android.test.suitebuilder.annotation.MediumTest;
-
 import com.jeremyhaberman.raingauge.processor.ResourceProcessor;
 import com.jeremyhaberman.raingauge.processor.ResourceProcessorCallback;
 import com.jeremyhaberman.raingauge.util.Logger;
+
+import static com.jeremyhaberman.raingauge.service.WeatherService.*;
 
 public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherService> {
 

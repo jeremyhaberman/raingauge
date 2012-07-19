@@ -1,7 +1,6 @@
 package com.jeremyhaberman.raingauge.processor.test;
 
 import android.test.AndroidTestCase;
-
 import com.jeremyhaberman.raingauge.Service;
 import com.jeremyhaberman.raingauge.ServiceManager;
 import com.jeremyhaberman.raingauge.processor.DefaultProcessorFactory;
@@ -19,19 +18,19 @@ public class ObservationsProcessorFactoryTest extends AndroidTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		mFactory = DefaultProcessorFactory.getInstance(getContext());
-		ServiceManager serviceManager = ServiceManager.createServiceManager();
-		serviceManager.loadService(Service.PROCESSOR_FACTORY, mFactory);
-		serviceManager.loadService(Service.REST_METHOD_FACTORY, DefaultRestMethodFactory.getInstance(getContext()));
-		ServiceManager.load(serviceManager);
+		ServiceManager.loadService(getContext(), Service.PROCESSOR_FACTORY, mFactory);
+		ServiceManager.loadService(getContext(), Service.REST_METHOD_FACTORY,
+				DefaultRestMethodFactory.getInstance(getContext()));
 	}
 
 	protected void tearDown() throws Exception {
-		TestUtil.resetServiceManager();
+		TestUtil.resetServiceManager(getContext());
 		super.tearDown();
 	}
 
 	public void testGetProcessor() {
-		ResourceProcessor processor = mFactory.getProcessor(WeatherService.ResourceType.OBSERVATIONS);
+		ResourceProcessor processor =
+				mFactory.getProcessor(WeatherService.ResourceType.OBSERVATIONS);
 		assertTrue(processor instanceof ObservationsProcessor);
 	}
 

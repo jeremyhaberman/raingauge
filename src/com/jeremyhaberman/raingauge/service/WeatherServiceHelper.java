@@ -1,18 +1,18 @@
 package com.jeremyhaberman.raingauge.service;
 
-import static com.jeremyhaberman.raingauge.service.WeatherService.METHOD_EXTRA;
-import static com.jeremyhaberman.raingauge.service.WeatherService.METHOD_GET;
-import static com.jeremyhaberman.raingauge.service.WeatherService.RESOURCE_TYPE_EXTRA;
-import static com.jeremyhaberman.raingauge.service.WeatherService.SERVICE_CALLBACK_EXTRA;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.ResultReceiver;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.ResultReceiver;
+import static com.jeremyhaberman.raingauge.service.WeatherService.METHOD_EXTRA;
+import static com.jeremyhaberman.raingauge.service.WeatherService.METHOD_GET;
+import static com.jeremyhaberman.raingauge.service.WeatherService.RESOURCE_TYPE_EXTRA;
+import static com.jeremyhaberman.raingauge.service.WeatherService.SERVICE_CALLBACK_EXTRA;
 
 /**
  * Weather API
@@ -40,7 +40,7 @@ public final class WeatherServiceHelper {
 	public WeatherServiceHelper(Context context, Class<? extends WeatherService> weatherService) {
 		init(context, weatherService);
 	}
-	
+
 	private void init(Context context, Class<? extends WeatherService> weatherService) {
 		mAppContext = context.getApplicationContext();
 		mServiceCallback = new ServiceResultReceiver();
@@ -49,9 +49,8 @@ public final class WeatherServiceHelper {
 
 	/**
 	 * Initiates a request to get today's rainfall
-	 * 
-	 * @param zip
-	 *            ZIP code
+	 *
+	 * @param zip ZIP code
 	 * @return request ID
 	 */
 	public long getTodaysRainfall(int zip) {
@@ -61,19 +60,25 @@ public final class WeatherServiceHelper {
 			mPendingRequests.add(requestId);
 		}
 
-		Intent intent = new Intent(mAppContext, mWeatherServiceClass);
-		intent.putExtra(METHOD_EXTRA, METHOD_GET);
-		intent.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.OBSERVATIONS);
+		Intent intent = getTodaysObservationsIntent(zip);
 		intent.putExtra(SERVICE_CALLBACK_EXTRA, mServiceCallback);
 		intent.putExtra(EXTRA_REQUEST_ID, requestId);
-		
-		Bundle requestParams = new Bundle();
-		requestParams.putInt(WeatherService.ZIP_CODE, zip);
-		intent.putExtra(WeatherService.EXTRA_REQUEST_PARAMETERS, requestParams);
 
 		mAppContext.startService(intent);
 
 		return requestId;
+	}
+
+	public Intent getTodaysObservationsIntent(int zip) {
+		Intent intent = new Intent(mAppContext, mWeatherServiceClass);
+		intent.putExtra(METHOD_EXTRA, METHOD_GET);
+		intent.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.RESOURCE_TYPE_OBSERVATIONS);
+
+		Bundle requestParams = new Bundle();
+		requestParams.putInt(WeatherService.ZIP_CODE, zip);
+		intent.putExtra(WeatherService.EXTRA_REQUEST_PARAMETERS, requestParams);
+
+		return intent;
 	}
 
 	protected Class<? extends WeatherService> getWeatherServiceClass() {
@@ -87,9 +92,8 @@ public final class WeatherServiceHelper {
 
 	/**
 	 * Determines whether a request is pending
-	 * 
-	 * @param requestId
-	 *            the ID of a previous request
+	 *
+	 * @param requestId the ID of a previous request
 	 * @return <code>true</code> if the request is pending, <code>false</code>
 	 *         otherwise
 	 */
@@ -102,14 +106,9 @@ public final class WeatherServiceHelper {
 	/**
 	 * Handles the result code and data during a callback from
 	 * CatPicturesService
-	 * 
-	 * @param resultCode
-	 *            the result code
-	 * @param resultData
-	 *            the data
 	 */
 	final class ServiceResultReceiver extends ResultReceiver {
-		
+
 		public ServiceResultReceiver() {
 			// null passed in to run callback on an arbitrary thread
 			super(null);

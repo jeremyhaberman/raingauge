@@ -30,8 +30,7 @@ public class ObservationsProcessorTest extends ProviderTestCase2<RainGaugeProvid
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		ServiceManager serviceManager = ServiceManager.createServiceManager();
-		serviceManager.loadService(Service.REST_METHOD_FACTORY, new MockRestMethodFactory());
+		ServiceManager.loadService(getContext(), Service.REST_METHOD_FACTORY, new MockRestMethodFactory());
 
 		mProcessor = ObservationsProcessor.createProcessor(getMockContext());
 	}

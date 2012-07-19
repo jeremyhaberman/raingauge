@@ -27,7 +27,7 @@ public class ObservationsProcessor implements ResourceProcessor {
 		mContext = context;
 
 		mRestMethodFactory = (RestMethodFactory) ServiceManager
-				.getService(Service.REST_METHOD_FACTORY);
+				.getService(context, Service.REST_METHOD_FACTORY);
 	}
 
 	public static ObservationsProcessor createProcessor(Context context) {
