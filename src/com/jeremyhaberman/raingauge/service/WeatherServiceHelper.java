@@ -42,7 +42,7 @@ public final class WeatherServiceHelper {
 	}
 
 	private void init(Context context, Class<? extends WeatherService> weatherService) {
-		mAppContext = context.getApplicationContext();
+		mAppContext = context;
 		mServiceCallback = new ServiceResultReceiver();
 		mWeatherServiceClass = weatherService;
 	}
@@ -60,25 +60,19 @@ public final class WeatherServiceHelper {
 			mPendingRequests.add(requestId);
 		}
 
-		Intent intent = getTodaysObservationsIntent(zip);
-		intent.putExtra(SERVICE_CALLBACK_EXTRA, mServiceCallback);
-		intent.putExtra(EXTRA_REQUEST_ID, requestId);
-
-		mAppContext.startService(intent);
-
-		return requestId;
-	}
-
-	public Intent getTodaysObservationsIntent(int zip) {
 		Intent intent = new Intent(mAppContext, mWeatherServiceClass);
 		intent.putExtra(METHOD_EXTRA, METHOD_GET);
 		intent.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.RESOURCE_TYPE_OBSERVATIONS);
+		intent.putExtra(SERVICE_CALLBACK_EXTRA, mServiceCallback);
+		intent.putExtra(EXTRA_REQUEST_ID, requestId);
 
 		Bundle requestParams = new Bundle();
 		requestParams.putInt(WeatherService.ZIP_CODE, zip);
 		intent.putExtra(WeatherService.EXTRA_REQUEST_PARAMETERS, requestParams);
 
-		return intent;
+		mAppContext.startService(intent);
+
+		return requestId;
 	}
 
 	protected Class<? extends WeatherService> getWeatherServiceClass() {

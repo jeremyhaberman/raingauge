@@ -2,15 +2,25 @@ package com.jeremyhaberman.raingauge.test.mock;
 
 import android.app.PendingIntent;
 import android.content.Context;
-import android.util.Log;
 import com.jeremyhaberman.raingauge.android.AndroidAlarmManager;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class MockAlarmManager implements AndroidAlarmManager {
 
 	private Context mContext;
 	private static final String TAG = MockAlarmManager.class.getSimpleName();
+	private Alarm mLastAlarm;
+
+	public class Alarm {
+		public final int type;
+		public final long triggerAtMillis;
+		public final long intervalMillis;
+
+		Alarm(int type, long triggerAtMillis, long intervalMillis) {
+			this.type = type;
+			this.triggerAtMillis = triggerAtMillis;
+			this.intervalMillis = intervalMillis;
+		}
+	}
 
 	public MockAlarmManager(Context context) {
 		mContext = context;
@@ -20,17 +30,10 @@ public class MockAlarmManager implements AndroidAlarmManager {
 	public void setRepeating(int type, long triggerAtMillis, long intervalMillis,
 							 PendingIntent operation) {
 
-		JSONObject object = new JSONObject();
-		try {
-			object.put("type", type);
-			object.put("triggerAtMillis", triggerAtMillis);
-			object.put("intervalMillis", intervalMillis);
-			object.put("operation", operation.toString());
-		} catch (JSONException e) {
-			throw new RuntimeException(e);
-		}
+		mLastAlarm = new Alarm(type, triggerAtMillis, intervalMillis);
+	}
 
-
-		Log.d(TAG, object.toString());
+	public Alarm getLastAlarm() {
+		return mLastAlarm;
 	}
 }

@@ -1,38 +1,38 @@
 package com.jeremyhaberman.raingauge.processor.test;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.test.ProviderTestCase2;
+import android.test.InstrumentationTestCase;
+import android.test.RenamingDelegatingContext;
 import android.test.suitebuilder.annotation.MediumTest;
 import com.jeremyhaberman.raingauge.Service;
 import com.jeremyhaberman.raingauge.ServiceManager;
 import com.jeremyhaberman.raingauge.processor.ObservationsProcessor;
 import com.jeremyhaberman.raingauge.processor.ResourceProcessor;
 import com.jeremyhaberman.raingauge.processor.ResourceProcessorCallback;
-import com.jeremyhaberman.raingauge.provider.RainGaugeProvider;
-import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.service.WeatherService;
 import com.jeremyhaberman.raingauge.test.mock.MockRestMethodFactory;
 
-public class ObservationsProcessorTest extends ProviderTestCase2<RainGaugeProvider> {
+public class ObservationsProcessorTest extends InstrumentationTestCase {
 
 	private ObservationsProcessor mProcessor;
-
-	public ObservationsProcessorTest() {
-		this(RainGaugeProvider.class, RainGaugeProviderContract.AUTHORITY);
-	}
-
-	public ObservationsProcessorTest(Class<RainGaugeProvider> providerClass, String providerAuthority) {
-		super(providerClass, providerAuthority);
-	}
+	private Context mTargetContext;
+	private MyMockContext mMockContext;
 
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		ServiceManager.loadService(getContext(), Service.REST_METHOD_FACTORY, new MockRestMethodFactory());
+		mTargetContext = getInstrumentation().getTargetContext();
 
-		mProcessor = ObservationsProcessor.createProcessor(getMockContext());
+		mMockContext = new MyMockContext(mTargetContext);
+
+		ServiceManager.loadService(mTargetContext, Service.REST_METHOD_FACTORY,
+				new MockRestMethodFactory());
+
+		mProcessor = ObservationsProcessor.createProcessor(mMockContext);
 	}
 
 	protected void tearDown() throws Exception {
@@ -47,7 +47,7 @@ public class ObservationsProcessorTest extends ProviderTestCase2<RainGaugeProvid
 	@MediumTest
 	public void testGetResource() throws InterruptedException {
 
-		Cursor cursor = getMockContentResolver()
+		Cursor cursor = mMockContext.getContentResolver()
 				.query(ObservationsTable.CONTENT_URI, null, null, null, null);
 		int countBefore = cursor.getCount();
 
@@ -93,6 +93,24 @@ public class ObservationsProcessorTest extends ProviderTestCase2<RainGaugeProvid
 		public int getLocalResultCode() {
 			return mLocalResultCode;
 		}
+
+	}
+
+	public class MyMockContext extends RenamingDelegatingContext {
+
+		private static final String TAG = "MyMockContext";
+
+		private static final String MOCK_FILE_PREFIX = "test.";
+
+		public MyMockContext(Context context) {
+			super(context, MOCK_FILE_PREFIX);
+		}
+
+		@Override
+		public Resources getResources() {
+			return super.getResources();
+		}
+
 
 	}
 

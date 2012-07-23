@@ -47,6 +47,15 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".WeatherUpdater"
+            android:enabled="true">
+            <intent-filter>
+                <action
+                    android:name="com.jeremyhaberman.raingauge.WeatherUpdater.ACTION_UPDATE_RAINFALL"/>
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name=".provider.RainGaugeProvider"
             android:authorities="com.jeremyhaberman.raingauge.raingaugeprovider"/>

@@ -8,7 +8,16 @@
          this package needs to link against the android.test library,
          which is needed when building test cases. -->
     <application>
-        <uses-library android:name="android.test.runner" />
+        <uses-library android:name="android.test.runner"/>
+        <service
+            android:name="com.jeremyhaberman.raingauge.test.mock.MockWeatherService"
+            android:enabled="true">
+        </service>
+
+        <receiver
+            android:name="com.jeremyhaberman.raingauge.test.mock.MockBroadcastReceiver"
+            android:enabled="true">
+        </receiver>
     </application>
     <!--
     This declares that this application uses the instrumentation test runner targeting

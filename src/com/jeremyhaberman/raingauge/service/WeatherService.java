@@ -16,6 +16,7 @@ public interface WeatherService {
 
 	public static final int RESOURCE_TYPE_OBSERVATIONS = 1;
 
+
 	public enum ResourceType {
 		OBSERVATIONS
 	};
