@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import com.jeremyhaberman.raingauge.R;
+import com.jeremyhaberman.raingauge.WeatherUpdateScheduler;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.WateringsTable;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
@@ -28,7 +29,7 @@ public class RainGaugeActivity extends Activity {
 	private TextView mRainfallText;
 	private TextView mWateringText;
 	private TextView mBalanceText;
-	private EditText mManualWateringAmoutEditText;
+	private EditText mManualWateringAmountEditText;
 	private double mRainfall;
 	private double mWatering;
 	private double mBalance;
@@ -44,7 +45,7 @@ public class RainGaugeActivity extends Activity {
 		mBalanceText = (TextView) findViewById(R.id.balance);
 		mForecastText = (TextView) findViewById(R.id.forecast);
 
-		mManualWateringAmoutEditText = (EditText) findViewById(R.id.watering_amount);
+		mManualWateringAmountEditText = (EditText) findViewById(R.id.watering_amount);
 		Button addManualWatering = (Button) findViewById(R.id.add_manual_watering);
 		addManualWatering.setOnClickListener(new OnClickListener() {
 
@@ -52,8 +53,8 @@ public class RainGaugeActivity extends Activity {
 				runOnUiThread(new Runnable() {
 
 					public void run() {
-						water(Float.parseFloat(mManualWateringAmoutEditText.getText().toString()));
-						mManualWateringAmoutEditText.setText("");
+						water(Float.parseFloat(mManualWateringAmountEditText.getText().toString()));
+						mManualWateringAmountEditText.setText("");
 						loadWatering();
 						calculateBalance();
 						showBalance();
@@ -78,6 +79,13 @@ public class RainGaugeActivity extends Activity {
 			mBalance = calculateBalance();
 			showBalance();
 			showForecast();
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == SetupActivity.CONFIGURE_ZIP && resultCode == Activity.RESULT_OK) {
+			sendBroadcast(new Intent(WeatherUpdateScheduler.ACTION_SCHEDULE_WEATHER_UPDATES));
 		}
 	}
 
