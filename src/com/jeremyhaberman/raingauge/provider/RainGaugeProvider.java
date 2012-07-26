@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.util.Log;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.WateringsTable;
 
@@ -107,6 +108,8 @@ public class RainGaugeProvider extends ContentProvider {
 		}
 
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+		Log.d(TAG, "DB path: " + db.getPath());
 
 		db.beginTransaction();
 

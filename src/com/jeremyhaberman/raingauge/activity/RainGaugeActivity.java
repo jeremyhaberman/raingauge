@@ -102,7 +102,7 @@ public class RainGaugeActivity extends Activity {
 	}
 
 	private void showBalance() {
-		String balanceText = "Balance: ";
+		String balanceText = "";
 		if (mBalance > 0.0) {
 			balanceText += "+";
 		}
@@ -129,7 +129,7 @@ public class RainGaugeActivity extends Activity {
 		}
 
 		mRainfall = recentRainfall;
-		mRainfallText.setText("Rainfall: " + formatRainfall(mRainfall));
+		mRainfallText.setText(formatRainfall(mRainfall));
 		return mRainfall;
 	}
 
@@ -154,7 +154,7 @@ public class RainGaugeActivity extends Activity {
 		}
 
 		mWatering = recentWatering;
-		mWateringText.setText("Watering: " + formatRainfall(mWatering));
+		mWateringText.setText(formatRainfall(mWatering));
 		return mWatering;
 	}
 

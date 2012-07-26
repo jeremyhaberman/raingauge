@@ -42,7 +42,7 @@ public class ProviderDbHelper extends SQLiteOpenHelper {
 
 	private void createTables(SQLiteDatabase db) {
 
-		Logger.debug(TAG, "Creating tables");
+		Logger.debug(TAG, "Creating tables for " + getDatabaseName());
 
 		/* Create Observations table */
 		StringBuilder rainfallBuilder = new StringBuilder();

@@ -33,11 +33,6 @@
             android:enabled="true">
         </service>
 
-        <service
-            android:name=".WeatherUpdateService"
-            android:enabled="true">
-        </service>
-
         <receiver
             android:name=".WeatherUpdateScheduler"
             android:enabled="true">

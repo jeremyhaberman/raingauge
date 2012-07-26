@@ -8,36 +8,63 @@
     <TextView
         android:id="@+id/header"
         style="@style/Text"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Past 7 days: "/>
 
     <TextView
-        android:id="@+id/rainfall"
+        android:id="@+id/rainfall_label"
         style="@style/Text"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/header"
         android:layout_marginLeft="8dp"
         android:text="Rainfall: "/>
 
     <TextView
-        android:id="@+id/watering"
+        android:id="@+id/rainfall"
         style="@style/Text"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/rainfall"
+        android:layout_below="@id/header"
+        android:layout_toRightOf="@id/rainfall_label"
+        android:layout_marginLeft="8dp"/>
+
+    <TextView
+        android:id="@+id/watering_label"
+        style="@style/Text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rainfall_label"
         android:layout_marginLeft="8dp"
         android:text="Watering: "/>
 
     <TextView
-        android:id="@+id/balance"
+        android:id="@+id/watering"
         style="@style/Text"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/watering"
+        android:layout_below="@id/rainfall_label"
+        android:layout_toRightOf="@id/watering_label"
+        android:layout_marginLeft="8dp"/>
+
+    <TextView
+        android:id="@+id/balance_label"
+        style="@style/Text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/watering_label"
         android:layout_marginLeft="8dp"
         android:text="Balance: "/>
+
+    <TextView
+        android:id="@+id/balance"
+        style="@style/Text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/watering_label"
+        android:layout_toRightOf="@id/balance_label"
+        android:layout_marginLeft="8dp"/>
 
     <RelativeLayout
         android:id="@+id/add_wrapper"
@@ -54,7 +81,8 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="numberDecimal"
-            android:singleLine="true">
+            android:singleLine="true"
+            android:hint="inches">
 
             <requestFocus/>
         </EditText>
