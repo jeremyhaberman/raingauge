@@ -3,6 +3,7 @@ package com.jeremyhaberman.raingauge.rest.resource;
 import android.content.ContentValues;
 import android.database.Cursor;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
+import com.jeremyhaberman.raingauge.util.TimeUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -80,14 +81,20 @@ public class Observations implements Resource {
 	@Override
 	public String toString() {
 		JSONObject obj = new JSONObject();
+
+		String timestamp = Long.toString(mTimestamp);
+		timestamp += TimeUtil.format(mTimestamp);
+
 		try {
-			obj.put("timestamp", mTimestamp);
+			obj.put("timestamp", timestamp);
 			obj.put("rainfall", mRainfall);
 			return obj.toString();
 		} catch (JSONException e) {
 			return super.toString();
 		}
 	}
+
+
 
 	@Override
 	public ContentValues toContentValues() {
@@ -101,8 +108,8 @@ public class Observations implements Resource {
 	 * Returns a new Observations object from the values in the given cursor.
 	 * <p>Assumptions:</p>
 	 * <ol>
-	 *     <li>The cursor is currently on the row for which you want to create a new Observations</li>
-	 *     <li>All Observations columns are present and in the order as-is in the DB</li>
+	 * <li>The cursor is currently on the row for which you want to create a new Observations</li>
+	 * <li>All Observations columns are present and in the order as-is in the DB</li>
 	 * </ol>
 	 * <p>WARNING: It does not close the cursor when finished.</p>
 	 *

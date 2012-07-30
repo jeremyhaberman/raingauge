@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -17,23 +18,30 @@ import android.widget.EditText;
 import android.widget.TextView;
 import com.jeremyhaberman.raingauge.R;
 import com.jeremyhaberman.raingauge.WeatherUpdateScheduler;
+import com.jeremyhaberman.raingauge.adapter.RainfallAdapter;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.WateringsTable;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
+import com.jeremyhaberman.raingauge.util.Logger;
+import com.jeremyhaberman.raingauge.util.TimeUtil;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class RainGaugeActivity extends Activity {
-	private static final String TAG = null;
+
+	private static final String TAG = RainGaugeActivity.class.getSimpleName();
+
 	private TextView mRainfallText;
 	private TextView mWateringText;
 	private TextView mBalanceText;
 	private EditText mManualWateringAmountEditText;
-	private double mRainfall;
 	private double mWatering;
 	private double mBalance;
 	private TextView mForecastText;
+
+	private Handler mHandler = new Handler();
+	private RainfallAdapter rainfallAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +71,8 @@ public class RainGaugeActivity extends Activity {
 
 			}
 		});
+
+		rainfallAdapter = new RainfallAdapter(mHandler, mRainfallText);
 	}
 
 	@Override
@@ -73,9 +83,8 @@ public class RainGaugeActivity extends Activity {
 			startActivityForResult(new Intent(this, SetupActivity.class),
 					SetupActivity.CONFIGURE_ZIP);
 		} else {
-			loadRainfall();
+			getContentResolver().registerContentObserver(ObservationsTable.CONTENT_URI, true, rainfallAdapter);
 			loadWatering();
-			showBalance();
 			mBalance = calculateBalance();
 			showBalance();
 			showForecast();
@@ -91,7 +100,7 @@ public class RainGaugeActivity extends Activity {
 
 	private void showForecast() {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		String forecast =  prefs.getString(Observations.TODAYS_FORECAST, "unknown");
+		String forecast = prefs.getString(Observations.TODAYS_FORECAST, "unknown");
 		mForecastText.setText(forecast);
 	}
 
@@ -112,41 +121,25 @@ public class RainGaugeActivity extends Activity {
 
 	private double calculateBalance() {
 
-		mBalance = -1.0 + mRainfall + mWatering;
+		mBalance = -1.0 + rainfallAdapter.getRainfall() + mWatering;
 		return mBalance;
-	}
-
-	private double loadRainfall() {
-
-		ContentResolver resolver = getContentResolver();
-		Cursor rainfallCursor = resolver.query(ObservationsTable.CONTENT_URI,
-				new String[] { ObservationsTable.RAINFALL }, null, null, ObservationsTable.TIMESTAMP
-						+ " DESC LIMIT 7");
-
-		double recentRainfall = 0.0;
-		while (rainfallCursor.moveToNext()) {
-			recentRainfall += rainfallCursor.getDouble(0);
-		}
-
-		mRainfall = recentRainfall;
-		mRainfallText.setText(formatRainfall(mRainfall));
-		return mRainfall;
 	}
 
 	private double loadWatering() {
 
 		ContentResolver resolver = getContentResolver();
 
-		// SELECT * FROM statistics WHERE date BETWEEN datetime('now', ' -6
-		// days') AND datetime('now', 'localtime')
+		Calendar cal = new GregorianCalendar();
+		cal.add(Calendar.DATE, -8);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
 
-		Calendar date = new GregorianCalendar();
-		int day = date.get(Calendar.DATE);
-		date.set(Calendar.DATE, day - 6);
+		Logger.debug(TAG, String.format("Loading waterings since %s", TimeUtil
+						.format(cal.getTimeInMillis())));
 
 		Cursor wateringCursor = resolver.query(WateringsTable.CONTENT_URI,
-				new String[] { WateringsTable.AMOUNT }, WateringsTable.TIMESTAMP + ">?",
-				new String[] { Long.toString(date.getTimeInMillis()) }, null);
+				new String[]{WateringsTable.AMOUNT}, WateringsTable.TIMESTAMP + ">?",
+				new String[]{Long.toString(cal.getTimeInMillis())}, null);
 
 		double recentWatering = 0.0;
 		while (wateringCursor.moveToNext()) {
@@ -171,5 +164,4 @@ public class RainGaugeActivity extends Activity {
 	private String formatRainfall(double inches) {
 		return String.format("%.2f", inches) + " in";
 	}
-
 }
