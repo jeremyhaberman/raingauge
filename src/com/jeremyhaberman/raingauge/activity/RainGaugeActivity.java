@@ -1,11 +1,9 @@
 package com.jeremyhaberman.raingauge.activity;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,14 +17,10 @@ import android.widget.TextView;
 import com.jeremyhaberman.raingauge.R;
 import com.jeremyhaberman.raingauge.WeatherUpdateScheduler;
 import com.jeremyhaberman.raingauge.adapter.RainfallAdapter;
+import com.jeremyhaberman.raingauge.adapter.WateringAdapter;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.WateringsTable;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
-import com.jeremyhaberman.raingauge.util.Logger;
-import com.jeremyhaberman.raingauge.util.TimeUtil;
-
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 public class RainGaugeActivity extends Activity {
 
@@ -36,12 +30,12 @@ public class RainGaugeActivity extends Activity {
 	private TextView mWateringText;
 	private TextView mBalanceText;
 	private EditText mManualWateringAmountEditText;
-	private double mWatering;
 	private double mBalance;
 	private TextView mForecastText;
 
 	private Handler mHandler = new Handler();
-	private RainfallAdapter rainfallAdapter;
+	private RainfallAdapter mRainfallAdapter;
+	private WateringAdapter mWateringAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -63,7 +57,6 @@ public class RainGaugeActivity extends Activity {
 					public void run() {
 						water(Float.parseFloat(mManualWateringAmountEditText.getText().toString()));
 						mManualWateringAmountEditText.setText("");
-						loadWatering();
 						calculateBalance();
 						showBalance();
 					}
@@ -72,7 +65,8 @@ public class RainGaugeActivity extends Activity {
 			}
 		});
 
-		rainfallAdapter = new RainfallAdapter(mHandler, mRainfallText);
+		mRainfallAdapter = new RainfallAdapter(mHandler, mRainfallText);
+		mWateringAdapter = new WateringAdapter(mHandler, mWateringText);
 	}
 
 	@Override
@@ -83,12 +77,21 @@ public class RainGaugeActivity extends Activity {
 			startActivityForResult(new Intent(this, SetupActivity.class),
 					SetupActivity.CONFIGURE_ZIP);
 		} else {
-			getContentResolver().registerContentObserver(ObservationsTable.CONTENT_URI, true, rainfallAdapter);
-			loadWatering();
+			getContentResolver().registerContentObserver(ObservationsTable.CONTENT_URI, true,
+					mRainfallAdapter);
+			getContentResolver().registerContentObserver(WateringsTable.CONTENT_URI, true,
+					mWateringAdapter);
 			mBalance = calculateBalance();
 			showBalance();
 			showForecast();
 		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		getContentResolver().unregisterContentObserver(mRainfallAdapter);
+		getContentResolver().unregisterContentObserver(mWateringAdapter);
 	}
 
 	@Override
@@ -121,34 +124,8 @@ public class RainGaugeActivity extends Activity {
 
 	private double calculateBalance() {
 
-		mBalance = -1.0 + rainfallAdapter.getRainfall() + mWatering;
+		mBalance = -1.0 + mRainfallAdapter.getRainfall() + mWateringAdapter.getWatering();
 		return mBalance;
-	}
-
-	private double loadWatering() {
-
-		ContentResolver resolver = getContentResolver();
-
-		Calendar cal = new GregorianCalendar();
-		cal.add(Calendar.DATE, -8);
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
-
-		Logger.debug(TAG, String.format("Loading waterings since %s", TimeUtil
-						.format(cal.getTimeInMillis())));
-
-		Cursor wateringCursor = resolver.query(WateringsTable.CONTENT_URI,
-				new String[]{WateringsTable.AMOUNT}, WateringsTable.TIMESTAMP + ">?",
-				new String[]{Long.toString(cal.getTimeInMillis())}, null);
-
-		double recentWatering = 0.0;
-		while (wateringCursor.moveToNext()) {
-			recentWatering += wateringCursor.getDouble(0);
-		}
-
-		mWatering = recentWatering;
-		mWateringText.setText(formatRainfall(mWatering));
-		return mWatering;
 	}
 
 	private void water(float amount) {
