@@ -3,6 +3,10 @@ package com.jeremyhaberman.raingauge;
 import android.content.Context;
 import com.jeremyhaberman.raingauge.android.AndroidAlarmManager;
 import com.jeremyhaberman.raingauge.android.DefaultAndroidAlarmManager;
+import com.jeremyhaberman.raingauge.android.DefaultNotificationManager;
+import com.jeremyhaberman.raingauge.android.NotificationManager;
+import com.jeremyhaberman.raingauge.notification.DefaultNotificationHelper;
+import com.jeremyhaberman.raingauge.notification.NotificationHelper;
 import com.jeremyhaberman.raingauge.processor.DefaultProcessorFactory;
 import com.jeremyhaberman.raingauge.processor.ProcessorFactory;
 import com.jeremyhaberman.raingauge.rest.method.DefaultRestMethodFactory;
@@ -29,12 +33,17 @@ public class ServiceManager {
 		RestMethodFactory restMethodFactory = DefaultRestMethodFactory.getInstance(context);
 		ProcessorFactory processorFactory = DefaultProcessorFactory.getInstance(context);
 		AndroidAlarmManager androidAlarmManager = new DefaultAndroidAlarmManager(context);
+		NotificationManager notificationManager = new DefaultNotificationManager(context);
+		NotificationHelper notificationHelper =
+				DefaultNotificationHelper.newNotificationHelper(context);
 
 		services = new HashMap();
 
 		services.put(Service.REST_METHOD_FACTORY, restMethodFactory);
 		services.put(Service.PROCESSOR_FACTORY, processorFactory);
 		services.put(Service.ALARM_SERVICE, androidAlarmManager);
+		services.put(Service.NOTIFICATION_MANAGER, notificationManager);
+		services.put(Service.NOTIFICATION_HELPER, notificationHelper);
 	}
 
 	public static void reset(Context context) {

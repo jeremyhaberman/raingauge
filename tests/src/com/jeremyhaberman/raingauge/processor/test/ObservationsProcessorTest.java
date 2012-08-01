@@ -9,12 +9,15 @@ import android.test.RenamingDelegatingContext;
 import android.test.suitebuilder.annotation.MediumTest;
 import com.jeremyhaberman.raingauge.Service;
 import com.jeremyhaberman.raingauge.ServiceManager;
+import com.jeremyhaberman.raingauge.mock.MockNotificationHelper;
 import com.jeremyhaberman.raingauge.processor.ObservationsProcessor;
 import com.jeremyhaberman.raingauge.processor.ResourceProcessor;
 import com.jeremyhaberman.raingauge.processor.ResourceProcessorCallback;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.service.WeatherService;
 import com.jeremyhaberman.raingauge.test.mock.MockRestMethodFactory;
+
+import java.util.Calendar;
 
 public class ObservationsProcessorTest extends InstrumentationTestCase {
 
@@ -36,6 +39,7 @@ public class ObservationsProcessorTest extends InstrumentationTestCase {
 	}
 
 	protected void tearDown() throws Exception {
+		ServiceManager.reset(mTargetContext);
 		super.tearDown();
 	}
 
@@ -67,6 +71,33 @@ public class ObservationsProcessorTest extends InstrumentationTestCase {
 		assertTrue(
 				String.format("countAfter (%d) != countBefore (%d) + 1", countAfter, countBefore),
 				countAfter == countBefore + 1);
+	}
+
+	public void testScheduleNotification() throws InterruptedException {
+
+		MockNotificationHelper mockNotificationHelper = new MockNotificationHelper();
+		ServiceManager
+				.loadService(mMockContext, Service.NOTIFICATION_HELPER,
+						mockNotificationHelper);
+
+		TestCallback callback = new TestCallback();
+		int zip = 55401;
+		Bundle params = createParams(zip);
+
+		mProcessor.getResource(callback, params);
+
+		Thread.sleep(1000);
+
+		assertEquals(0.75, mockNotificationHelper.getRainfall());
+
+		long currentTimeInMillis = mockNotificationHelper.getCurrentTimeInMillis();
+		Calendar expectedCalendar = Calendar.getInstance();
+		Calendar actualCalendar = Calendar.getInstance();
+		actualCalendar.setTimeInMillis(currentTimeInMillis);
+
+		long diff = Math.abs(expectedCalendar.getTimeInMillis() - actualCalendar.getTimeInMillis());
+
+		assertTrue(diff < 3000);
 	}
 
 	private Bundle createParams(int zip) {
