@@ -1,8 +1,7 @@
 package com.jeremyhaberman.raingauge.processor;
 
 import android.content.Context;
-
-import com.jeremyhaberman.raingauge.service.WeatherService.ResourceType;
+import com.jeremyhaberman.raingauge.service.WeatherService;
 
 public class DefaultProcessorFactory implements ProcessorFactory {
 
@@ -10,14 +9,10 @@ public class DefaultProcessorFactory implements ProcessorFactory {
 	private Context mContext;
 
 	@Override
-	public ResourceProcessor getProcessor(ResourceType resourceType) {
-		
-		if (resourceType == null) {
-			throw new IllegalArgumentException("resourceType is null");
-		}
+	public ResourceProcessor getProcessor(int resourceType) {
 		
 		switch (resourceType) {
-		case OBSERVATIONS:
+		case WeatherService.RESOURCE_TYPE_OBSERVATIONS:
 			return ObservationsProcessor.createProcessor(mContext);
 		default:
 			throw new IllegalArgumentException("No processor for resource type: " + resourceType);
@@ -27,7 +22,7 @@ public class DefaultProcessorFactory implements ProcessorFactory {
 
 	public static ProcessorFactory getInstance(Context context) {
 		if (mSingleton == null) {
-			mSingleton = new DefaultProcessorFactory(context.getApplicationContext());
+			mSingleton = new DefaultProcessorFactory(context);
 		}
 		return mSingleton;
 	}

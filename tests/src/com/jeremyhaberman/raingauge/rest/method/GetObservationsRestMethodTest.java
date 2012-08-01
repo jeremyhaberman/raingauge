@@ -16,7 +16,7 @@ public class GetObservationsRestMethodTest extends InstrumentationTestCase {
 
 	private static final String TAG = GetObservationsRestMethod.class.getSimpleName();
 	private String mApiKey;
-	private static final String ZIP = "55408";
+	private static final int ZIP = 55408;
 	private GetObservationsRestMethod mMethod;
 	private MockRestClient mRestClient;
 
@@ -45,7 +45,7 @@ public class GetObservationsRestMethodTest extends InstrumentationTestCase {
 	public void testExecute() {
 		RestMethod<Observations> method =
 				GetObservationsRestMethod.newInstance(getInstrumentation().getTargetContext(),
-						Integer.toString(55408));
+						55408);
 		RestMethodResult<Observations> result = method.execute();
 		assertEquals(200, result.getStatusCode());
 		Observations observations = result.getResource();
@@ -56,7 +56,7 @@ public class GetObservationsRestMethodTest extends InstrumentationTestCase {
 	@SmallTest
 	public void testGetURI() {
 
-		String zip = "55408";
+		int zip = 55408;
 		String apiKey = getInstrumentation().getTargetContext().getString(R.string.api_key);
 
 		GetObservationsRestMethod method =
@@ -73,12 +73,12 @@ public class GetObservationsRestMethodTest extends InstrumentationTestCase {
 	public void testGetLogTag() {
 		GetObservationsRestMethod method =
 				GetObservationsRestMethod
-						.newInstance(getInstrumentation().getTargetContext(), "55408");
+						.newInstance(getInstrumentation().getTargetContext(), 55408);
 		assertEquals("GetObservationsRestMethod", method.getLogTag());
 	}
 
 	public void testBuildRequest() {
-		String zip = "55408";
+		int zip = 55408;
 		GetObservationsRestMethod method =
 				GetObservationsRestMethod.newInstance(getInstrumentation().getTargetContext(), zip);
 		Request request = method.buildRequest();
@@ -94,7 +94,7 @@ public class GetObservationsRestMethodTest extends InstrumentationTestCase {
 	public void testNewInstance() {
 		RestMethod<Observations> method =
 				GetObservationsRestMethod.newInstance(getInstrumentation().getTargetContext(),
-						Integer.toString(55408));
+						55408);
 		assertNotNull(method);
 	}
 

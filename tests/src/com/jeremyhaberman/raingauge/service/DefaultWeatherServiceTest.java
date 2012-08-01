@@ -5,21 +5,28 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.os.ResultReceiver;
 import android.test.IsolatedContext;
 import android.test.ServiceTestCase;
 import android.test.suitebuilder.annotation.MediumTest;
+import com.jeremyhaberman.raingauge.Service;
+import com.jeremyhaberman.raingauge.ServiceManager;
+import com.jeremyhaberman.raingauge.mock.MockProcessor;
+import com.jeremyhaberman.raingauge.mock.MockProcessorFactory;
 import com.jeremyhaberman.raingauge.processor.ResourceProcessor;
 import com.jeremyhaberman.raingauge.processor.ResourceProcessorCallback;
 import com.jeremyhaberman.raingauge.util.Logger;
 
-import static com.jeremyhaberman.raingauge.service.WeatherService.*;
+import static com.jeremyhaberman.raingauge.service.WeatherService.METHOD_EXTRA;
+import static com.jeremyhaberman.raingauge.service.WeatherService.METHOD_GET;
+import static com.jeremyhaberman.raingauge.service.WeatherService.RESOURCE_TYPE_EXTRA;
+import static com.jeremyhaberman.raingauge.service.WeatherService.SERVICE_CALLBACK_EXTRA;
 
 public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherService> {
 
 	public static final String TAG = DefaultWeatherServiceTest.class.getSimpleName();
+	private TestContext mMockContext;
+	private MockProcessorFactory mProcessorFactory;
 
 	public DefaultWeatherServiceTest(String name) {
 		super(DefaultWeatherService.class);
@@ -32,26 +39,27 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 
 	protected void setUp() throws Exception {
 		super.setUp();
+		mMockContext = new TestContext(getSystemContext());
 		Logger.clearCache();
+		mProcessorFactory = new MockProcessorFactory();
+		ServiceManager.loadService(mMockContext, Service.PROCESSOR_FACTORY, mProcessorFactory);
 	}
 
 	protected void tearDown() throws Exception {
+		ServiceManager.reset(getSystemContext());
 		super.tearDown();
 	}
 
 	@MediumTest
 	public void testStartService() throws InterruptedException {
-		
-		Context mockContext = new TestContext(getSystemContext());
-		setContext(mockContext);
-		
-		MockProcessor processor = new MockProcessor();
+
+		setContext(mMockContext);
+
 		MockResultReceiver receiver = new MockResultReceiver(null);
 		
 		Intent service = new Intent(getSystemContext(), DefaultWeatherService.class);
 		service.putExtra(METHOD_EXTRA, METHOD_GET);
-		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.OBSERVATIONS);
-		service.putExtra(EXTRA_PROCESSOR, processor);
+		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.RESOURCE_TYPE_OBSERVATIONS);
 		service.putExtra(SERVICE_CALLBACK_EXTRA, receiver);
 		service.putExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, 1);
 		
@@ -63,7 +71,8 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		super.startService(service);
 		
 		Thread.sleep(500);
-		
+
+		MockProcessor processor = mProcessorFactory.getProcessor();
 		Bundle params = processor.getParams();
 		
 		assertNotNull(params);
@@ -73,18 +82,16 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 	
 	@MediumTest
 	public void testServiceCallback() throws InterruptedException {
-		Context mockContext = new TestContext(getSystemContext());
-		setContext(mockContext);
-		
-		MockProcessor processor = new MockProcessor();
+
+		setContext(mMockContext);
+
 		MockResultReceiver receiver = new MockResultReceiver(null);
 		
 		long expectedRequestId = 1;
 		
 		Intent service = new Intent(getSystemContext(), DefaultWeatherService.class);
 		service.putExtra(METHOD_EXTRA, METHOD_GET);
-		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.OBSERVATIONS);
-		service.putExtra(EXTRA_PROCESSOR, processor);
+		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.RESOURCE_TYPE_OBSERVATIONS);
 		service.putExtra(SERVICE_CALLBACK_EXTRA, receiver);
 		service.putExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, expectedRequestId);
 		
@@ -97,7 +104,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		
 		Thread.sleep(500);
 		
-		ResourceProcessorCallback callback = processor.getCallback();
+		ResourceProcessorCallback callback = mProcessorFactory.getProcessor().getCallback();
 		assertNotNull(callback);
 		int expectedResultCode = 200;
 		callback.send(expectedResultCode, ResourceProcessor.SUCCESS);
@@ -109,17 +116,14 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		Intent resultIntent = (Intent) actualResultData.get(WeatherService.ORIGINAL_INTENT_EXTRA);
 		
 		assertEquals(METHOD_GET, resultIntent.getStringExtra(METHOD_EXTRA));
-		assertEquals(WeatherService.ResourceType.OBSERVATIONS, resultIntent.getSerializableExtra(RESOURCE_TYPE_EXTRA));
-		assertEquals(processor, resultIntent.getParcelableExtra(EXTRA_PROCESSOR));
+		assertEquals(WeatherService.RESOURCE_TYPE_OBSERVATIONS, resultIntent.getIntExtra(RESOURCE_TYPE_EXTRA, -1));
 		assertEquals(expectedRequestId, resultIntent.getLongExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, -1));
 	}
 	
 	@MediumTest
 	public void testStartServiceWithInvalidMethod() throws InterruptedException {
-		Context mockContext = new TestContext(getSystemContext());
-		setContext(mockContext);
-		
-		MockProcessor processor = new MockProcessor();
+		setContext(mMockContext);
+
 		MockResultReceiver receiver = new MockResultReceiver(null);
 		
 		String method = "POST";
@@ -127,8 +131,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		
 		Intent service = new Intent(getSystemContext(), DefaultWeatherService.class);
 		service.putExtra(METHOD_EXTRA, method);
-		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.OBSERVATIONS);
-		service.putExtra(EXTRA_PROCESSOR, processor);
+		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.RESOURCE_TYPE_OBSERVATIONS);
 		service.putExtra(SERVICE_CALLBACK_EXTRA, receiver);
 		service.putExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, requestId);
 		
@@ -141,24 +144,22 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		
 		Thread.sleep(500);
 		
-		Bundle params = processor.getParams();
+		Bundle params = mProcessorFactory.getProcessor().getParams();
 		assertNull(params);
 		assertEquals(WeatherService.REQUEST_INVALID, receiver.getResultCode());
 		Bundle resultData = receiver.getResultData();
 		Intent resultIntent = (Intent) resultData.get(WeatherService.ORIGINAL_INTENT_EXTRA);
 		
 		assertEquals(method, resultIntent.getStringExtra(METHOD_EXTRA));
-		assertEquals(WeatherService.ResourceType.OBSERVATIONS, resultIntent.getSerializableExtra(RESOURCE_TYPE_EXTRA));
-		assertEquals(processor, resultIntent.getParcelableExtra(EXTRA_PROCESSOR));
+		assertEquals(WeatherService.RESOURCE_TYPE_OBSERVATIONS, resultIntent.getIntExtra(RESOURCE_TYPE_EXTRA, -1));
 		assertEquals(requestId, resultIntent.getLongExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, -1));
 	}
 	
 	@MediumTest
 	public void testStartServiceWithNullMethod() throws InterruptedException {
-		Context mockContext = new TestContext(getSystemContext());
-		setContext(mockContext);
-		
-		MockProcessor processor = new MockProcessor();
+
+		setContext(mMockContext);
+
 		MockResultReceiver receiver = new MockResultReceiver(null);
 		
 		String method = null;
@@ -166,8 +167,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		
 		Intent service = new Intent(getSystemContext(), DefaultWeatherService.class);
 		service.putExtra(METHOD_EXTRA, method);
-		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.OBSERVATIONS);
-		service.putExtra(EXTRA_PROCESSOR, processor);
+		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.RESOURCE_TYPE_OBSERVATIONS);
 		service.putExtra(SERVICE_CALLBACK_EXTRA, receiver);
 		service.putExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, requestId);
 		
@@ -179,62 +179,21 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		super.startService(service);
 		
 		Thread.sleep(500);
-		
-		Bundle params = processor.getParams();
-		assertNull(params);
+
 		assertEquals(WeatherService.REQUEST_INVALID, receiver.getResultCode());
 		Bundle resultData = receiver.getResultData();
 		Intent resultIntent = (Intent) resultData.get(WeatherService.ORIGINAL_INTENT_EXTRA);
 		
 		assertNull(resultIntent.getStringExtra(METHOD_EXTRA));
-		assertEquals(WeatherService.ResourceType.OBSERVATIONS, resultIntent.getSerializableExtra(RESOURCE_TYPE_EXTRA));
-		assertEquals(processor, resultIntent.getParcelableExtra(EXTRA_PROCESSOR));
-		assertEquals(requestId, resultIntent.getLongExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, -1));
-	}
-	
-	@MediumTest
-	public void testStartServiceWithNullProcessor() throws InterruptedException {
-		Context mockContext = new TestContext(getSystemContext());
-		setContext(mockContext);
-		
-		MockProcessor processor = null;
-		MockResultReceiver receiver = new MockResultReceiver(null);
-		
-		String method = METHOD_GET;
-		long requestId = 1;
-		
-		Intent service = new Intent(getSystemContext(), DefaultWeatherService.class);
-		service.putExtra(METHOD_EXTRA, method);
-		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.OBSERVATIONS);
-		service.putExtra(EXTRA_PROCESSOR, processor);
-		service.putExtra(SERVICE_CALLBACK_EXTRA, receiver);
-		service.putExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, requestId);
-		
-		Bundle requestParams = new Bundle();
-		int zip = 55401;
-		requestParams.putInt(WeatherService.ZIP_CODE, zip);
-		service.putExtra(WeatherService.EXTRA_REQUEST_PARAMETERS, requestParams);
-		
-		super.startService(service);
-		
-		Thread.sleep(500);
-		
-		assertEquals(WeatherService.REQUEST_INVALID, receiver.getResultCode());
-		Bundle resultData = receiver.getResultData();
-		Intent resultIntent = (Intent) resultData.get(WeatherService.ORIGINAL_INTENT_EXTRA);
-		
-		assertEquals(method, resultIntent.getStringExtra(METHOD_EXTRA));
-		assertEquals(WeatherService.ResourceType.OBSERVATIONS, resultIntent.getSerializableExtra(RESOURCE_TYPE_EXTRA));
-		assertNull(resultIntent.getParcelableExtra(EXTRA_PROCESSOR));
+		assertEquals(WeatherService.RESOURCE_TYPE_OBSERVATIONS, resultIntent.getIntExtra(RESOURCE_TYPE_EXTRA, -1));
 		assertEquals(requestId, resultIntent.getLongExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, -1));
 	}
 	
 	@MediumTest
 	public void testStartServiceWithNullParameters() throws InterruptedException {
-		Context mockContext = new TestContext(getSystemContext());
-		setContext(mockContext);
-		
-		MockProcessor processor = new MockProcessor();
+
+		setContext(mMockContext);
+
 		MockResultReceiver receiver = new MockResultReceiver(null);
 		
 		String method = METHOD_GET;
@@ -242,8 +201,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		
 		Intent service = new Intent(getSystemContext(), DefaultWeatherService.class);
 		service.putExtra(METHOD_EXTRA, method);
-		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.OBSERVATIONS);
-		service.putExtra(EXTRA_PROCESSOR, processor);
+		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.RESOURCE_TYPE_OBSERVATIONS);
 		service.putExtra(SERVICE_CALLBACK_EXTRA, receiver);
 		service.putExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, requestId);
 		
@@ -253,25 +211,21 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		super.startService(service);
 		
 		Thread.sleep(500);
-		
-		Bundle params = processor.getParams();
-		assertNull(params);
+
 		assertEquals(WeatherService.REQUEST_INVALID, receiver.getResultCode());
 		Bundle resultData = receiver.getResultData();
 		Intent resultIntent = (Intent) resultData.get(WeatherService.ORIGINAL_INTENT_EXTRA);
 		
 		assertEquals(method, resultIntent.getStringExtra(METHOD_EXTRA));
-		assertEquals(WeatherService.ResourceType.OBSERVATIONS, resultIntent.getSerializableExtra(RESOURCE_TYPE_EXTRA));
-		assertEquals(processor, resultIntent.getParcelableExtra(EXTRA_PROCESSOR));
+		assertEquals(WeatherService.RESOURCE_TYPE_OBSERVATIONS, resultIntent.getIntExtra(RESOURCE_TYPE_EXTRA, -1));
 		assertEquals(requestId, resultIntent.getLongExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, -1));
 	}
 	
 	@MediumTest
 	public void testStartServiceWithNullCallback() throws InterruptedException {
-		Context mockContext = new TestContext(getSystemContext());
-		setContext(mockContext);
-		
-		MockProcessor processor = new MockProcessor();
+
+		setContext(mMockContext);
+
 		MockResultReceiver receiver = null;
 		
 		String method = METHOD_GET;
@@ -279,8 +233,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		
 		Intent service = new Intent(getSystemContext(), DefaultWeatherService.class);
 		service.putExtra(METHOD_EXTRA, method);
-		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.ResourceType.OBSERVATIONS);
-		service.putExtra(EXTRA_PROCESSOR, processor);
+		service.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.RESOURCE_TYPE_OBSERVATIONS);
 		service.putExtra(SERVICE_CALLBACK_EXTRA, receiver);
 		service.putExtra(WeatherServiceHelper.EXTRA_REQUEST_ID, requestId);
 		
@@ -292,7 +245,7 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		Thread.sleep(500);
 		
 		String[] recentMessages = Logger.getMessageCache();
-		assertTrue(recentMessages[0].matches(".*Service\\scallback\\sis\\snull"));
+		assertTrue(recentMessages[1].matches(".*Service\\scallback\\sis\\snull"));
 	}
 	
 	private class TestContext extends IsolatedContext {
@@ -310,40 +263,6 @@ public class DefaultWeatherServiceTest extends ServiceTestCase<DefaultWeatherSer
 		public ComponentName startService(Intent service) {
 			return super.startService(service);
 		}
-	}
-
-	public class MockProcessor implements ResourceProcessor, Parcelable {
-
-		private Bundle mParams;
-		private ResourceProcessorCallback mCallback;
-
-		@Override
-		public void getResource(ResourceProcessorCallback callback, Bundle params) {
-			mockCallback(callback, params);
-		}
-
-		private void mockCallback(ResourceProcessorCallback callback, Bundle params) {
-			mCallback = callback;
-			mParams = params;
-		}
-		
-		public ResourceProcessorCallback getCallback() {
-			return mCallback;
-		}
-		
-		public Bundle getParams() {
-			return mParams;
-		}
-
-		@Override
-		public int describeContents() {
-			return 0;
-		}
-
-		@Override
-		public void writeToParcel(Parcel dest, int flags) {
-		}
-
 	}
 	
 	public class MockResultReceiver extends ResultReceiver {

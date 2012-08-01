@@ -30,13 +30,13 @@ public class ObservationsProcessorFactoryTest extends AndroidTestCase {
 
 	public void testGetProcessor() {
 		ResourceProcessor processor =
-				mFactory.getProcessor(WeatherService.ResourceType.OBSERVATIONS);
+				mFactory.getProcessor(WeatherService.RESOURCE_TYPE_OBSERVATIONS);
 		assertTrue(processor instanceof ObservationsProcessor);
 	}
 
 	public void testGetProcessorWithInvalidType() {
 		try {
-			mFactory.getProcessor(null);
+			mFactory.getProcessor(2);
 			fail("Should have thrown IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);

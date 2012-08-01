@@ -30,6 +30,13 @@ public class WeatherUpdateSchedulerTest extends InstrumentationTestCase {
 		super.setUp();
 
 		mTestContext = getInstrumentation().getContext();
+		ServiceManager.reset(getInstrumentation().getTargetContext());
+	}
+
+	@Override
+	protected void tearDown() throws Exception {
+		ServiceManager.reset(getInstrumentation().getTargetContext());
+		super.tearDown();
 	}
 
 	@MediumTest

@@ -4,6 +4,9 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import com.jeremyhaberman.raingauge.Service;
+import com.jeremyhaberman.raingauge.ServiceManager;
+import com.jeremyhaberman.raingauge.processor.ProcessorFactory;
 import com.jeremyhaberman.raingauge.processor.ResourceProcessor;
 import com.jeremyhaberman.raingauge.processor.ResourceProcessorCallback;
 import com.jeremyhaberman.raingauge.util.Logger;
@@ -30,20 +33,22 @@ public class DefaultWeatherService extends IntentService implements WeatherServi
 		Bundle parameters = requestIntent.getBundleExtra(EXTRA_REQUEST_PARAMETERS);
 		ResultReceiver serviceHelperCallback = requestIntent
 				.getParcelableExtra(SERVICE_CALLBACK_EXTRA);
-		ResourceProcessor processor = (ResourceProcessor) requestIntent
-				.getParcelableExtra(EXTRA_PROCESSOR);
 
 		if (serviceHelperCallback == null) {
 			Logger.error(TAG, "Service callback is null");
 		}
 
-		if (processor == null || method == null || parameters == null) {
+		if (method == null || parameters == null) {
+			Logger.error(TAG, String.format(
+					"Invalid request; null param (method=%s, parameters=%s)", method, parameters));
 			if (serviceHelperCallback != null) {
 				serviceHelperCallback.send(REQUEST_INVALID, createResultData(requestIntent));
 			}
 			return;
 		}
 
+		ProcessorFactory processorFactory = (ProcessorFactory) ServiceManager.getService(this, Service.PROCESSOR_FACTORY);
+		ResourceProcessor processor = processorFactory.getProcessor(resourceType);
 		ResourceProcessorCallback processorCallback = createProcessorCallback(requestIntent,
 				serviceHelperCallback);
 

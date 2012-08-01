@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import com.jeremyhaberman.raingauge.rest.resource.Observations;
+import com.jeremyhaberman.raingauge.util.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +30,7 @@ public final class WeatherServiceHelper {
 
 	private List<Long> mPendingRequests = new ArrayList<Long>();
 	private final Object mPendingRequestsLock = new Object();
-	private Context mAppContext;
+	private Context mContext;
 	private ServiceResultReceiver mServiceCallback;
 
 	private Class<? extends WeatherService> mWeatherServiceClass;
@@ -42,7 +44,7 @@ public final class WeatherServiceHelper {
 	}
 
 	private void init(Context context, Class<? extends WeatherService> weatherService) {
-		mAppContext = context;
+		mContext = context;
 		mServiceCallback = new ServiceResultReceiver();
 		mWeatherServiceClass = weatherService;
 	}
@@ -55,22 +57,31 @@ public final class WeatherServiceHelper {
 	 */
 	public long getTodaysRainfall(int zip) {
 
+		if (Logger.isEnabled(Logger.DEBUG)) {
+			Logger.debug(TAG, String.format("getTodaysRainfall(%d)", zip));
+		}
+
 		long requestId = generateRequestID();
+
 		synchronized (mPendingRequestsLock) {
 			mPendingRequests.add(requestId);
 		}
 
-		Intent intent = new Intent(mAppContext, mWeatherServiceClass);
+		Intent intent = new Intent(mContext, mWeatherServiceClass);
 		intent.putExtra(METHOD_EXTRA, METHOD_GET);
 		intent.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.RESOURCE_TYPE_OBSERVATIONS);
 		intent.putExtra(SERVICE_CALLBACK_EXTRA, mServiceCallback);
 		intent.putExtra(EXTRA_REQUEST_ID, requestId);
 
 		Bundle requestParams = new Bundle();
-		requestParams.putInt(WeatherService.ZIP_CODE, zip);
+		requestParams.putInt(Observations.ZIP_CODE, zip);
 		intent.putExtra(WeatherService.EXTRA_REQUEST_PARAMETERS, requestParams);
 
-		mAppContext.startService(intent);
+		if (Logger.isEnabled(Logger.DEBUG)) {
+			Logger.debug(TAG, "Starting service with intent:", intent);
+		}
+
+		mContext.startService(intent);
 
 		return requestId;
 	}
@@ -123,7 +134,7 @@ public final class WeatherServiceHelper {
 				resultBroadcast.putExtra(EXTRA_REQUEST_ID, requestId);
 				resultBroadcast.putExtra(EXTRA_RESULT_CODE, resultCode);
 
-				mAppContext.sendBroadcast(resultBroadcast);
+				mContext.sendBroadcast(resultBroadcast);
 			}
 		}
 	}

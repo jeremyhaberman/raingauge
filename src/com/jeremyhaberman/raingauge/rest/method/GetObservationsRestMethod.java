@@ -19,7 +19,7 @@ public class GetObservationsRestMethod extends AbstractRestMethod<Observations> 
 	private static final String JSON_KEY_RAIN_DAILY = "rainDaily";
 	private static final String JSON_KEY_DATE_TIME = "dateTime";
 
-	private String mZipCode;
+	private int mZipCode;
 
 	private URI mUri;
 
@@ -27,14 +27,10 @@ public class GetObservationsRestMethod extends AbstractRestMethod<Observations> 
 	private String mApiKey;
 
 
-	private GetObservationsRestMethod(Context context, String zipCode) {
+	private GetObservationsRestMethod(Context context, int zipCode) {
 		
 		if (context == null) {
 			throw new IllegalArgumentException("context is null");
-		}
-		
-		if (zipCode == null) {
-			throw new IllegalArgumentException("zipCode is null");
 		}
 		
 		mContext = context.getApplicationContext();
@@ -43,7 +39,7 @@ public class GetObservationsRestMethod extends AbstractRestMethod<Observations> 
 		mUri = buildUri();
 	}
 
-	public static GetObservationsRestMethod newInstance(Context context, String zipCode) {
+	public static GetObservationsRestMethod newInstance(Context context, int zipCode) {
 		return new GetObservationsRestMethod(context, zipCode);
 	}
 

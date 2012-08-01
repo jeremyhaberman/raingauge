@@ -23,7 +23,7 @@ public class DefaultRestMethodFactory implements RestMethodFactory {
 	private static final int OBSERVATIONS = 1;
 
 	private DefaultRestMethodFactory(Context context) {
-		mContext = context.getApplicationContext();
+		mContext = context;
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(RainGaugeProviderContract.AUTHORITY, ObservationsTable.TABLE_NAME,
 				OBSERVATIONS);
@@ -48,7 +48,7 @@ public class DefaultRestMethodFactory implements RestMethodFactory {
 				if (method == Method.GET) {
 					if (params.containsKey(Observations.ZIP_CODE)) {
 						return GetObservationsRestMethod.newInstance(mContext,
-								params.getString(Observations.ZIP_CODE));
+								params.getInt(Observations.ZIP_CODE));
 					} else {
 						Logger.error(TAG, "Missing parameter in params for zip code");
 						throw new IllegalArgumentException("Missing zip code in params");

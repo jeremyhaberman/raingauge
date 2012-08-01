@@ -10,6 +10,7 @@ import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
 import android.test.suitebuilder.annotation.SmallTest;
 import com.jeremyhaberman.raingauge.rest.Method;
+import com.jeremyhaberman.raingauge.rest.resource.Observations;
 import com.jeremyhaberman.raingauge.service.WeatherServiceHelper.ServiceResultReceiver;
 import com.jeremyhaberman.raingauge.test.mock.MockWeatherService;
 
@@ -81,7 +82,7 @@ public class WeatherServiceHelperTest extends AndroidTestCase {
 		assertNotNull(resultReceiver);
 		
 		Bundle requestParams = extras.getBundle(WeatherService.EXTRA_REQUEST_PARAMETERS);
-		int intentZip = requestParams.getInt(WeatherService.ZIP_CODE);
+		int intentZip = requestParams.getInt(Observations.ZIP_CODE);
 		assertEquals(TEST_ZIP, intentZip);
 	}
 	
