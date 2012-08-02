@@ -24,6 +24,8 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 
 	public static final String ACTION_SCHEDULE_WEATHER_UPDATES =
 			"com.jeremyhaberman.raingauge.ACTION_SCHEDULE_WEATHER_UPDATES";
+	private static final String ACTION_BOOT_COMPLETED = "android.intent.action.BOOT_COMPLETED";
+
 	public static final String EXTRA_ZIP_CODE =
 			"com.jeremyhaberman.raingauge.WeatherUpdateScheduler.EXTRA_ZIP_CODE";
 	public static final String EXTRA_NEXT_RAINFALL_UPDATE_TIME =
@@ -33,7 +35,7 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 
 	private static final long DAILY_INTERVAL = 86400000;
 
-	private boolean mScheduled = false;
+	private boolean mRainfallUpdateScheduled = false;
 
 	private Calendar mNextRainfulUpdateTime;
 	private Calendar mNextRainForecastTime;
@@ -46,33 +48,56 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 
 		synchronized (this) {
 
-			if (!mScheduled) {
-				if (intent.getAction().equalsIgnoreCase(ACTION_SCHEDULE_WEATHER_UPDATES)) {
+			if (Logger.isEnabled(Logger.DEBUG)) {
+				Logger.debug(TAG, "onReceive()", intent);
+			}
 
-					if (Logger.isEnabled(Logger.DEBUG)) {
-						Logger.debug(TAG, "Scheduling rainfall and forecast updates");
-					}
+			if (intent.getAction().equalsIgnoreCase(ACTION_SCHEDULE_WEATHER_UPDATES) ||
+					intent.getAction().equalsIgnoreCase(ACTION_BOOT_COMPLETED)) {
 
-					int zip = getZip(context, intent);
-
-					scheduleRainfallUpdate(context, intent);
-					// scheduleForecastUpdate(context);
-
-					mScheduled = true;
+				if (!mRainfallUpdateScheduled) {
+					scheduleRainfallUpdates(context, intent);
 				} else {
 					if (Logger.isEnabled(Logger.DEBUG)) {
-						Logger.debug(TAG, "Rainfall and forecast updates already scheduled");
+						Logger.debug(TAG, "Rainfall update already scheduled");
 					}
+				}
+			} else {
+				if (Logger.isEnabled(Logger.WARN)) {
+					Logger.warn(TAG, "Unknown action: " + intent.getAction());
 				}
 			}
 		}
 	}
 
+	private void scheduleRainfallUpdates(Context context, Intent intent) {
 
-	private void scheduleRainfallUpdate(Context context, Intent intent) {
+		if (Logger.isEnabled(Logger.DEBUG)) {
+			Logger.debug(TAG, "Scheduling rainfall updates");
+		}
+
+		int zip = getZip(context, intent);
+		long nextRainfallUpdateTime = intent.getLongExtra(EXTRA_NEXT_RAINFALL_UPDATE_TIME,
+				getNextRainfallUpdateTime(23, 55).getTimeInMillis());
+
+		mRainfallUpdateScheduled = scheduleRainfallUpdates(context, zip, nextRainfallUpdateTime);
+	}
+
+	public boolean isRainfallUpdateScheduled() {
+		return mRainfallUpdateScheduled;
+	}
+
+	private boolean scheduleRainfallUpdates(Context context, int zip, long timeInMillis) {
+
+		if (zip == 0) {
+			if (Logger.isEnabled(Logger.WARN)) {
+				Logger.warn(TAG, String.format("zip is 0; rainfall update not scheduled"));
+			}
+			return false;
+		}
 
 		Intent updateRainfallIntent = new Intent(WeatherUpdater.ACTION_UPDATE_RAINFALL);
-		updateRainfallIntent.putExtra(WeatherService.ZIP_CODE, getZip(context, intent));
+		updateRainfallIntent.putExtra(WeatherService.ZIP_CODE, zip);
 
 		Logger.debug(TAG, "updateRainfallIntent", updateRainfallIntent);
 
@@ -82,18 +107,17 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 		AndroidAlarmManager alarmManager =
 				(AndroidAlarmManager) ServiceManager.getService(context, Service.ALARM_SERVICE);
 
-		long nextRainfallUpdateTime = intent.getLongExtra(EXTRA_NEXT_RAINFALL_UPDATE_TIME,
-				getNextRainfallUpdateTime(23, 55).getTimeInMillis());
-
-		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, nextRainfallUpdateTime, DAILY_INTERVAL,
+		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, timeInMillis, DAILY_INTERVAL,
 				updateRainfallPendingIntent);
 
 		if (Logger.isEnabled(Logger.DEBUG)) {
 			Calendar cal = Calendar.getInstance();
-			cal.setTimeInMillis(nextRainfallUpdateTime);
+			cal.setTimeInMillis(timeInMillis);
 			Logger.debug(TAG,
 					"Next rainfall update scheduled to run at " + cal.getTime().toString());
 		}
+
+		return true;
 	}
 
 	private int getZip(Context context, Intent intent) {

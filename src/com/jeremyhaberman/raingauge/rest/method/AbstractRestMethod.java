@@ -45,6 +45,7 @@ public abstract class AbstractRestMethod<T extends Resource> implements RestMeth
 			logResponse(status, responseBody);
 			resource = parseResponseBody(responseBody);
 		} catch (Exception ex) {
+			Logger.error(getLogTag(), "Error in buildResult", ex);
 			// our own internal error code, not from service
 			// spec only defines up to 505
 			status = 506;
