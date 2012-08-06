@@ -16,6 +16,7 @@ import com.jeremyhaberman.raingauge.rest.resource.Observations;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class ObservationsProcessor implements ResourceProcessor {
 
@@ -47,7 +48,7 @@ public class ObservationsProcessor implements ResourceProcessor {
 
 		try {
 			addToContentProvider(result.getResource());
-			scheduleNotification(result.getResource().getRainfall());
+			scheduleNotification(mContext, result.getResource().getRainfall());
 			callback.send(result.getStatusCode(), ResourceProcessor.SUCCESS);
 		} catch (IOException e) {
 			callback.send(result.getStatusCode(), ResourceProcessor.IO_ERROR);
@@ -67,11 +68,25 @@ public class ObservationsProcessor implements ResourceProcessor {
 		}
 	}
 
-	private void scheduleNotification(double rainfall) {
+	private void scheduleNotification(Context context, double rainfall) {
 		NotificationHelper
 				notificationHelper = (NotificationHelper) ServiceManager
 				.getService(mContext, Service.NOTIFICATION_HELPER);
 		Calendar cal = Calendar.getInstance();
-		notificationHelper.scheduleRainfallNotification(cal.getTimeInMillis(), rainfall);
+		notificationHelper.scheduleRainfallNotification(context, getNextNotificationTime(), rainfall);
+	}
+
+	private long getNextNotificationTime() {
+
+		Calendar date = new GregorianCalendar();
+
+		date.set(Calendar.HOUR_OF_DAY, 0);
+		date.set(Calendar.MINUTE, 0);
+		date.set(Calendar.SECOND, 0);
+		date.set(Calendar.MILLISECOND, 0);
+
+		date.add(Calendar.DAY_OF_MONTH, 1);
+
+		return date.getTimeInMillis();
 	}
 }

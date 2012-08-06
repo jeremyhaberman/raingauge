@@ -90,12 +90,17 @@ public class ObservationsProcessorTest extends InstrumentationTestCase {
 
 		assertEquals(0.75, mockNotificationHelper.getRainfall());
 
-		long currentTimeInMillis = mockNotificationHelper.getCurrentTimeInMillis();
-		Calendar expectedCalendar = Calendar.getInstance();
-		Calendar actualCalendar = Calendar.getInstance();
-		actualCalendar.setTimeInMillis(currentTimeInMillis);
+		long actualWhen = mockNotificationHelper.getWhen();
 
-		long diff = Math.abs(expectedCalendar.getTimeInMillis() - actualCalendar.getTimeInMillis());
+		Calendar expectedCalendar = Calendar.getInstance();
+		expectedCalendar.set(Calendar.HOUR_OF_DAY, 0);
+		expectedCalendar.set(Calendar.MINUTE, 0);
+		expectedCalendar.set(Calendar.SECOND, 0);
+		expectedCalendar.set(Calendar.MILLISECOND, 0);
+		expectedCalendar.add(Calendar.DAY_OF_MONTH, 1);
+		long expectedWhen = expectedCalendar.getTimeInMillis();
+
+		long diff = Math.abs(expectedWhen - actualWhen);
 
 		assertTrue(diff < 3000);
 	}

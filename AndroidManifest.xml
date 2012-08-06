@@ -4,11 +4,11 @@
           android:versionCode="1"
           android:versionName="1.0">
 
-    <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="15"/>
+    <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="15"/>
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:icon="@drawable/icon"
@@ -40,7 +40,7 @@
             <intent-filter>
                 <action
                     android:name="com.jeremyhaberman.raingauge.ACTION_SCHEDULE_WEATHER_UPDATES"/>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
 
@@ -52,6 +52,16 @@
                     android:name="com.jeremyhaberman.raingauge.WeatherUpdater.ACTION_UPDATE_RAINFALL"/>
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".notification.DefaultNotificationHelper"
+            android:enabled="true">
+            <intent-filter>
+                <action
+                    android:name="com.jeremyhaberman.raingauge.notification.ACTION_SHOW_NOTIFICATION"/>
+            </intent-filter>
+        </receiver>
+
 
         <provider
             android:name=".provider.RainGaugeProvider"

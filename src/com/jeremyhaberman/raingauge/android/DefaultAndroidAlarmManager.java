@@ -4,7 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 
-public class DefaultAndroidAlarmManager implements AndroidAlarmManager{
+public class DefaultAndroidAlarmManager implements AndroidAlarmManager {
 
 	private Context mContext;
 
@@ -18,5 +18,12 @@ public class DefaultAndroidAlarmManager implements AndroidAlarmManager{
 
 		AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
 		alarmManager.setRepeating(type, triggerAtMillis, intervalMillis, operation);
+	}
+
+	@Override
+	public void set(int type, long triggerAtMillis, PendingIntent operation) {
+
+		AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+		alarmManager.set(type, triggerAtMillis, operation);
 	}
 }

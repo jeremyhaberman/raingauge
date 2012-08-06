@@ -34,8 +34,7 @@ public class ServiceManager {
 		ProcessorFactory processorFactory = DefaultProcessorFactory.getInstance(context);
 		AndroidAlarmManager androidAlarmManager = new DefaultAndroidAlarmManager(context);
 		NotificationManager notificationManager = new DefaultNotificationManager(context);
-		NotificationHelper notificationHelper =
-				DefaultNotificationHelper.newNotificationHelper(context);
+		NotificationHelper notificationHelper = new DefaultNotificationHelper();
 
 		services = new HashMap();
 

@@ -20,6 +20,12 @@ public class MockAlarmManager implements AndroidAlarmManager {
 			this.triggerAtMillis = triggerAtMillis;
 			this.intervalMillis = intervalMillis;
 		}
+
+		Alarm(int type, long triggerAtMillis) {
+			this.type = type;
+			this.triggerAtMillis = triggerAtMillis;
+			this.intervalMillis = -1;
+		}
 	}
 
 	public MockAlarmManager(Context context) {
@@ -31,6 +37,11 @@ public class MockAlarmManager implements AndroidAlarmManager {
 							 PendingIntent operation) {
 
 		mLastAlarm = new Alarm(type, triggerAtMillis, intervalMillis);
+	}
+
+	@Override
+	public void set(int type, long triggerAtMillis, PendingIntent operation) {
+		mLastAlarm = new Alarm(type, triggerAtMillis);
 	}
 
 	public Alarm getLastAlarm() {
