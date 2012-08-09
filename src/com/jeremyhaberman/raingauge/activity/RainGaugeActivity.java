@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,6 +38,22 @@ public class RainGaugeActivity extends Activity {
 	private Handler mHandler = new Handler();
 	private RainfallAdapter mRainfallAdapter;
 	private WateringAdapter mWateringAdapter;
+
+	private TextWatcher mWaterTextWatcher = new TextWatcher() {
+		@Override
+		public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+		}
+
+		@Override
+		public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+		}
+
+		@Override
+		public void afterTextChanged(Editable editable) {
+			calculateBalance();
+			showBalance();
+		}
+	};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -81,6 +99,10 @@ public class RainGaugeActivity extends Activity {
 					mRainfallAdapter);
 			getContentResolver().registerContentObserver(WateringsTable.CONTENT_URI, true,
 					mWateringAdapter);
+
+			mRainfallText.addTextChangedListener(mWaterTextWatcher);
+			mWateringText.addTextChangedListener(mWaterTextWatcher);
+
 			mBalance = calculateBalance();
 			showBalance();
 			showForecast();
@@ -92,6 +114,8 @@ public class RainGaugeActivity extends Activity {
 		super.onPause();
 		getContentResolver().unregisterContentObserver(mRainfallAdapter);
 		getContentResolver().unregisterContentObserver(mWateringAdapter);
+		mRainfallText.removeTextChangedListener(mWaterTextWatcher);
+		mWateringText.removeTextChangedListener(mWaterTextWatcher);
 	}
 
 	@Override

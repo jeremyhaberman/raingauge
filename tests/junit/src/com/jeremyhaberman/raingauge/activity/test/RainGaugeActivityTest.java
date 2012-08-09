@@ -87,42 +87,42 @@ public class RainGaugeActivityTest extends ActivityInstrumentationTestCase2<Rain
 	}
 
 	public void testZeroDaysOfRainfall() {
-		assertRainfall(new double[]{});
+		assertRainfall(new double[] { });
 	}
 
 	public void testOneDayOfRainfall() {
-		assertRainfall(new double[]{0.72});
+		assertRainfall(new double[] { 0.72 });
 	}
 
 	public void testTwoDaysOfRainfallWithOneZero() {
-		assertRainfall(new double[]{0.72, 0.0});
+		assertRainfall(new double[] { 0.72, 0.0 });
 	}
 
 	public void testTwoDaysOfRainfall() {
-		assertRainfall(new double[]{0.72, 0.21});
+		assertRainfall(new double[] { 0.72, 0.21 });
 	}
 
 	public void testSevenDaysOfRainfall() {
-		assertRainfall(new double[]{0.72, 0.21, 0.0, 1.2, 0.14, 0.72, 0.0});
+		assertRainfall(new double[] { 0.72, 0.21, 0.0, 1.2, 0.14, 0.72, 0.0 });
 	}
 
 	public void testEightDaysOfRainfall() {
-		assertRainfall(new double[]{0.72, 0.21, 0.0, 1.2, 0.14, 0.72, 0.0, .43});
+		assertRainfall(new double[] { 0.72, 0.21, 0.0, 1.2, 0.14, 0.72, 0.0, .43 });
 	}
 
 	public void testRainfallChangeWhileActivityInForeground() throws InterruptedException {
-		addRainfall(new double[]{0.72});
+		addRainfall(new double[] { 0.72 });
 		RainGaugeActivity activity = getActivity();
 		TextView rainfallText = (TextView) activity.findViewById(R.id.rainfall);
 		assertEquals(String.format("%.2f in", 0.72), rainfallText.getText().toString());
-		addRainfall(new double[]{0.21});
+		addRainfall(new double[] { 0.21 });
 		Thread.sleep(1000);
 		assertEquals(String.format("%.2f in", 0.93), rainfallText.getText().toString());
 	}
 
 	public void testAddWatering() throws Throwable {
 		setActivityInitialTouchMode(false);
-		addWatering(new double[]{.25});
+		addWatering(new double[] { .25 });
 		RainGaugeActivity activity = getActivity();
 		TextView watering = (TextView) activity.findViewById(R.id.watering);
 		assertEquals(String.format("%.2f in", 0.25), watering.getText().toString());
@@ -146,25 +146,44 @@ public class RainGaugeActivityTest extends ActivityInstrumentationTestCase2<Rain
 	}
 
 	public void testBalanceWithRainfall() throws Throwable {
-		addRainfall(new double[]{.25});
+		addRainfall(new double[] { .25 });
 		RainGaugeActivity activity = getActivity();
 		TextView balance = (TextView) activity.findViewById(R.id.balance);
 		assertEquals(String.format("-%.2f in", 0.75), balance.getText().toString());
 	}
 
 	public void testBalanceWithWatering() throws Throwable {
-		addWatering(new double[]{.25});
+		addWatering(new double[] { .25 });
 		RainGaugeActivity activity = getActivity();
 		TextView balance = (TextView) activity.findViewById(R.id.balance);
 		assertEquals(String.format("-%.2f in", 0.75), balance.getText().toString());
 	}
 
 	public void testBalanceWithRainfallAndWatering() throws Throwable {
-		addRainfall(new double[]{.32});
-		addWatering(new double[]{.25});
+		addRainfall(new double[] { .32 });
+		addWatering(new double[] { .25 });
 		RainGaugeActivity activity = getActivity();
 		TextView balance = (TextView) activity.findViewById(R.id.balance);
 		assertEquals(String.format("-%.2f in", 0.43), balance.getText().toString());
+	}
+
+	public void testBalanceAfterAddingWatering() throws Throwable {
+		addRainfall(new double[] { .32 });
+		addWatering(new double[] { .25 });
+		RainGaugeActivity activity = getActivity();
+		TextView balance = (TextView) activity.findViewById(R.id.balance);
+		assertEquals(String.format("-%.2f in", 0.43), balance.getText().toString());
+
+		sendKeys("0 PERIOD 2 5");
+		final Button addWatering = (Button) activity.findViewById(R.id.add_manual_watering);
+		runTestOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				addWatering.performClick();
+			}
+		});
+		Thread.sleep(1000);
+		assertEquals(String.format("-%.2f in", 0.18), balance.getText().toString());
 	}
 
 

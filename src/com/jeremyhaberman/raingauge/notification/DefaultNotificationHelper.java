@@ -17,9 +17,9 @@ public class DefaultNotificationHelper extends BroadcastReceiver implements Noti
 
 	private static final int RAINFALL_NOTIFICATION_ID = 4692;
 	private static final int SHOW_NOTIFICATION_REQUEST_CODE = 1;
-	private static final String ACTION_SHOW_NOTIFICATION =
+	public static final String ACTION_SHOW_NOTIFICATION =
 			"com.jeremyhaberman.raingauge.notification.ACTION_SHOW_NOTIFICATION";
-	private static final String EXTRA_RAINFALL =
+	public static final String EXTRA_RAINFALL =
 			"com.jeremyhaberman.raingauge.notification.EXTRA_RAINFALL";
 
 	public DefaultNotificationHelper() {
@@ -68,7 +68,7 @@ public class DefaultNotificationHelper extends BroadcastReceiver implements Noti
 		notificationBuilder.setAutoCancel(true);
 		notificationBuilder.setContentIntent(contentIntent);
 
-		return notificationBuilder.build();
+		return notificationBuilder.getNotification();
 	}
 
 	private void notify(Context context, int id, Notification notification) {

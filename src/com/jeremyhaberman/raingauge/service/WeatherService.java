@@ -18,7 +18,4 @@ public interface WeatherService {
 	public static final String METHOD_GET = Method.GET.toString();
 	
 	public static final String ZIP_CODE = "zipCode";
-	
-	
-	
 }
