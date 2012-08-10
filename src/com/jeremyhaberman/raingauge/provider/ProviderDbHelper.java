@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.WateringsTable;
+import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ForecastsTable;
 import com.jeremyhaberman.raingauge.util.Logger;
 
 /**
@@ -18,7 +19,7 @@ public class ProviderDbHelper extends SQLiteOpenHelper {
 
 	// Name of the database file
 	private static final String DATABASE_NAME = "raingauge.db";
-	private static final int DATABASE_VERSION = 4;
+	private static final int DATABASE_VERSION = 5;
 
 	public ProviderDbHelper(Context context) {
 		this(context, DATABASE_VERSION);
@@ -37,6 +38,7 @@ public class ProviderDbHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL("DROP TABLE IF EXISTS " + ObservationsTable.TABLE_NAME + ";");
 		db.execSQL("DROP TABLE IF EXISTS " + WateringsTable.TABLE_NAME + ";");
+		db.execSQL("DROP TABLE IF EXISTS " + ForecastsTable.TABLE_NAME + ";");
 		createTables(db);
 	}
 
@@ -63,6 +65,18 @@ public class ProviderDbHelper extends SQLiteOpenHelper {
 		wateringsBuilder.append(WateringsTable.AMOUNT + " REAL");
 		wateringsBuilder.append(");");
 		sql = wateringsBuilder.toString();
+		Log.i(TAG, "Creating DB table with string: '" + sql + "'");
+		db.execSQL(sql);
+
+		/* Create forecasts table */
+		StringBuilder forecastsBuilder = new StringBuilder();
+		forecastsBuilder.append("CREATE TABLE " + ForecastsTable.TABLE_NAME + " (");
+		forecastsBuilder.append(ForecastsTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, ");
+		forecastsBuilder.append(ForecastsTable.TIMESTAMP + " INTEGER, ");
+		forecastsBuilder.append(ForecastsTable.DAY_FORECAST + " TEXT, ");
+		forecastsBuilder.append(ForecastsTable.NIGHT_FORECAST + " TEXT");
+		forecastsBuilder.append(");");
+		sql = forecastsBuilder.toString();
 		Log.i(TAG, "Creating DB table with string: '" + sql + "'");
 		db.execSQL(sql);
 

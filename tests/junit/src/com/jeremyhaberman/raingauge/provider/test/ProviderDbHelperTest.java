@@ -32,11 +32,12 @@ public class ProviderDbHelperTest extends InstrumentationTestCase {
 
 		// test table names
 		Cursor cursor =
-				db.query("sqlite_master", new String[]{"name"}, "type='table'", null, null, null,
+				db.query("sqlite_master", new String[] { "name" }, "type='table'", null, null, null,
 						"name");
 
 		String[] expectedTableNames =
-				new String[]{"android_metadata", "observations", "sqlite_sequence", "waterings"};
+				new String[] { "android_metadata", "forecasts", "observations", "sqlite_sequence",
+						"waterings" };
 
 		String actualTableName = null;
 		for (int i = 0; i < expectedTableNames.length; i++) {
@@ -49,7 +50,7 @@ public class ProviderDbHelperTest extends InstrumentationTestCase {
 
 		String where =
 				String.format("tbl_name='%s' AND type='table'", ObservationsTable.TABLE_NAME);
-		cursor = db.query("sqlite_master", new String[]{"sql"}, where, null, null, null, null);
+		cursor = db.query("sqlite_master", new String[] { "sql" }, where, null, null, null, null);
 		assertTrue(cursor.getCount() == 1);
 		cursor.moveToFirst();
 		String expectedSql =
@@ -59,11 +60,21 @@ public class ProviderDbHelperTest extends InstrumentationTestCase {
 
 		where = String.format("tbl_name='%s' AND type='table'",
 				RainGaugeProviderContract.WateringsTable.TABLE_NAME);
-		cursor = db.query("sqlite_master", new String[]{"sql"}, where, null, null, null, null);
+		cursor = db.query("sqlite_master", new String[] { "sql" }, where, null, null, null, null);
 		assertTrue(cursor.getCount() == 1);
 		cursor.moveToFirst();
 		expectedSql =
 				"CREATE TABLE waterings (_id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp INTEGER, amount REAL)";
+		actualSql = cursor.getString(0);
+		assertEquals(expectedSql, actualSql);
+
+		where = String.format("tbl_name='%s' AND type='table'",
+				RainGaugeProviderContract.ForecastsTable.TABLE_NAME);
+		cursor = db.query("sqlite_master", new String[] { "sql" }, where, null, null, null, null);
+		assertTrue(cursor.getCount() == 1);
+		cursor.moveToFirst();
+		expectedSql =
+				"CREATE TABLE forecasts (_id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp INTEGER, day TEXT, night TEXT)";
 		actualSql = cursor.getString(0);
 		assertEquals(expectedSql, actualSql);
 
@@ -88,6 +99,9 @@ public class ProviderDbHelperTest extends InstrumentationTestCase {
 		assertEquals(0, cursor.getCount());
 		cursor = db.query(WateringsTable.TABLE_NAME, null, null, null, null, null, null);
 		assertEquals(0, cursor.getCount());
+		cursor = db.query(RainGaugeProviderContract.ForecastsTable.TABLE_NAME, null, null, null,
+				null, null, null);
+		assertEquals(0, cursor.getCount());
 
 		ContentValues values = new ContentValues();
 		values.put(ObservationsTable.RAINFALL, 0.5f);
@@ -97,6 +111,13 @@ public class ProviderDbHelperTest extends InstrumentationTestCase {
 		values = new ContentValues();
 		values.put(RainGaugeProviderContract.WateringsTable.AMOUNT, 0.5f);
 		rowId = db.insert(WateringsTable.TABLE_NAME, null, values);
+		assertTrue(rowId != -1);
+
+		values = new ContentValues();
+		values.put(RainGaugeProviderContract.ForecastsTable.TIMESTAMP, System.currentTimeMillis());
+		values.put(RainGaugeProviderContract.ForecastsTable.DAY_FORECAST, "Lots of rain");
+		values.put(RainGaugeProviderContract.ForecastsTable.NIGHT_FORECAST, "More rain");
+		rowId = db.insert(RainGaugeProviderContract.ForecastsTable.TABLE_NAME, null, values);
 		assertTrue(rowId != -1);
 
 		db.close();
@@ -111,6 +132,10 @@ public class ProviderDbHelperTest extends InstrumentationTestCase {
 
 		cursor = db.query(WateringsTable.TABLE_NAME, null, null, null, null, null, null);
 		assertEquals(0, cursor.getCount());
+
+		cursor = db.query(RainGaugeProviderContract.ForecastsTable.TABLE_NAME, null, null, null, null, null, null);
+		assertEquals(0, cursor.getCount());
+
 
 		db.close();
 		helper.close();

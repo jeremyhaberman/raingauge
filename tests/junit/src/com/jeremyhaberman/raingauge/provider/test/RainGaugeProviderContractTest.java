@@ -16,7 +16,8 @@ public class RainGaugeProviderContractTest extends AndroidTestCase {
 
 		Class[] classes = new Class[]{RainGaugeProviderContract.class,
 				RainGaugeProviderContract.ObservationsTable.class,
-				RainGaugeProviderContract.WateringsTable.class};
+				RainGaugeProviderContract.WateringsTable.class,
+				RainGaugeProviderContract.ForecastsTable.class};
 
 		for (Class testClass : classes) {
 			Constructor constructor = testClass.getDeclaredConstructor();

@@ -15,7 +15,7 @@ public final class RainGaugeProviderContract {
 		public static final String[] ALL_COLUMNS;
 
 		static {
-			ALL_COLUMNS = new String[]{
+			ALL_COLUMNS = new String[] {
 					ObservationsTable._ID,
 					ObservationsTable.TIMESTAMP,
 					ObservationsTable.RAINFALL
@@ -56,7 +56,7 @@ public final class RainGaugeProviderContract {
 		public static final String[] ALL_COLUMNS;
 
 		static {
-			ALL_COLUMNS = new String[]{
+			ALL_COLUMNS = new String[] {
 					WateringsTable._ID,
 					WateringsTable.TIMESTAMP,
 					WateringsTable.AMOUNT
@@ -91,8 +91,54 @@ public final class RainGaugeProviderContract {
 		}
 	}
 
+	public static final class ForecastsTable implements ResourceTable {
+
+		public static final String TABLE_NAME = "forecasts";
+
+		public static final String[] ALL_COLUMNS;
+
+		static {
+			ALL_COLUMNS = new String[] {
+					ForecastsTable._ID,
+					ForecastsTable.TIMESTAMP,
+					ForecastsTable.DAY_FORECAST,
+					ForecastsTable.NIGHT_FORECAST
+			};
+		}
+
+		// URI DEFS
+		static final String SCHEME = "content://";
+		public static final String URI_PREFIX = SCHEME + AUTHORITY;
+		private static final String URI_PATH_FORECASTS = "/" + TABLE_NAME;
+
+		public static final int FORECAST_ID_PATH_POSITION = 1;
+
+		public static final Uri CONTENT_URI = Uri.parse(URI_PREFIX + URI_PATH_FORECASTS);
+
+		public static final Uri CONTENT_ID_URI_BASE = Uri.parse(SCHEME + AUTHORITY
+				+ URI_PATH_FORECASTS);
+
+		public static final Uri CONTENT_ID_URI_PATTERN = Uri.parse(SCHEME + AUTHORITY
+				+ URI_PATH_FORECASTS + "#");
+
+		public static final String TIMESTAMP = "timestamp";
+		public static final String DAY_FORECAST = "day";
+		public static final String NIGHT_FORECAST = "night";
+
+		public static final int TIMESTAMP_COLUMN_INDEX = 1;
+		public static final int DAY_FORECAST_COLUMN_INDEX = 2;
+		public static final int NIGHT_FORECAST_COLUMN_INDEX = 3;
+
+		// Prevent instantiation of this class
+		private ForecastsTable() throws InvocationTargetException {
+			throw new InvocationTargetException(
+					new InstantiationException("Instantiation forbidden"));
+		}
+	}
+
 	private RainGaugeProviderContract() throws InvocationTargetException {
 		throw new InvocationTargetException(new InstantiationException("Instantiation forbidden"));
 	}
+
 
 }
