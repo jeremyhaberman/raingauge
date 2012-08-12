@@ -2,6 +2,7 @@ package com.jeremyhaberman.raingauge.activity.test;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
@@ -120,6 +121,77 @@ public class RainGaugeActivityTest extends ActivityInstrumentationTestCase2<Rain
 		assertEquals(String.format("%.2f in", 0.93), rainfallText.getText().toString());
 	}
 
+	public void testAddWateringWithoutValue() throws Throwable {
+		setActivityInitialTouchMode(false);
+		addWatering(new double[] { .25 });
+		RainGaugeActivity activity = getActivity();
+		TextView watering = (TextView) activity.findViewById(R.id.watering);
+		assertEquals(String.format("%.2f in", 0.25), watering.getText().toString());
+
+		final Button addWatering = (Button) activity.findViewById(R.id.add_manual_watering);
+		runTestOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				addWatering.performClick();
+			}
+		});
+		Thread.sleep(1000);
+		assertEquals(String.format("%.2f in", 0.25), watering.getText().toString());
+	}
+
+	public void testWateringInputCharacters() throws Throwable {
+		setActivityInitialTouchMode(false);
+		RainGaugeActivity activity = getActivity();
+		EditText wateringInput = (EditText) activity.findViewById(R.id.watering_amount);
+
+		assertCharacterAllowed("0", "0", wateringInput);
+		assertCharacterAllowed("PERIOD", ".", wateringInput);
+
+		assertCharacterNotAllowed("SPACE", wateringInput);
+		assertCharacterNotAllowed("-", wateringInput);
+		assertCharacterNotAllowed("a", wateringInput);
+		assertCharacterNotAllowed(",", wateringInput);
+	}
+
+	public void testWateringInputLength() throws Throwable {
+		setActivityInitialTouchMode(false);
+		RainGaugeActivity activity = getActivity();
+		EditText wateringInput = (EditText) activity.findViewById(R.id.watering_amount);
+
+		sendKeys("1");
+		assertEquals("1", wateringInput.getText().toString());
+
+		sendKeys("2 3 4");
+		assertEquals("1234", wateringInput.getText().toString());
+
+		sendKeys("PERIOD");
+		assertEquals("1234", wateringInput.getText().toString());
+
+		sendKeys("DEL PERIOD");
+		assertEquals("123.", wateringInput.getText().toString());
+
+		sendKeys("DEL DEL PERIOD 4");
+		assertEquals("12.4", wateringInput.getText().toString());
+
+		sendKeys("DEL DEL DEL DEL 0 PERIOD 2 3");
+		assertEquals("0.23", wateringInput.getText().toString());
+
+		sendKeys("4");
+		assertEquals("0.23", wateringInput.getText().toString());
+	}
+
+	private void assertCharacterAllowed(String keyName, String character, EditText field) {
+		sendKeys(keyName);
+		assertEquals(character, field.getText().toString());
+		sendKeys("DEL");
+	}
+
+	private void assertCharacterNotAllowed(String keyName, EditText field) {
+		sendKeys(keyName);
+		assertEquals("", field.getText().toString());
+		sendKeys("DEL");
+	}
+
 	public void testAddWatering() throws Throwable {
 		setActivityInitialTouchMode(false);
 		addWatering(new double[] { .25 });
@@ -184,6 +256,15 @@ public class RainGaugeActivityTest extends ActivityInstrumentationTestCase2<Rain
 		});
 		Thread.sleep(1000);
 		assertEquals(String.format("-%.2f in", 0.18), balance.getText().toString());
+	}
+
+	public void testWateringInputNotLostOnOrientationChange() throws Throwable {
+		RainGaugeActivity activity = getActivity();
+		sendKeys("0 PERIOD 2 5");
+		activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		Thread.sleep(500);
+		EditText wateringInput = (EditText) activity.findViewById(R.id.watering_amount);
+		assertEquals("0.25", wateringInput.getText().toString());
 	}
 
 

@@ -73,10 +73,13 @@ public class RainGaugeActivity extends Activity {
 				runOnUiThread(new Runnable() {
 
 					public void run() {
-						water(Float.parseFloat(mManualWateringAmountEditText.getText().toString()));
-						mManualWateringAmountEditText.setText("");
-						calculateBalance();
-						showBalance();
+						String enteredAmount = mManualWateringAmountEditText.getText().toString();
+						if (validWateringInput(enteredAmount)) {
+							water(Float.parseFloat(enteredAmount));
+							mManualWateringAmountEditText.setText("");
+							calculateBalance();
+							showBalance();
+						}
 					}
 				});
 
@@ -85,6 +88,16 @@ public class RainGaugeActivity extends Activity {
 
 		mRainfallAdapter = new RainfallAdapter(mHandler, mRainfallText);
 		mWateringAdapter = new WateringAdapter(mHandler, mWateringText);
+	}
+
+	private boolean validWateringInput(String value) {
+
+		try {
+			Float.parseFloat(value);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 
 	@Override

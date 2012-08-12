@@ -81,6 +81,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="numberDecimal"
+            android:maxLength="4"
             android:singleLine="true"
             android:hint="inches">
 
