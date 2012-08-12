@@ -1,27 +1,22 @@
 package com.jeremyhaberman.raingauge.adapter;
 
-import android.content.ContentResolver;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.os.Handler;
 import android.widget.TextView;
-import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract;
 import com.jeremyhaberman.raingauge.util.Logger;
-import com.jeremyhaberman.raingauge.util.TimeUtil;
-
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 public class WateringAdapter extends ContentObserver {
 
 	private static final String TAG = WateringAdapter.class.getSimpleName();
 	private TextView mTextView;
 	private double mWatering;
+	private Cursor mCursor;
 
-	public WateringAdapter(Handler handler, TextView textView) {
-		super(handler);
+	public WateringAdapter(TextView textView, Cursor cursor) {
+		super(null);
 
 		mTextView = textView;
+		mCursor = cursor;
 
 		setWatering();
 	}
@@ -34,27 +29,12 @@ public class WateringAdapter extends ContentObserver {
 	}
 
 	private double calculateWatering() {
-		ContentResolver resolver = mTextView.getContext().getContentResolver();
 
-		Calendar cal = new GregorianCalendar();
-		cal.add(Calendar.DATE, -8);
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
-
-		Logger.debug(TAG, String.format("Loading waterings since %s", TimeUtil
-				.format(cal.getTimeInMillis())));
-
-		Cursor wateringCursor = resolver.query(RainGaugeProviderContract.WateringsTable.CONTENT_URI,
-				new String[]{RainGaugeProviderContract.WateringsTable.AMOUNT},
-				RainGaugeProviderContract.WateringsTable.TIMESTAMP + ">?",
-				new String[]{Long.toString(cal.getTimeInMillis())}, null);
-
+		mCursor.requery();
 		double recentWatering = 0.0;
-		while (wateringCursor.moveToNext()) {
-			recentWatering += wateringCursor.getDouble(0);
+		while (mCursor.moveToNext()) {
+			recentWatering += mCursor.getDouble(0);
 		}
-
-		wateringCursor.close();
 
 		return recentWatering;
 	}
@@ -76,6 +56,11 @@ public class WateringAdapter extends ContentObserver {
 
 	public double getWatering() {
 		return mWatering;
+	}
+
+	public void destroy() {
+		mTextView = null;
+		mCursor = null;
 	}
 }
 

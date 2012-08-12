@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,9 +20,13 @@ import com.jeremyhaberman.raingauge.R;
 import com.jeremyhaberman.raingauge.WeatherUpdateScheduler;
 import com.jeremyhaberman.raingauge.adapter.RainfallAdapter;
 import com.jeremyhaberman.raingauge.adapter.WateringAdapter;
+import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.WateringsTable;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class RainGaugeActivity extends Activity {
 
@@ -35,7 +39,6 @@ public class RainGaugeActivity extends Activity {
 	private double mBalance;
 	private TextView mForecastText;
 
-	private Handler mHandler = new Handler();
 	private RainfallAdapter mRainfallAdapter;
 	private WateringAdapter mWateringAdapter;
 
@@ -86,8 +89,25 @@ public class RainGaugeActivity extends Activity {
 			}
 		});
 
-		mRainfallAdapter = new RainfallAdapter(mHandler, mRainfallText);
-		mWateringAdapter = new WateringAdapter(mHandler, mWateringText);
+		Calendar cal = new GregorianCalendar();
+		cal.add(Calendar.DATE, -8);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+
+		String[] projection = new String[] { RainGaugeProviderContract.ObservationsTable.RAINFALL };
+		Cursor rainfallCursor = getContentResolver().query(RainGaugeProviderContract.ObservationsTable.CONTENT_URI,
+				projection, RainGaugeProviderContract.ObservationsTable.TIMESTAMP + ">?",
+				new String[] { Long.toString(cal.getTimeInMillis()) }, null);
+		startManagingCursor(rainfallCursor);
+		mRainfallAdapter = new RainfallAdapter(mRainfallText, rainfallCursor);
+
+		Cursor wateringCursor = getContentResolver().query(
+				RainGaugeProviderContract.WateringsTable.CONTENT_URI,
+				new String[] { RainGaugeProviderContract.WateringsTable.AMOUNT },
+				RainGaugeProviderContract.WateringsTable.TIMESTAMP + ">?",
+				new String[] { Long.toString(cal.getTimeInMillis()) }, null);
+		startManagingCursor(wateringCursor);
+		mWateringAdapter = new WateringAdapter(mWateringText, wateringCursor);
 	}
 
 	private boolean validWateringInput(String value) {
@@ -129,6 +149,13 @@ public class RainGaugeActivity extends Activity {
 		getContentResolver().unregisterContentObserver(mWateringAdapter);
 		mRainfallText.removeTextChangedListener(mWaterTextWatcher);
 		mWateringText.removeTextChangedListener(mWaterTextWatcher);
+	}
+
+	@Override
+	protected void onDestroy() {
+		mRainfallAdapter.destroy();
+		mWateringAdapter.destroy();
+		super.onDestroy();
 	}
 
 	@Override

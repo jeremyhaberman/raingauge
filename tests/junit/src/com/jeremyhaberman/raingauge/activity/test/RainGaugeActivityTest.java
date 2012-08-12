@@ -1,6 +1,8 @@
 package com.jeremyhaberman.raingauge.activity.test;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -19,6 +21,8 @@ import com.jeremyhaberman.raingauge.rest.resource.Observations;
 import com.jeremyhaberman.raingauge.util.Logger;
 import com.jeremyhaberman.raingauge.util.TestUtil;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -267,6 +271,35 @@ public class RainGaugeActivityTest extends ActivityInstrumentationTestCase2<Rain
 		assertEquals("0.25", wateringInput.getText().toString());
 	}
 
+	public void testActivityLeak() throws Exception {
+
+		final int TEST_COUNT = 5;
+		Intent intent = new Intent();
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.setClass(getInstrumentation().getTargetContext(), RainGaugeActivity.class);
+		ArrayList<WeakReference<Activity>> refs =
+				new ArrayList<WeakReference<Activity>>();
+		for (int i = 0; i < TEST_COUNT; i++) {
+			Activity activity = getInstrumentation().startActivitySync(intent);
+			refs.add(new WeakReference<Activity>(activity));
+			activity.finish();
+			getInstrumentation().waitForIdleSync();
+			activity = null;
+		}
+		Runtime.getRuntime().gc();
+		Runtime.getRuntime().runFinalization();
+		Runtime.getRuntime().gc();
+
+		int refCount = 0;
+		for (WeakReference<Activity> c : refs) {
+			if (c.get() != null) {
+				refCount++;
+			}
+		}
+		// If applications are leaking activity, every reference is reachable.
+		assertTrue(refCount != TEST_COUNT);
+	}
+
 
 	private void assertRainfall(double[] rainfall) {
 		addRainfall(rainfall);
@@ -274,6 +307,11 @@ public class RainGaugeActivityTest extends ActivityInstrumentationTestCase2<Rain
 		RainGaugeActivity activity = getActivity();
 		getInstrumentation().waitForIdleSync();
 		TextView rainfallText = (TextView) activity.findViewById(R.id.rainfall);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 		assertEquals(String.format("%.2f in", total), rainfallText.getText().toString());
 	}
 
