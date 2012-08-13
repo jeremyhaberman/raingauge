@@ -42,7 +42,7 @@ public class ObservationsProcessor implements ResourceProcessor {
 
 		@SuppressWarnings("unchecked")
 		RestMethod<Observations> method = (RestMethod<Observations>) mRestMethodFactory
-				.getRestMethod(ObservationsTable.CONTENT_URI, Method.GET, params);
+				.getRestMethod(RestMethodFactory.RESOURCE_TYPE_OBSERVATIONS, Method.GET, params);
 
 		RestMethodResult<Observations> result = method.execute();
 

@@ -1,11 +1,10 @@
 package com.jeremyhaberman.raingauge.rest.method;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
-import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract;
 import com.jeremyhaberman.raingauge.rest.Method;
+import com.jeremyhaberman.raingauge.rest.resource.Forecast;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
 
 public class DefaultRestMethodFactoryTest extends AndroidTestCase {
@@ -30,13 +29,29 @@ public class DefaultRestMethodFactoryTest extends AndroidTestCase {
 
 		RestMethodFactory factory = DefaultRestMethodFactory.getInstance(getContext());
 
-		Uri uri = RainGaugeProviderContract.ObservationsTable.CONTENT_URI;
-
 		Bundle params = new Bundle();
 		params.putString(Observations.ZIP_CODE, "55401");
 
 		RestMethod<Observations> method =
-				(RestMethod<Observations>) factory.getRestMethod(uri, Method.GET, params);
+				(RestMethod<Observations>) factory
+						.getRestMethod(RestMethodFactory.RESOURCE_TYPE_OBSERVATIONS, Method.GET,
+								params);
+
+		assertNotNull(method);
+	}
+
+	@SmallTest
+	public void testGetRestMethodForForecast() {
+
+		RestMethodFactory factory = DefaultRestMethodFactory.getInstance(getContext());
+
+		Bundle params = new Bundle();
+		params.putString(Forecast.ZIP_CODE, "55401");
+
+		RestMethod<Forecast> method =
+				(RestMethod<Forecast>) factory
+						.getRestMethod(RestMethodFactory.RESOURCE_TYPE_FORECAST, Method.GET,
+								params);
 
 		assertNotNull(method);
 	}
@@ -46,14 +61,33 @@ public class DefaultRestMethodFactoryTest extends AndroidTestCase {
 
 		RestMethodFactory factory = DefaultRestMethodFactory.getInstance(getContext());
 
-		Uri uri = RainGaugeProviderContract.ObservationsTable.CONTENT_URI;
-
 		Bundle params = new Bundle();
 		params.putString(Observations.ZIP_CODE, "55401");
 
 		try {
 			RestMethod<Observations> method =
-					(RestMethod<Observations>) factory.getRestMethod(uri, Method.POST, params);
+					(RestMethod<Observations>) factory
+							.getRestMethod(RestMethodFactory.RESOURCE_TYPE_OBSERVATIONS,
+									Method.POST, params);
+			fail("Should have thrown IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			assertNotNull(e);
+		}
+	}
+
+	@SmallTest
+	public void testGetRestMethodForForecastWithInvalidMethod() {
+
+		RestMethodFactory factory = DefaultRestMethodFactory.getInstance(getContext());
+
+		Bundle params = new Bundle();
+		params.putString(Forecast.ZIP_CODE, "55401");
+
+		try {
+			RestMethod<Forecast> method =
+					(RestMethod<Forecast>) factory
+							.getRestMethod(RestMethodFactory.RESOURCE_TYPE_FORECAST,
+									Method.POST, params);
 			fail("Should have thrown IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			assertNotNull(e);
@@ -65,13 +99,32 @@ public class DefaultRestMethodFactoryTest extends AndroidTestCase {
 
 		RestMethodFactory factory = DefaultRestMethodFactory.getInstance(getContext());
 
-		Uri uri = RainGaugeProviderContract.ObservationsTable.CONTENT_URI;
-
 		Bundle params = new Bundle();
 
 		try {
 			RestMethod<Observations> method =
-					(RestMethod<Observations>) factory.getRestMethod(uri, Method.GET, params);
+					(RestMethod<Observations>) factory
+							.getRestMethod(RestMethodFactory.RESOURCE_TYPE_OBSERVATIONS, Method.GET,
+									params);
+			fail("Should have thrown IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			assertNotNull(e);
+		}
+	}
+
+	@SmallTest
+	public void testGetRestMethodForForecastWithoutZip() {
+
+		RestMethodFactory factory = DefaultRestMethodFactory.getInstance(getContext());
+
+		Bundle params = new Bundle();
+
+		try {
+			RestMethod<Forecast> method =
+					(RestMethod<Forecast>) factory
+							.getRestMethod(RestMethodFactory.RESOURCE_TYPE_FORECAST,
+									Method.GET,
+									params);
 			fail("Should have thrown IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			assertNotNull(e);
@@ -83,14 +136,12 @@ public class DefaultRestMethodFactoryTest extends AndroidTestCase {
 
 		RestMethodFactory factory = DefaultRestMethodFactory.getInstance(getContext());
 
-		Uri uri = Uri.parse("invalid");
-
 		Bundle params = new Bundle();
 		params.putString(Observations.ZIP_CODE, "55401");
 
 		try {
 			RestMethod<Observations> method =
-					(RestMethod<Observations>) factory.getRestMethod(uri, Method.GET, params);
+					(RestMethod<Observations>) factory.getRestMethod(4, Method.GET, params);
 			fail("Should have thrown IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			assertNotNull(e);

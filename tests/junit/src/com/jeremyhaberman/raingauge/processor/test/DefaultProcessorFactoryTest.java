@@ -4,6 +4,7 @@ import android.test.AndroidTestCase;
 import com.jeremyhaberman.raingauge.Service;
 import com.jeremyhaberman.raingauge.ServiceManager;
 import com.jeremyhaberman.raingauge.processor.DefaultProcessorFactory;
+import com.jeremyhaberman.raingauge.processor.ForecastProcessor;
 import com.jeremyhaberman.raingauge.processor.ObservationsProcessor;
 import com.jeremyhaberman.raingauge.processor.ProcessorFactory;
 import com.jeremyhaberman.raingauge.processor.ResourceProcessor;
@@ -11,7 +12,7 @@ import com.jeremyhaberman.raingauge.rest.method.DefaultRestMethodFactory;
 import com.jeremyhaberman.raingauge.service.WeatherService;
 import com.jeremyhaberman.raingauge.util.TestUtil;
 
-public class ObservationsProcessorFactoryTest extends AndroidTestCase {
+public class DefaultProcessorFactoryTest extends AndroidTestCase {
 
 	private ProcessorFactory mFactory;
 
@@ -32,6 +33,9 @@ public class ObservationsProcessorFactoryTest extends AndroidTestCase {
 		ResourceProcessor processor =
 				mFactory.getProcessor(WeatherService.RESOURCE_TYPE_OBSERVATIONS);
 		assertTrue(processor instanceof ObservationsProcessor);
+
+		processor = mFactory.getProcessor(WeatherService.RESOURCE_TYPE_FORECAST);
+		assertTrue(processor instanceof ForecastProcessor);
 	}
 
 	public void testGetProcessorWithInvalidType() {

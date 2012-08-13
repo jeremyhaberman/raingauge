@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import com.jeremyhaberman.raingauge.rest.resource.Forecast;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
 import com.jeremyhaberman.raingauge.util.Logger;
 
@@ -75,6 +76,36 @@ public final class WeatherServiceHelper {
 
 		Bundle requestParams = new Bundle();
 		requestParams.putInt(Observations.ZIP_CODE, zip);
+		intent.putExtra(WeatherService.EXTRA_REQUEST_PARAMETERS, requestParams);
+
+		if (Logger.isEnabled(Logger.DEBUG)) {
+			Logger.debug(TAG, "Starting service with intent:", intent);
+		}
+
+		mContext.startService(intent);
+
+		return requestId;
+	}
+
+	public long getTodaysForecast(int zip) {
+		if (Logger.isEnabled(Logger.DEBUG)) {
+			Logger.debug(TAG, String.format("getTodaysForecast(%d)", zip));
+		}
+
+		long requestId = generateRequestID();
+
+		synchronized (mPendingRequestsLock) {
+			mPendingRequests.add(requestId);
+		}
+
+		Intent intent = new Intent(mContext, mWeatherServiceClass);
+		intent.putExtra(METHOD_EXTRA, METHOD_GET);
+		intent.putExtra(RESOURCE_TYPE_EXTRA, WeatherService.RESOURCE_TYPE_FORECAST);
+		intent.putExtra(SERVICE_CALLBACK_EXTRA, mServiceCallback);
+		intent.putExtra(EXTRA_REQUEST_ID, requestId);
+
+		Bundle requestParams = new Bundle();
+		requestParams.putInt(Forecast.ZIP_CODE, zip);
 		intent.putExtra(WeatherService.EXTRA_REQUEST_PARAMETERS, requestParams);
 
 		if (Logger.isEnabled(Logger.DEBUG)) {

@@ -22,26 +22,31 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 
 	public static final String TAG = WeatherUpdateScheduler.class.getSimpleName();
 
-	public static final String ACTION_SCHEDULE_WEATHER_UPDATES =
-			"com.jeremyhaberman.raingauge.ACTION_SCHEDULE_WEATHER_UPDATES";
+	public static final String ACTION_SCHEDULE_RAINFALL_UPDATES =
+			"com.jeremyhaberman.raingauge.ACTION_SCHEDULE_RAINFALL_UPDATES";
+
+	public static final String ACTION_SCHEDULE_FORECAST_UPDATES =
+			"com.jeremyhaberman.raingauge.ACTION_SCHEDULE_FORECAST_UPDATES";
+
 	private static final String ACTION_BOOT_COMPLETED = "android.intent.action.BOOT_COMPLETED";
 
 	public static final String EXTRA_ZIP_CODE =
 			"com.jeremyhaberman.raingauge.WeatherUpdateScheduler.EXTRA_ZIP_CODE";
+
 	public static final String EXTRA_NEXT_RAINFALL_UPDATE_TIME =
 			"com.jeremyhaberman.raingauge.EXTRA_NEXT_RAINFALL_UPDATE_TIME";
-	private static final String EXTRA_NEXT_RAIN_FORECAST_UPDATE_TIME =
-			"com.jeremyhaberman.raingauge.EXTRA_NEXT_RAIN_FORECAST_UPDATE_TIME";
+
+	public static final String EXTRA_NEXT_FORECAST_UPDATE_TIME =
+			"com.jeremyhaberman.raingauge.EXTRA_NEXT_FORECAST_UPDATE_TIME";
 
 	private static final long DAILY_INTERVAL = 86400000;
+	private static final long FOUR_HOUR_INTERVAL = 14400000;
 
-	private boolean mRainfallUpdateScheduled = false;
+	private boolean mRainfallUpdatesScheduled = false;
+	private boolean mForecastUpdatesScheduled = false;
 
-	private Calendar mNextRainfulUpdateTime;
-	private Calendar mNextRainForecastTime;
-
+	private Calendar mNextRainfallUpdateTime;
 	private Calendar mNextForecastUpdateTime;
-
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -52,20 +57,29 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 				Logger.debug(TAG, "onReceive()", intent);
 			}
 
-			if (intent.getAction().equalsIgnoreCase(ACTION_SCHEDULE_WEATHER_UPDATES) ||
-					intent.getAction().equalsIgnoreCase(ACTION_BOOT_COMPLETED)) {
+			boolean scheduleRainfallUpdate = false;
+			boolean scheduleForecastUpdate = false;
 
-				if (!mRainfallUpdateScheduled) {
-					scheduleRainfallUpdates(context, intent);
-				} else {
-					if (Logger.isEnabled(Logger.DEBUG)) {
-						Logger.debug(TAG, "Rainfall update already scheduled");
-					}
-				}
+			if (intent.getAction().equalsIgnoreCase(ACTION_BOOT_COMPLETED)) {
+				scheduleRainfallUpdate = true;
+				scheduleForecastUpdate = true;
+			} else if (intent.getAction().equalsIgnoreCase(ACTION_SCHEDULE_RAINFALL_UPDATES)) {
+				scheduleRainfallUpdate = true;
+			} else if (intent.getAction().equalsIgnoreCase(ACTION_SCHEDULE_FORECAST_UPDATES)) {
+				scheduleForecastUpdate = true;
 			} else {
 				if (Logger.isEnabled(Logger.WARN)) {
 					Logger.warn(TAG, "Unknown action: " + intent.getAction());
 				}
+				return;
+			}
+
+			if (scheduleRainfallUpdate && !mRainfallUpdatesScheduled) {
+				scheduleRainfallUpdates(context, intent);
+			}
+
+			if (scheduleForecastUpdate && !mForecastUpdatesScheduled) {
+				scheduleForecastUpdates(context, intent);
 			}
 		}
 	}
@@ -80,11 +94,20 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 		long nextRainfallUpdateTime = intent.getLongExtra(EXTRA_NEXT_RAINFALL_UPDATE_TIME,
 				getNextRainfallUpdateTime(23, 55).getTimeInMillis());
 
-		mRainfallUpdateScheduled = scheduleRainfallUpdates(context, zip, nextRainfallUpdateTime);
+		mRainfallUpdatesScheduled = scheduleRainfallUpdates(context, zip, nextRainfallUpdateTime);
 	}
 
-	public boolean isRainfallUpdateScheduled() {
-		return mRainfallUpdateScheduled;
+	private void scheduleForecastUpdates(Context context, Intent intent) {
+
+		if (Logger.isEnabled(Logger.DEBUG)) {
+			Logger.debug(TAG, "Scheduling forecast updates");
+		}
+
+		int zip = getZip(context, intent);
+		long nextForecastUpdateTime = intent.getLongExtra(EXTRA_NEXT_FORECAST_UPDATE_TIME,
+				getNextForecastUpdateTime(0, 0).getTimeInMillis());
+
+		mRainfallUpdatesScheduled = scheduleForecastUpdates(context, zip, nextForecastUpdateTime);
 	}
 
 	private boolean scheduleRainfallUpdates(Context context, int zip, long timeInMillis) {
@@ -115,6 +138,39 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 			cal.setTimeInMillis(timeInMillis);
 			Logger.debug(TAG,
 					"Next rainfall update scheduled to run at " + cal.getTime().toString());
+		}
+
+		return true;
+	}
+
+	private boolean scheduleForecastUpdates(Context context, int zip, long timeInMillis) {
+
+		if (zip == 0) {
+			if (Logger.isEnabled(Logger.WARN)) {
+				Logger.warn(TAG, String.format("zip is 0; forecast update not scheduled"));
+			}
+			return false;
+		}
+
+		Intent updateForecastIntent = new Intent(WeatherUpdater.ACTION_UPDATE_FORECAST);
+		updateForecastIntent.putExtra(WeatherService.ZIP_CODE, zip);
+
+		Logger.debug(TAG, "updateForecastIntent", updateForecastIntent);
+
+		PendingIntent updateForecastPendingIntent = PendingIntent.getBroadcast(context, 0,
+				updateForecastIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+		AndroidAlarmManager alarmManager =
+				(AndroidAlarmManager) ServiceManager.getService(context, Service.ALARM_SERVICE);
+
+		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, timeInMillis, FOUR_HOUR_INTERVAL,
+				updateForecastPendingIntent);
+
+		if (Logger.isEnabled(Logger.DEBUG)) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(timeInMillis);
+			Logger.debug(TAG,
+					"Next forecast update scheduled to run at " + cal.getTime().toString());
 		}
 
 		return true;
@@ -153,11 +209,11 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 
 	private Calendar getNextRainfallUpdateTime(int hour, int minute) {
 
-		if (mNextRainfulUpdateTime == null) {
-			mNextRainfulUpdateTime = getDefaultNextTime(hour, minute);
+		if (mNextRainfallUpdateTime == null) {
+			mNextRainfallUpdateTime = getDefaultNextTime(hour, minute);
 		}
 
-		return mNextRainfulUpdateTime;
+		return mNextRainfallUpdateTime;
 	}
 
 	private Calendar getNextForecastUpdateTime(int hour, int minute) {
@@ -176,9 +232,6 @@ public class WeatherUpdateScheduler extends BroadcastReceiver {
 		date.set(Calendar.MINUTE, minute);
 		date.set(Calendar.SECOND, 0);
 		date.set(Calendar.MILLISECOND, 0);
-
-		// next day
-		// date.add(Calendar.DAY_OF_MONTH, 1);
 
 		return date;
 	}

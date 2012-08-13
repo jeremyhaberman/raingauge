@@ -6,6 +6,11 @@ import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract;
 
 public class Forecast implements Resource {
 
+	public static final String ZIP_CODE = "com.jeremyhaberman.raingauge.ZIP_CODE";
+
+	public static final String KEY_DAY_FORECAST = "dayForecast";
+	public static final String KEY_NIGHT_FORECAST = "nightForecast";
+
 	private long mTimestamp;
 	private String mDayForecast;
 	private String mNightForecast;

@@ -40,7 +40,7 @@ public class WeatherUpdateSchedulerTest extends InstrumentationTestCase {
 	}
 
 	@MediumTest
-	public void testOnReceive() {
+	public void testOnReceiveActionScheduleRainfallUpdates() {
 
 		MockAlarmManager alarmManager = new MockAlarmManager(getInstrumentation().getContext());
 		ServiceManager.loadService(getInstrumentation().getContext(), Service.ALARM_SERVICE,
@@ -48,34 +48,39 @@ public class WeatherUpdateSchedulerTest extends InstrumentationTestCase {
 
 		Context mockContext = new MyMockContext(getInstrumentation().getTargetContext());
 
-		Intent intent = new Intent(WeatherUpdateScheduler.ACTION_SCHEDULE_WEATHER_UPDATES);
+		Intent intent = new Intent(WeatherUpdateScheduler.ACTION_SCHEDULE_RAINFALL_UPDATES);
 
 		WeatherUpdateScheduler weatherUpdateScheduler = new WeatherUpdateScheduler();
 		weatherUpdateScheduler.onReceive(mockContext, intent);
 
 		MockAlarmManager.Alarm alarm = alarmManager.getLastAlarm();
 		assertEquals(0, alarm.type);
-		assertEquals(getExpectedTriggerAt(), alarm.triggerAtMillis);
-		assertEquals(getExpectedInterval(), alarm.intervalMillis);
-	}
-
-	private long getExpectedInterval() {
-		return 1000 * 60 * 60 * 24;
-	}
-
-	private long getExpectedTriggerAt() {
-		Calendar date = new GregorianCalendar();
-
-		date.set(Calendar.HOUR_OF_DAY, 23);
-		date.set(Calendar.MINUTE, 55);
-		date.set(Calendar.SECOND, 0);
-		date.set(Calendar.MILLISECOND, 0);
-
-		return date.getTimeInMillis();
+		assertEquals(getExpectedRainfallUpdateTriggerAt(), alarm.triggerAtMillis);
+		assertEquals(getExpectedRainfallUpdateInterval(), alarm.intervalMillis);
 	}
 
 	@MediumTest
-	public void testOnReceiveIntent() throws InterruptedException {
+	public void testOnReceiveActionScheduleForecastUpdates() {
+
+		MockAlarmManager alarmManager = new MockAlarmManager(getInstrumentation().getContext());
+		ServiceManager.loadService(getInstrumentation().getContext(), Service.ALARM_SERVICE,
+				alarmManager);
+
+		Context mockContext = new MyMockContext(getInstrumentation().getTargetContext());
+
+		Intent intent = new Intent(WeatherUpdateScheduler.ACTION_SCHEDULE_FORECAST_UPDATES);
+
+		WeatherUpdateScheduler weatherUpdateScheduler = new WeatherUpdateScheduler();
+		weatherUpdateScheduler.onReceive(mockContext, intent);
+
+		MockAlarmManager.Alarm alarm = alarmManager.getLastAlarm();
+		assertEquals(0, alarm.type);
+		assertEquals(getExpectedForecastUpdateTriggerAt(), alarm.triggerAtMillis);
+		assertEquals(getExpectedForecastUpdateInterval(), alarm.intervalMillis);
+	}
+
+	@MediumTest
+	public void testOnReceiveUpdateRainfallIntent() throws InterruptedException {
 
 		Context context = getInstrumentation().getTargetContext();
 
@@ -88,7 +93,7 @@ public class WeatherUpdateSchedulerTest extends InstrumentationTestCase {
 
 		int expectedZip = 55417;
 
-		Intent intent = new Intent(WeatherUpdateScheduler.ACTION_SCHEDULE_WEATHER_UPDATES);
+		Intent intent = new Intent(WeatherUpdateScheduler.ACTION_SCHEDULE_RAINFALL_UPDATES);
 		intent.putExtra(WeatherUpdateScheduler.EXTRA_ZIP_CODE, expectedZip);
 		intent.putExtra(WeatherUpdateScheduler.EXTRA_NEXT_RAINFALL_UPDATE_TIME,
 				System.currentTimeMillis() + 2000);
@@ -102,6 +107,66 @@ public class WeatherUpdateSchedulerTest extends InstrumentationTestCase {
 		assertNotNull(updateRainfallIntent);
 		assertEquals(WeatherUpdater.ACTION_UPDATE_RAINFALL, updateRainfallIntent.getAction());
 		assertEquals(expectedZip, updateRainfallIntent.getIntExtra(WeatherService.ZIP_CODE, 0));
+	}
+
+	@MediumTest
+	public void testOnReceiveUpdateForecastIntent() throws InterruptedException {
+
+		Context context = getInstrumentation().getTargetContext();
+
+		MockBroadcastReceiver mockBroadcastReceiver = new MockBroadcastReceiver();
+		IntentFilter filter = new IntentFilter(WeatherUpdater.ACTION_UPDATE_FORECAST);
+		context.registerReceiver(mockBroadcastReceiver, filter);
+
+		ServiceManager.loadService(context, Service.ALARM_SERVICE,
+				new DefaultAndroidAlarmManager(context));
+
+		int expectedZip = 55417;
+
+		Intent intent = new Intent(WeatherUpdateScheduler.ACTION_SCHEDULE_FORECAST_UPDATES);
+		intent.putExtra(WeatherUpdateScheduler.EXTRA_ZIP_CODE, expectedZip);
+		intent.putExtra(WeatherUpdateScheduler.EXTRA_NEXT_FORECAST_UPDATE_TIME,
+				System.currentTimeMillis() + 2000);
+
+		WeatherUpdateScheduler weatherUpdateScheduler = new WeatherUpdateScheduler();
+		weatherUpdateScheduler.onReceive(context, intent);
+
+		Thread.sleep(5000);
+
+		Intent updateForecastIntent = mockBroadcastReceiver.getLastIntent();
+		assertNotNull(updateForecastIntent);
+		assertEquals(WeatherUpdater.ACTION_UPDATE_FORECAST, updateForecastIntent.getAction());
+		assertEquals(expectedZip, updateForecastIntent.getIntExtra(WeatherService.ZIP_CODE, 0));
+	}
+
+	private long getExpectedRainfallUpdateInterval() {
+		return 1000 * 60 * 60 * 24;
+	}
+
+	private long getExpectedForecastUpdateInterval() {
+		return 1000 * 60 * 60 * 4;
+	}
+
+	private long getExpectedRainfallUpdateTriggerAt() {
+		Calendar date = new GregorianCalendar();
+
+		date.set(Calendar.HOUR_OF_DAY, 23);
+		date.set(Calendar.MINUTE, 55);
+		date.set(Calendar.SECOND, 0);
+		date.set(Calendar.MILLISECOND, 0);
+
+		return date.getTimeInMillis();
+	}
+
+	private long getExpectedForecastUpdateTriggerAt() {
+		Calendar date = new GregorianCalendar();
+
+		date.set(Calendar.HOUR_OF_DAY, 0);
+		date.set(Calendar.MINUTE, 0);
+		date.set(Calendar.SECOND, 0);
+		date.set(Calendar.MILLISECOND, 0);
+
+		return date.getTimeInMillis();
 	}
 
 	public class MyMockContext extends MockContext {

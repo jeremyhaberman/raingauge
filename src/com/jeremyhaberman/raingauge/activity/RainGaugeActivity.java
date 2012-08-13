@@ -161,7 +161,8 @@ public class RainGaugeActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == SetupActivity.CONFIGURE_ZIP && resultCode == Activity.RESULT_OK) {
-			sendBroadcast(new Intent(WeatherUpdateScheduler.ACTION_SCHEDULE_WEATHER_UPDATES));
+			sendBroadcast(new Intent(WeatherUpdateScheduler.ACTION_SCHEDULE_RAINFALL_UPDATES));
+			sendBroadcast(new Intent(WeatherUpdateScheduler.ACTION_SCHEDULE_FORECAST_UPDATES));
 		}
 	}
 

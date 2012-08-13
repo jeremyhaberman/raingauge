@@ -39,7 +39,9 @@
             android:enabled="true">
             <intent-filter>
                 <action
-                    android:name="com.jeremyhaberman.raingauge.ACTION_SCHEDULE_WEATHER_UPDATES"/>
+                    android:name="com.jeremyhaberman.raingauge.ACTION_SCHEDULE_RAINFALL_UPDATES"/>
+                <action
+                    android:name="com.jeremyhaberman.raingauge.ACTION_SCHEDULE_FORECAST_UPDATES"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>

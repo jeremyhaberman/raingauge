@@ -14,8 +14,10 @@ public interface WeatherService {
 	public static final String EXTRA_STATUS_CODE = "status_code";
 
 	public static final int RESOURCE_TYPE_OBSERVATIONS = 1;
+	public static final int RESOURCE_TYPE_FORECAST = 2;
 
 	public static final String METHOD_GET = Method.GET.toString();
 	
 	public static final String ZIP_CODE = "zipCode";
+
 }

@@ -1,6 +1,5 @@
 package com.jeremyhaberman.raingauge.test.mock;
 
-import android.net.Uri;
 import android.os.Bundle;
 import com.jeremyhaberman.raingauge.rest.Method;
 import com.jeremyhaberman.raingauge.rest.method.RestMethod;
@@ -12,7 +11,7 @@ public class MockRestMethodFactory implements RestMethodFactory {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public RestMethod<? extends Resource> getRestMethod(Uri resourceUri, Method method,
+	public RestMethod<? extends Resource> getRestMethod(int resourceType, Method method,
 														Bundle params) {
 
 		return new MockRestMethod(200,
