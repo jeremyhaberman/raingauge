@@ -23,6 +23,7 @@ import com.jeremyhaberman.raingauge.adapter.WateringAdapter;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.ObservationsTable;
 import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract.WateringsTable;
+import com.jeremyhaberman.raingauge.rest.resource.Forecast;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
 
 import java.util.Calendar;
@@ -37,7 +38,8 @@ public class RainGaugeActivity extends Activity {
 	private TextView mBalanceText;
 	private EditText mManualWateringAmountEditText;
 	private double mBalance;
-	private TextView mForecastText;
+	private TextView mDayForecast;
+	private TextView mNightForecast;
 
 	private RainfallAdapter mRainfallAdapter;
 	private WateringAdapter mWateringAdapter;
@@ -66,7 +68,8 @@ public class RainGaugeActivity extends Activity {
 		mRainfallText = (TextView) findViewById(R.id.rainfall);
 		mWateringText = (TextView) findViewById(R.id.watering);
 		mBalanceText = (TextView) findViewById(R.id.balance);
-		mForecastText = (TextView) findViewById(R.id.forecast);
+		mDayForecast = (TextView) findViewById(R.id.day_forecast);
+		mNightForecast = (TextView) findViewById(R.id.night_forecast);
 
 		mManualWateringAmountEditText = (EditText) findViewById(R.id.watering_amount);
 		Button addManualWatering = (Button) findViewById(R.id.add_manual_watering);
@@ -95,9 +98,10 @@ public class RainGaugeActivity extends Activity {
 		cal.set(Calendar.MINUTE, 0);
 
 		String[] projection = new String[] { RainGaugeProviderContract.ObservationsTable.RAINFALL };
-		Cursor rainfallCursor = getContentResolver().query(RainGaugeProviderContract.ObservationsTable.CONTENT_URI,
-				projection, RainGaugeProviderContract.ObservationsTable.TIMESTAMP + ">?",
-				new String[] { Long.toString(cal.getTimeInMillis()) }, null);
+		Cursor rainfallCursor =
+				getContentResolver().query(RainGaugeProviderContract.ObservationsTable.CONTENT_URI,
+						projection, RainGaugeProviderContract.ObservationsTable.TIMESTAMP + ">?",
+						new String[] { Long.toString(cal.getTimeInMillis()) }, null);
 		startManagingCursor(rainfallCursor);
 		mRainfallAdapter = new RainfallAdapter(mRainfallText, rainfallCursor);
 
@@ -168,8 +172,10 @@ public class RainGaugeActivity extends Activity {
 
 	private void showForecast() {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		String forecast = prefs.getString(Observations.TODAYS_FORECAST, "unknown");
-		mForecastText.setText(forecast);
+		String dayForecast = prefs.getString(Forecast.KEY_DAY_FORECAST, "unknown");
+		String nightForecast = prefs.getString(Forecast.KEY_NIGHT_FORECAST, "unknown");
+		mDayForecast.setText(dayForecast);
+		mNightForecast.setText(nightForecast);
 	}
 
 	private boolean hasZip() {

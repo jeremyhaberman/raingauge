@@ -75,20 +75,20 @@ public class RainGaugeActivityTest extends ActivityInstrumentationTestCase2<Rain
 		TextView balanceText = (TextView) activity.findViewById(R.id.balance);
 		EditText manualWateringAmountEditText =
 				(EditText) activity.findViewById(R.id.watering_amount);
-		TextView forecastText = (TextView) activity.findViewById(R.id.forecast);
+		TextView dayForecast = (TextView) activity.findViewById(R.id.day_forecast);
 
 		assertNotNull(activity);
 		assertNotNull(rainfallText);
 		assertNotNull(wateringText);
 		assertNotNull(balanceText);
 		assertNotNull(manualWateringAmountEditText);
-		assertNotNull(forecastText);
+		assertNotNull(dayForecast);
 
 		ViewAsserts.assertOnScreen(root, rainfallText);
 		ViewAsserts.assertOnScreen(root, wateringText);
 		ViewAsserts.assertOnScreen(root, balanceText);
 		ViewAsserts.assertOnScreen(root, manualWateringAmountEditText);
-		ViewAsserts.assertOnScreen(root, forecastText);
+		ViewAsserts.assertOnScreen(root, dayForecast);
 	}
 
 	public void testZeroDaysOfRainfall() {

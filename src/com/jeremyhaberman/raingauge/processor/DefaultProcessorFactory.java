@@ -10,12 +10,15 @@ public class DefaultProcessorFactory implements ProcessorFactory {
 
 	@Override
 	public ResourceProcessor getProcessor(int resourceType) {
-		
+
 		switch (resourceType) {
-		case WeatherService.RESOURCE_TYPE_OBSERVATIONS:
-			return ObservationsProcessor.createProcessor(mContext);
-		default:
-			throw new IllegalArgumentException("No processor for resource type: " + resourceType);
+			case WeatherService.RESOURCE_TYPE_OBSERVATIONS:
+				return ObservationsProcessor.createProcessor(mContext);
+			case WeatherService.RESOURCE_TYPE_FORECAST:
+				return ForecastProcessor.createProcessor(mContext);
+			default:
+				throw new IllegalArgumentException(
+						"No processor for resource type: " + resourceType);
 		}
 
 	}
@@ -29,6 +32,5 @@ public class DefaultProcessorFactory implements ProcessorFactory {
 
 	private DefaultProcessorFactory(Context context) {
 		mContext = context;
-	};
-
+	}
 }
