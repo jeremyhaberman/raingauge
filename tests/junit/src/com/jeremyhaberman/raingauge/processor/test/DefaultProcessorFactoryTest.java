@@ -40,7 +40,7 @@ public class DefaultProcessorFactoryTest extends AndroidTestCase {
 
 	public void testGetProcessorWithInvalidType() {
 		try {
-			mFactory.getProcessor(2);
+			mFactory.getProcessor(3);
 			fail("Should have thrown IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			assertTrue(true);
