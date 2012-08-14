@@ -5,11 +5,24 @@ import android.content.Intent;
 import android.test.InstrumentationTestCase;
 import com.jeremyhaberman.raingauge.activity.RainGaugeActivity;
 import com.jeremyhaberman.raingauge.activity.SetupActivity;
+import com.jeremyhaberman.raingauge.util.TestUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class ActivityLeakTest extends InstrumentationTestCase {
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		TestUtil.setZip(getInstrumentation().getTargetContext(), 55417);
+	}
+
+	@Override
+	protected void tearDown() throws Exception {
+		TestUtil.clearZip(getInstrumentation().getTargetContext());
+		super.tearDown();
+	}
 
 	public void testActivityLeak() throws Exception {
 		assertNoLeak(RainGaugeActivity.class);

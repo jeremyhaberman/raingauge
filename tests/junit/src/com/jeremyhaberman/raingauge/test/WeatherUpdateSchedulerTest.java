@@ -17,6 +17,7 @@ import com.jeremyhaberman.raingauge.android.DefaultAndroidAlarmManager;
 import com.jeremyhaberman.raingauge.service.WeatherService;
 import com.jeremyhaberman.raingauge.test.mock.MockAlarmManager;
 import com.jeremyhaberman.raingauge.test.mock.MockBroadcastReceiver;
+import com.jeremyhaberman.raingauge.util.TestUtil;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -29,12 +30,14 @@ public class WeatherUpdateSchedulerTest extends InstrumentationTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 
+		TestUtil.setZip(getInstrumentation().getTargetContext(), 55417);
 		mTestContext = getInstrumentation().getContext();
 		ServiceManager.reset(getInstrumentation().getTargetContext());
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
+		TestUtil.clearZip(getInstrumentation().getTargetContext());
 		ServiceManager.reset(getInstrumentation().getTargetContext());
 		super.tearDown();
 	}

@@ -11,6 +11,7 @@ import com.jeremyhaberman.raingauge.R;
 import com.jeremyhaberman.raingauge.activity.RainGaugeActivity;
 import com.jeremyhaberman.raingauge.activity.SetupActivity;
 import com.jeremyhaberman.raingauge.rest.resource.Observations;
+import com.jeremyhaberman.raingauge.util.TestUtil;
 
 public class SetupTest extends InstrumentationTestCase {
 
@@ -18,21 +19,12 @@ public class SetupTest extends InstrumentationTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		clearZip();
+		TestUtil.clearZip(getInstrumentation().getTargetContext());
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-	}
-
-	private void clearZip() throws InterruptedException {
-		SharedPreferences.Editor editor =
-				PreferenceManager
-						.getDefaultSharedPreferences(getInstrumentation().getTargetContext())
-						.edit();
-		editor.clear().commit();
-		Thread.sleep(500);
 	}
 
 	public void testSetup() throws Throwable {

@@ -1,4 +1,4 @@
-package com.jeremyhaberman.notification;
+package com.jeremyhaberman.raingauge.notification;
 
 import android.content.Context;
 import android.test.InstrumentationTestCase;
