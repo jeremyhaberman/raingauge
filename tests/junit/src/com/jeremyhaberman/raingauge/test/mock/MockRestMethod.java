@@ -4,6 +4,7 @@ import com.jeremyhaberman.raingauge.rest.method.RestMethod;
 import com.jeremyhaberman.raingauge.rest.method.RestMethodResult;
 import com.jeremyhaberman.raingauge.rest.resource.Resource;
 
+@SuppressWarnings("rawtypes")
 public class MockRestMethod implements RestMethod {
 
 	private Resource mResource;

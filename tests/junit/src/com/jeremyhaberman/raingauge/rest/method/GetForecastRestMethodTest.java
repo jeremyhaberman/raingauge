@@ -1,22 +1,22 @@
 package com.jeremyhaberman.raingauge.rest.method;
 
+import java.net.URI;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import android.test.InstrumentationTestCase;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
+
 import com.jeremyhaberman.raingauge.R;
 import com.jeremyhaberman.raingauge.mock.MockRestClient;
-import com.jeremyhaberman.raingauge.rest.Request;
 import com.jeremyhaberman.raingauge.rest.resource.Forecast;
 import com.jeremyhaberman.raingauge.util.TestUtil;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.net.URI;
 
 public class GetForecastRestMethodTest extends InstrumentationTestCase {
 
-	private static final String TAG = GetObservationsRestMethod.class.getSimpleName();
 	private String mApiKey;
 	private static final int ZIP = 55408;
 	private GetForecastRestMethod mMethod;
@@ -81,7 +81,7 @@ public class GetForecastRestMethodTest extends InstrumentationTestCase {
 		int zip = 55408;
 		GetForecastRestMethod method =
 				GetForecastRestMethod.newInstance(getInstrumentation().getTargetContext(), zip);
-		Request request = method.buildRequest();
+		method.buildRequest();
 
 		URI expectedURI = URI.create(
 				"http://i.wxbug.net/REST/Direct/GetForecast.ashx?zip=" + zip + "&nf=1&c=US&l=en&api_key=" +

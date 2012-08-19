@@ -90,7 +90,7 @@ public class NanoHTTPD
 	{
 		myOut.println( method + " '" + uri + "' " );
 
-		Enumeration e = header.propertyNames();
+		Enumeration<?> e = header.propertyNames();
 		while ( e.hasMoreElements())
 		{
 			String value = (String)e.nextElement();
@@ -612,7 +612,7 @@ public class NanoHTTPD
 		{
 			int matchcount = 0;
 			int matchbyte = -1;
-			Vector matchbytes = new Vector();
+			Vector<Integer> matchbytes = new Vector<Integer>();
 			for (int i=0; i<b.length; i++)
 			{
 				if (b[i] == boundary[matchcount])
@@ -622,7 +622,7 @@ public class NanoHTTPD
 					matchcount++;
 					if (matchcount==boundary.length)
 					{
-						matchbytes.addElement(new Integer(matchbyte));
+						matchbytes.addElement(Integer.valueOf(matchbyte));
 						matchcount = 0;
 						matchbyte = -1;
 					}
@@ -773,7 +773,7 @@ public class NanoHTTPD
 
 				if ( header != null )
 				{
-					Enumeration e = header.keys();
+					Enumeration<?> e = header.keys();
 					while ( e.hasMoreElements())
 					{
 						String key = (String)e.nextElement();
@@ -816,6 +816,7 @@ public class NanoHTTPD
 	 * URL-encodes everything between "/"-characters.
 	 * Encodes spaces as '%20' instead of '+'.
 	 */
+	@SuppressWarnings("deprecation")
 	private String encodeUri( String uri )
 	{
 		String newUri = "";
@@ -1047,7 +1048,7 @@ public class NanoHTTPD
 	/**
 	 * Hashtable mapping (String)FILENAME_EXTENSION -> (String)MIME_TYPE
 	 */
-	private static Hashtable theMimeTypes = new Hashtable();
+	private static Hashtable<String, String> theMimeTypes = new Hashtable<String, String>();
 	static
 	{
 		StringTokenizer st = new StringTokenizer(

@@ -10,14 +10,16 @@ import com.jeremyhaberman.raingauge.activity.SetupActivity;
 
 public class SetupActivityTest extends ActivityInstrumentationTestCase2<SetupActivity> {
 
+	public SetupActivityTest(Class<SetupActivity> activityClass) {
+		super(activityClass);
+	}
+
 	private SetupActivity mActivity;
 	private EditText mZipCode;
 	private Button mGoButton;
 	private View mRootView;
 
-	public SetupActivityTest() {
-		super("com.jeremyhaberman.raingauge", SetupActivity.class);
-	}
+	
 
 	@Override
 	protected void setUp() throws Exception {

@@ -1,28 +1,22 @@
 package com.jeremyhaberman.raingauge.rest;
 
-import android.test.suitebuilder.annotation.SmallTest;
-import junit.framework.TestCase;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import junit.framework.TestCase;
+import android.test.suitebuilder.annotation.SmallTest;
 
 public class RequestTest extends TestCase {
 
 	private static final URI TEST_URI = URI.create("http://test.com");
 
 	private static final String HEADER_1_KEY = "key1";
-	private static final Map<String, List<String>> HEADER_1 =
-			buildHeader(HEADER_1_KEY, "value1a");
-	private static final String HEADER_2_KEY = "key2";
-	private static final Map<String, List<String>> HEADER_2 =
-			buildHeader(HEADER_2_KEY, "value2a", "value2b");
-	private static final byte[] TEST_BODY = "test body".getBytes();
+
 	private static final List<String> HEADER_1_VALUE = buildHeaderValue("value1");
 
 	@SmallTest
@@ -54,12 +48,6 @@ public class RequestTest extends TestCase {
 		assertTrue(headers.size() == 1);
 		List<String> header1ActualValue = headers.get(HEADER_1_KEY);
 		assertHeaderValuesMatch(HEADER_1_VALUE, header1ActualValue);
-	}
-
-	private static Map<String, List<String>> buildHeader(String key, String... values) {
-		Map<String, List<String>> header = new HashMap<String, List<String>>();
-		header.put(key, buildHeaderValue(values));
-		return header;
 	}
 
 	private static List<String> buildHeaderValue(String... values) {

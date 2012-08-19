@@ -1,3 +1,4 @@
+
 package com.jeremyhaberman.raingauge.activity;
 
 import android.app.Activity;
@@ -31,185 +32,195 @@ import java.util.GregorianCalendar;
 
 public class RainGaugeActivity extends Activity {
 
-	private static final String TAG = RainGaugeActivity.class.getSimpleName();
+    private static final String TAG = RainGaugeActivity.class.getSimpleName();
 
-	private TextView mRainfallText;
-	private TextView mWateringText;
-	private TextView mBalanceText;
-	private EditText mManualWateringAmountEditText;
-	private double mBalance;
-	private TextView mDayForecast;
-	private TextView mNightForecast;
+    private TextView mRainfallText;
+    private TextView mWateringText;
+    private TextView mBalanceText;
+    private EditText mManualWateringAmountEditText;
+    private double mBalance;
+    private TextView mDayForecast;
+    private TextView mNightForecast;
 
-	private RainfallAdapter mRainfallAdapter;
-	private WateringAdapter mWateringAdapter;
+    private RainfallAdapter mRainfallAdapter;
+    private WateringAdapter mWateringAdapter;
 
-	private TextWatcher mWaterTextWatcher = new TextWatcher() {
-		@Override
-		public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-		}
+    private TextWatcher mWaterTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
 
-		@Override
-		public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-		}
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
 
-		@Override
-		public void afterTextChanged(Editable editable) {
-			calculateBalance();
-			showBalance();
-		}
-	};
+        @Override
+        public void afterTextChanged(Editable editable) {
+            calculateBalance();
+            showBalance();
+        }
+    };
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
 
-		mRainfallText = (TextView) findViewById(R.id.rainfall);
-		mWateringText = (TextView) findViewById(R.id.watering);
-		mBalanceText = (TextView) findViewById(R.id.balance);
-		mDayForecast = (TextView) findViewById(R.id.day_forecast);
-		mNightForecast = (TextView) findViewById(R.id.night_forecast);
+        mRainfallText = (TextView) findViewById(R.id.rainfall);
+        mWateringText = (TextView) findViewById(R.id.watering);
+        mBalanceText = (TextView) findViewById(R.id.balance);
+        mDayForecast = (TextView) findViewById(R.id.day_forecast);
+        mNightForecast = (TextView) findViewById(R.id.night_forecast);
 
-		mManualWateringAmountEditText = (EditText) findViewById(R.id.watering_amount);
-		Button addManualWatering = (Button) findViewById(R.id.add_manual_watering);
-		addManualWatering.setOnClickListener(new OnClickListener() {
+        mManualWateringAmountEditText = (EditText) findViewById(R.id.watering_amount);
+        Button addManualWatering = (Button) findViewById(R.id.add_manual_watering);
+        addManualWatering.setOnClickListener(new OnClickListener() {
 
-			public void onClick(View v) {
-				runOnUiThread(new Runnable() {
+            public void onClick(View v) {
+                runOnUiThread(new Runnable() {
 
-					public void run() {
-						String enteredAmount = mManualWateringAmountEditText.getText().toString();
-						if (validWateringInput(enteredAmount)) {
-							water(Float.parseFloat(enteredAmount));
-							mManualWateringAmountEditText.setText("");
-							calculateBalance();
-							showBalance();
-						}
-					}
-				});
+                    public void run() {
+                        String enteredAmount = mManualWateringAmountEditText.getText().toString();
+                        if (validWateringInput(enteredAmount)) {
+                            water(Float.parseFloat(enteredAmount));
+                            mManualWateringAmountEditText.setText("");
+                            calculateBalance();
+                            showBalance();
+                        }
+                    }
+                });
 
-			}
-		});
+            }
+        });
 
-		Calendar cal = new GregorianCalendar();
-		cal.add(Calendar.DATE, -8);
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
+        Calendar cal = new GregorianCalendar();
+        cal.add(Calendar.DATE, -8);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
 
-		String[] projection = new String[] { RainGaugeProviderContract.ObservationsTable.RAINFALL };
-		Cursor rainfallCursor =
-				getContentResolver().query(RainGaugeProviderContract.ObservationsTable.CONTENT_URI,
-						projection, RainGaugeProviderContract.ObservationsTable.TIMESTAMP + ">?",
-						new String[] { Long.toString(cal.getTimeInMillis()) }, null);
-		startManagingCursor(rainfallCursor);
-		mRainfallAdapter = new RainfallAdapter(mRainfallText, rainfallCursor);
+        String[] projection = new String[] {
+            RainGaugeProviderContract.ObservationsTable.RAINFALL
+        };
+        Cursor rainfallCursor =
+                getContentResolver().query(RainGaugeProviderContract.ObservationsTable.CONTENT_URI,
+                        projection, RainGaugeProviderContract.ObservationsTable.TIMESTAMP + ">?",
+                        new String[] {
+                            Long.toString(cal.getTimeInMillis())
+                        }, null);
+        startManagingCursor(rainfallCursor);
+        mRainfallAdapter = new RainfallAdapter(mRainfallText, rainfallCursor);
 
-		Cursor wateringCursor = getContentResolver().query(
-				RainGaugeProviderContract.WateringsTable.CONTENT_URI,
-				new String[] { RainGaugeProviderContract.WateringsTable.AMOUNT },
-				RainGaugeProviderContract.WateringsTable.TIMESTAMP + ">?",
-				new String[] { Long.toString(cal.getTimeInMillis()) }, null);
-		startManagingCursor(wateringCursor);
-		mWateringAdapter = new WateringAdapter(mWateringText, wateringCursor);
-	}
+        Cursor wateringCursor = getContentResolver().query(
+                RainGaugeProviderContract.WateringsTable.CONTENT_URI,
+                new String[] {
+                    RainGaugeProviderContract.WateringsTable.AMOUNT
+                },
+                RainGaugeProviderContract.WateringsTable.TIMESTAMP + ">?",
+                new String[] {
+                    Long.toString(cal.getTimeInMillis())
+                }, null);
+        startManagingCursor(wateringCursor);
+        mWateringAdapter = new WateringAdapter(mWateringText, wateringCursor);
+    }
 
-	private boolean validWateringInput(String value) {
+    private boolean validWateringInput(String value) {
 
-		try {
-			Float.parseFloat(value);
-			return true;
-		} catch (NumberFormatException e) {
-			return false;
-		}
-	}
+        try {
+            Float.parseFloat(value);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-		if (!hasZip()) {
-			startActivityForResult(new Intent(this, SetupActivity.class),
-					SetupActivity.CONFIGURE_ZIP);
-		} else {
-			getContentResolver().registerContentObserver(ObservationsTable.CONTENT_URI, true,
-					mRainfallAdapter);
-			getContentResolver().registerContentObserver(WateringsTable.CONTENT_URI, true,
-					mWateringAdapter);
+        if (!hasZip()) {
+            startActivityForResult(new Intent(this, SetupActivity.class),
+                    SetupActivity.REQUEST_CODE_CONFIGURE_ZIP);
+        } else {
+            getContentResolver().registerContentObserver(ObservationsTable.CONTENT_URI, true,
+                    mRainfallAdapter);
+            getContentResolver().registerContentObserver(WateringsTable.CONTENT_URI, true,
+                    mWateringAdapter);
 
-			mRainfallText.addTextChangedListener(mWaterTextWatcher);
-			mWateringText.addTextChangedListener(mWaterTextWatcher);
+            mRainfallText.addTextChangedListener(mWaterTextWatcher);
+            mWateringText.addTextChangedListener(mWaterTextWatcher);
 
-			mBalance = calculateBalance();
-			showBalance();
-			showForecast();
-		}
-	}
+            mBalance = calculateBalance();
+            showBalance();
+            showForecast();
+        }
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		getContentResolver().unregisterContentObserver(mRainfallAdapter);
-		getContentResolver().unregisterContentObserver(mWateringAdapter);
-		mRainfallText.removeTextChangedListener(mWaterTextWatcher);
-		mWateringText.removeTextChangedListener(mWaterTextWatcher);
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getContentResolver().unregisterContentObserver(mRainfallAdapter);
+        getContentResolver().unregisterContentObserver(mWateringAdapter);
+        mRainfallText.removeTextChangedListener(mWaterTextWatcher);
+        mWateringText.removeTextChangedListener(mWaterTextWatcher);
+    }
 
-	@Override
-	protected void onDestroy() {
-		mRainfallAdapter.destroy();
-		mWateringAdapter.destroy();
-		super.onDestroy();
-	}
+    @Override
+    protected void onDestroy() {
+        mRainfallAdapter.destroy();
+        mWateringAdapter.destroy();
+        super.onDestroy();
+    }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == SetupActivity.CONFIGURE_ZIP && resultCode == Activity.RESULT_OK) {
-			sendBroadcast(new Intent(WeatherUpdateScheduler.ACTION_SCHEDULE_RAINFALL_UPDATES));
-			sendBroadcast(new Intent(WeatherUpdateScheduler.ACTION_SCHEDULE_FORECAST_UPDATES));
-		}
-	}
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SetupActivity.REQUEST_CODE_CONFIGURE_ZIP
+                && resultCode == Activity.RESULT_OK) {
+            sendBroadcast(new Intent(WeatherUpdateScheduler.ACTION_SCHEDULE_RAINFALL_UPDATES));
+            sendBroadcast(new Intent(WeatherUpdateScheduler.ACTION_SCHEDULE_FORECAST_UPDATES));
+        }
+    }
 
-	private void showForecast() {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		String dayForecast = prefs.getString(Forecast.KEY_DAY_FORECAST, "unknown");
-		String nightForecast = prefs.getString(Forecast.KEY_NIGHT_FORECAST, "unknown");
-		mDayForecast.setText(dayForecast);
-		mNightForecast.setText(nightForecast);
-	}
+    private void showForecast() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String dayForecast = prefs.getString(Forecast.KEY_DAY_FORECAST, "unknown");
+        String nightForecast = prefs.getString(Forecast.KEY_NIGHT_FORECAST, "unknown");
+        mDayForecast.setText(dayForecast);
+        mNightForecast.setText(nightForecast);
+    }
 
-	private boolean hasZip() {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		int zip = prefs.getInt(Observations.ZIP_CODE, 0);
-		return zip != 0;
-	}
+    private boolean hasZip() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        int zip = prefs.getInt(Observations.ZIP_CODE, 0);
+        return zip != 0;
+    }
 
-	private void showBalance() {
-		String balanceText = "";
-		if (mBalance > 0.0) {
-			balanceText += "+";
-		}
-		balanceText += formatRainfall(mBalance);
-		mBalanceText.setText(balanceText);
-	}
+    private void showBalance() {
+        String balanceText = "";
+        if (mBalance > 0.0) {
+            balanceText += "+";
+        }
+        balanceText += formatRainfall(mBalance);
+        mBalanceText.setText(balanceText);
+    }
 
-	private double calculateBalance() {
+    private double calculateBalance() {
 
-		mBalance = -1.0 + mRainfallAdapter.getRainfall() + mWateringAdapter.getWatering();
-		return mBalance;
-	}
+        mBalance = -1.0 + mRainfallAdapter.getRainfall() + mWateringAdapter.getWatering();
+        return mBalance;
+    }
 
-	private void water(float amount) {
+    private void water(float amount) {
 
-		ContentValues values = new ContentValues();
-		values.put(WateringsTable.TIMESTAMP, System.currentTimeMillis());
-		values.put(WateringsTable.AMOUNT, amount);
-		Uri uri = getContentResolver().insert(WateringsTable.CONTENT_ID_URI_BASE, values);
+        ContentValues values = new ContentValues();
+        values.put(WateringsTable.TIMESTAMP, System.currentTimeMillis());
+        values.put(WateringsTable.AMOUNT, amount);
+        Uri uri = getContentResolver().insert(WateringsTable.CONTENT_ID_URI_BASE, values);
 
-		Log.d(TAG, "inserted watering: " + uri.toString());
-	}
+        Log.d(TAG, "inserted watering: " + uri.toString());
+    }
 
-	private String formatRainfall(double inches) {
-		return String.format("%.2f", inches) + " in";
-	}
+    private String formatRainfall(double inches) {
+        return String.format("%.2f", inches) + " in";
+    }
 }

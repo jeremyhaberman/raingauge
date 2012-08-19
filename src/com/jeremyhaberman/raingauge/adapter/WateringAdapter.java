@@ -1,3 +1,4 @@
+
 package com.jeremyhaberman.raingauge.adapter;
 
 import android.database.ContentObserver;
@@ -7,60 +8,60 @@ import com.jeremyhaberman.raingauge.util.Logger;
 
 public class WateringAdapter extends ContentObserver {
 
-	private static final String TAG = WateringAdapter.class.getSimpleName();
-	private TextView mTextView;
-	private double mWatering;
-	private Cursor mCursor;
+    private static final String TAG = WateringAdapter.class.getSimpleName();
+    private TextView mTextView;
+    private double mWatering;
+    private Cursor mCursor;
 
-	public WateringAdapter(TextView textView, Cursor cursor) {
-		super(null);
+    public WateringAdapter(TextView textView, Cursor cursor) {
+        super(null);
 
-		mTextView = textView;
-		mCursor = cursor;
+        mTextView = textView;
+        mCursor = cursor;
 
-		setWatering();
-	}
+        setWatering();
+    }
 
-	private void setWatering() {
+    private void setWatering() {
 
-		mWatering = calculateWatering();
-		mTextView.setText(formatWatering(mWatering));
-		mTextView.invalidate();
-	}
+        mWatering = calculateWatering();
+        mTextView.setText(formatWatering(mWatering));
+        mTextView.invalidate();
+    }
 
-	private double calculateWatering() {
+    @SuppressWarnings("deprecation")
+    private double calculateWatering() {
 
-		mCursor.requery();
-		double recentWatering = 0.0;
-		while (mCursor.moveToNext()) {
-			recentWatering += mCursor.getDouble(0);
-		}
+        mCursor.requery();
+        double recentWatering = 0.0;
+        while (mCursor.moveToNext()) {
+            recentWatering += mCursor.getDouble(0);
+        }
 
-		return recentWatering;
-	}
+        return recentWatering;
+    }
 
-	private String formatWatering(double inches) {
-		return String.format("%.2f", inches) + " in";
-	}
+    private String formatWatering(double inches) {
+        return String.format("%.2f", inches) + " in";
+    }
 
-	@Override
-	public void onChange(boolean selfChange) {
-		Logger.debug(TAG, "onChange");
-		setWatering();
-	}
+    @Override
+    public void onChange(boolean selfChange) {
+        Logger.debug(TAG, "onChange");
+        setWatering();
+    }
 
-	@Override
-	public boolean deliverSelfNotifications() {
-		return true;
-	}
+    @Override
+    public boolean deliverSelfNotifications() {
+        return true;
+    }
 
-	public double getWatering() {
-		return mWatering;
-	}
+    public double getWatering() {
+        return mWatering;
+    }
 
-	public void destroy() {
-		mTextView = null;
-		mCursor = null;
-	}
+    public void destroy() {
+        mTextView = null;
+        mCursor = null;
+    }
 }
-

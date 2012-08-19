@@ -1,13 +1,11 @@
 package com.jeremyhaberman.raingauge.test.mock;
 
 import android.app.PendingIntent;
-import android.content.Context;
+
 import com.jeremyhaberman.raingauge.android.AndroidAlarmManager;
 
 public class MockAlarmManager implements AndroidAlarmManager {
 
-	private Context mContext;
-	private static final String TAG = MockAlarmManager.class.getSimpleName();
 	private Alarm mLastAlarm;
 
 	public class Alarm {
@@ -28,8 +26,7 @@ public class MockAlarmManager implements AndroidAlarmManager {
 		}
 	}
 
-	public MockAlarmManager(Context context) {
-		mContext = context;
+	public MockAlarmManager() {
 	}
 
 	@Override

@@ -13,8 +13,6 @@ public class GetForecastRestMethod extends AbstractRestMethod<Forecast> {
 
 	private static final String TAG = GetForecastRestMethod.class.getSimpleName();
 
-	private Context mContext;
-
 	private static final String BASE_URI = "http://i.wxbug.net/REST/Direct/GetForecast.ashx";
 
 	private static final String JSON_KEY_FORECAST_LIST = "forecastList";
@@ -35,7 +33,6 @@ public class GetForecastRestMethod extends AbstractRestMethod<Forecast> {
 			throw new IllegalArgumentException("context is null");
 		}
 		
-		mContext = context.getApplicationContext();
 		mApiKey = context.getString(R.string.api_key);
 		mZipCode = zipCode;
 		mUri = buildUri();

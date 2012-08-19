@@ -22,7 +22,6 @@ import static com.jeremyhaberman.raingauge.service.WeatherService.SERVICE_CALLBA
  */
 public final class WeatherServiceHelper {
 
-	@SuppressWarnings("unused")
 	private static final String TAG = WeatherServiceHelper.class.getSimpleName();
 
 	public static String ACTION_REQUEST_RESULT = "REQUEST_RESULT";

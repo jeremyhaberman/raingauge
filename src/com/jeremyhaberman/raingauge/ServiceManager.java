@@ -21,10 +21,7 @@ import java.util.Map;
  */
 public class ServiceManager {
 
-	private static final String TAG = ServiceManager.class.getSimpleName();
-
-	@SuppressWarnings("rawtypes")
-	private static Map services;
+	private static Map<Service, Object> services;
 
 	private ServiceManager() {
 	}
@@ -36,7 +33,7 @@ public class ServiceManager {
 		NotificationManager notificationManager = new DefaultNotificationManager(context);
 		NotificationHelper notificationHelper = new DefaultNotificationHelper();
 
-		services = new HashMap();
+		services = new HashMap<Service, Object>();
 
 		services.put(Service.REST_METHOD_FACTORY, restMethodFactory);
 		services.put(Service.PROCESSOR_FACTORY, processorFactory);
@@ -55,7 +52,6 @@ public class ServiceManager {
 	 * @param key     the name of the service (use the static methods on {@link ServiceManager}).
 	 * @param service the implementation of the service to load
 	 */
-	@SuppressWarnings("unchecked")
 	public static void loadService(Context context, Service key, Object service) {
 
 		if (services == null) {

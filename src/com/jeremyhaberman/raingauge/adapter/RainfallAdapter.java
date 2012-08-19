@@ -1,3 +1,4 @@
+
 package com.jeremyhaberman.raingauge.adapter;
 
 import android.database.ContentObserver;
@@ -7,61 +8,61 @@ import com.jeremyhaberman.raingauge.util.Logger;
 
 public class RainfallAdapter extends ContentObserver {
 
-	private static final String TAG = RainfallAdapter.class.getSimpleName();
-	private TextView mTextView;
-	private double mRainfall;
-	private Cursor mCursor;
+    private static final String TAG = RainfallAdapter.class.getSimpleName();
+    private TextView mTextView;
+    private double mRainfall;
+    private Cursor mCursor;
 
-	public RainfallAdapter(TextView textView, Cursor cursor) {
-		super(null);
+    public RainfallAdapter(TextView textView, Cursor cursor) {
+        super(null);
 
-		mTextView = textView;
-		mCursor = cursor;
+        mTextView = textView;
+        mCursor = cursor;
 
-		setRainfall();
-	}
+        setRainfall();
+    }
 
-	private void setRainfall() {
+    private void setRainfall() {
 
-		mRainfall = calculateRainfall();
-		mTextView.setText(formatRainfall(mRainfall));
-		mTextView.invalidate();
-	}
+        mRainfall = calculateRainfall();
+        mTextView.setText(formatRainfall(mRainfall));
+        mTextView.invalidate();
+    }
 
-	private double calculateRainfall() {
+    @SuppressWarnings("deprecation")
+    private double calculateRainfall() {
 
-		mCursor.requery();
+        mCursor.requery();
 
-		double recentRainfall = 0.0;
-		while (mCursor.moveToNext()) {
-			recentRainfall += mCursor.getDouble(0);
-		}
+        double recentRainfall = 0.0;
+        while (mCursor.moveToNext()) {
+            recentRainfall += mCursor.getDouble(0);
+        }
 
-		return recentRainfall;
-	}
+        return recentRainfall;
+    }
 
-	private String formatRainfall(double inches) {
-		return String.format("%.2f", inches) + " in";
-	}
+    private String formatRainfall(double inches) {
+        return String.format("%.2f", inches) + " in";
+    }
 
-	@Override
-	public void onChange(boolean selfChange) {
-		Logger.debug(TAG, "onChange");
-		setRainfall();
-	}
+    @Override
+    public void onChange(boolean selfChange) {
+        Logger.debug(TAG, "onChange");
+        setRainfall();
+    }
 
-	@Override
-	public boolean deliverSelfNotifications() {
-		return true;
-	}
+    @Override
+    public boolean deliverSelfNotifications() {
+        return true;
+    }
 
-	public double getRainfall() {
-		return mRainfall;
-	}
+    public double getRainfall() {
+        return mRainfall;
+    }
 
-	public void destroy() {
-		mTextView = null;
-		mCursor = null;
-	}
+    public void destroy() {
+        mTextView = null;
+        mCursor = null;
+    }
 }
-

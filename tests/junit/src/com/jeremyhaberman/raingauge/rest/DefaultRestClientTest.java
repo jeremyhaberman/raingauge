@@ -123,8 +123,8 @@ public class DefaultRestClientTest extends InstrumentationTestCase {
 	@MediumTest
 	@Suppress
 	public void testExecuteReturns500() throws Exception {
-		URL url = new URL("http://www.google.com");
-
+//		URL url = new URL("http://www.google.com");
+//
 //		MockURLConnection mockConnection = new MockURLConnection(url, 500, null, null);
 //		Request request = new Request(Method.GET, mockConnection, null, null);
 //
@@ -136,6 +136,7 @@ public class DefaultRestClientTest extends InstrumentationTestCase {
 //		assertTrue(response.getHeaders().size() == 0);
 	}
 
+	@SuppressWarnings("unused")
 	private class MockURLConnection extends HttpURLConnection {
 
 		private int mResponseCode;

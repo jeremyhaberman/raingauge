@@ -18,6 +18,7 @@ public class DefaultNotificationManagerTest extends InstrumentationTestCase {
 		assertNotNull(mNotificationManager);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void testNotify() throws InterruptedException {
 
 		Notification.Builder notificationBuilder = new Notification.Builder(getInstrumentation().getTargetContext());

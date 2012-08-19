@@ -6,10 +6,7 @@ import android.content.Intent;
 
 public class MockBroadcastReceiver extends BroadcastReceiver {
 
-	private static final String TAG = MockBroadcastReceiver.class.getSimpleName();
-
     public boolean alarmed = false;
-    private Object mSync = new Object();
 
     public long elapsedTime;
     public long rtcTime;

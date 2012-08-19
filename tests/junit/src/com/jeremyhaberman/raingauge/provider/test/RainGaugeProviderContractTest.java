@@ -14,13 +14,13 @@ public class RainGaugeProviderContractTest extends AndroidTestCase {
 			throws NoSuchMethodException, InvocationTargetException, InstantiationException,
 			IllegalAccessException {
 
-		Class[] classes = new Class[]{RainGaugeProviderContract.class,
+		Class<?>[] classes = new Class[]{RainGaugeProviderContract.class,
 				RainGaugeProviderContract.ObservationsTable.class,
 				RainGaugeProviderContract.WateringsTable.class,
 				RainGaugeProviderContract.ForecastsTable.class};
 
-		for (Class testClass : classes) {
-			Constructor constructor = testClass.getDeclaredConstructor();
+		for (Class<?> testClass : classes) {
+			Constructor<?> constructor = testClass.getDeclaredConstructor();
 			try {
 				constructor.newInstance();
 				fail("Should have thrown IllegalAccessException");

@@ -12,8 +12,6 @@ public class GetObservationsRestMethod extends AbstractRestMethod<Observations> 
 
 	private static final String TAG = GetObservationsRestMethod.class.getSimpleName();
 
-	private Context mContext;
-
 	private static final String BASE_URI = "http://i.wxbug.net/REST/Direct/GetObs.ashx";
 
 	private static final String JSON_KEY_RAIN_DAILY = "rainDaily";
@@ -33,7 +31,6 @@ public class GetObservationsRestMethod extends AbstractRestMethod<Observations> 
 			throw new IllegalArgumentException("context is null");
 		}
 		
-		mContext = context.getApplicationContext();
 		mApiKey = context.getString(R.string.api_key);
 		mZipCode = zipCode;
 		mUri = buildUri();

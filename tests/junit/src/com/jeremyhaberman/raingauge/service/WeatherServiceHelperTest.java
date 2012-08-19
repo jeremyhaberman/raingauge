@@ -27,7 +27,6 @@ import static com.jeremyhaberman.raingauge.service.WeatherService.SERVICE_CALLBA
  */
 public class WeatherServiceHelperTest extends AndroidTestCase {
 
-	private static final String TAG = WeatherServiceHelperTest.class.getSimpleName();
 	private WeatherServiceHelper mWeather;
 	private TestContext mTestContext;
 	

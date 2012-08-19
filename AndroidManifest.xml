@@ -1,76 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.jeremyhaberman.raingauge"
-          android:versionCode="1"
-          android:versionName="1.0">
+    package="com.jeremyhaberman.raingauge"
+    android:versionCode="1"
+    android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="15"/>
+    <uses-sdk
+        android:minSdkVersion="7"
+        android:targetSdkVersion="15" />
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:theme="@style/RainGaugeTheme">
+        android:theme="@style/RainGaugeTheme" >
         <activity
             android:name=".activity.RainGaugeActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".activity.SetupActivity"
             android:label="@string/setup_activity_label"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize" >
         </activity>
 
         <service
             android:name=".service.DefaultWeatherService"
-            android:enabled="true">
+            android:enabled="true" >
         </service>
 
         <receiver
             android:name=".WeatherUpdateScheduler"
-            android:enabled="true">
+            android:enabled="true"
+            android:exported="false" >
             <intent-filter>
-                <action
-                    android:name="com.jeremyhaberman.raingauge.ACTION_SCHEDULE_RAINFALL_UPDATES"/>
-                <action
-                    android:name="com.jeremyhaberman.raingauge.ACTION_SCHEDULE_FORECAST_UPDATES"/>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="com.jeremyhaberman.raingauge.ACTION_SCHEDULE_RAINFALL_UPDATES" />
+                <action android:name="com.jeremyhaberman.raingauge.ACTION_SCHEDULE_FORECAST_UPDATES" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".WeatherUpdater"
-            android:enabled="true">
+            android:enabled="true"
+            android:exported="false" >
             <intent-filter>
-                <action
-                    android:name="com.jeremyhaberman.raingauge.WeatherUpdater.ACTION_UPDATE_RAINFALL"/>
-                <action
-                    android:name="com.jeremyhaberman.raingauge.WeatherUpdater.ACTION_UPDATE_FORECAST"/>
+                <action android:name="com.jeremyhaberman.raingauge.WeatherUpdater.ACTION_UPDATE_RAINFALL" />
+                <action android:name="com.jeremyhaberman.raingauge.WeatherUpdater.ACTION_UPDATE_FORECAST" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".notification.DefaultNotificationHelper"
-            android:enabled="true">
+            android:enabled="true"
+            android:exported="false" >
             <intent-filter>
-                <action
-                    android:name="com.jeremyhaberman.raingauge.notification.ACTION_SHOW_NOTIFICATION"/>
+                <action android:name="com.jeremyhaberman.raingauge.ACTION_SHOW_NOTIFICATION" />
             </intent-filter>
         </receiver>
-
 
         <provider
             android:name=".provider.RainGaugeProvider"
-            android:authorities="com.jeremyhaberman.raingauge.raingaugeprovider"/>
+            android:authorities="com.jeremyhaberman.raingauge.raingaugeprovider"
+            android:exported="false" />
     </application>
 
 </manifest>

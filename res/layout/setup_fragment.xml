@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:layout_marginTop="10dp"
-        android:hint="Your ZIP code"
+        android:hint="@string/zip_code_hint"
         android:inputType="number"
         android:maxLength="5"
         android:singleLine="true">
@@ -24,6 +24,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:enabled="false"
-        android:text="Go"/>
+        android:text="@string/go_button_label"/>
 
 </RelativeLayout>

@@ -72,7 +72,6 @@ public class ObservationsProcessor implements ResourceProcessor {
 		NotificationHelper
 				notificationHelper = (NotificationHelper) ServiceManager
 				.getService(mContext, Service.NOTIFICATION_HELPER);
-		Calendar cal = Calendar.getInstance();
 		notificationHelper.scheduleRainfallNotification(context, getNextNotificationTime(), rainfall);
 	}
 

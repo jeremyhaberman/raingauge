@@ -143,8 +143,6 @@ public class ProviderDbHelperTest extends InstrumentationTestCase {
 
 	public class MyMockContext extends RenamingDelegatingContext {
 
-		private static final String TAG = "MyMockContext";
-
 		private static final String MOCK_FILE_PREFIX = "test.";
 
 		public MyMockContext(Context context) {

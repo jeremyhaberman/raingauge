@@ -24,14 +24,11 @@ import java.util.GregorianCalendar;
 
 public class WeatherUpdateSchedulerTest extends InstrumentationTestCase {
 
-	private Context mTestContext;
-
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 
 		TestUtil.setZip(getInstrumentation().getTargetContext(), 55417);
-		mTestContext = getInstrumentation().getContext();
 		ServiceManager.reset(getInstrumentation().getTargetContext());
 	}
 
@@ -45,7 +42,7 @@ public class WeatherUpdateSchedulerTest extends InstrumentationTestCase {
 	@MediumTest
 	public void testOnReceiveActionScheduleRainfallUpdates() {
 
-		MockAlarmManager alarmManager = new MockAlarmManager(getInstrumentation().getContext());
+		MockAlarmManager alarmManager = new MockAlarmManager();
 		ServiceManager.loadService(getInstrumentation().getContext(), Service.ALARM_SERVICE,
 				alarmManager);
 
@@ -65,7 +62,7 @@ public class WeatherUpdateSchedulerTest extends InstrumentationTestCase {
 	@MediumTest
 	public void testOnReceiveActionScheduleForecastUpdates() {
 
-		MockAlarmManager alarmManager = new MockAlarmManager(getInstrumentation().getContext());
+		MockAlarmManager alarmManager = new MockAlarmManager();
 		ServiceManager.loadService(getInstrumentation().getContext(), Service.ALARM_SERVICE,
 				alarmManager);
 

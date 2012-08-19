@@ -78,6 +78,7 @@ public class RainGaugeActivityTest extends ActivityInstrumentationTestCase2<Rain
 		TextView dayForecast = (TextView) activity.findViewById(R.id.day_forecast);
 
 		assertNotNull(activity);
+		assertNotNull(rainfallLabel);
 		assertNotNull(rainfallText);
 		assertNotNull(wateringText);
 		assertNotNull(balanceText);

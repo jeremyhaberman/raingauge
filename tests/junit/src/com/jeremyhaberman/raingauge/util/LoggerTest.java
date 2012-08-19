@@ -23,7 +23,7 @@ public class LoggerTest extends AndroidTestCase {
 	public void testPrivateConstructor()
 			throws NoSuchMethodException, InvocationTargetException, InstantiationException,
 			IllegalAccessException {
-		Constructor constructor = Logger.class.getDeclaredConstructor();
+		Constructor<?> constructor = Logger.class.getDeclaredConstructor();
 		try {
 			constructor.newInstance();
 			fail("Should have thrown IllegalAccessException");

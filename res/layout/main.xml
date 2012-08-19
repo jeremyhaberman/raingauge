@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/main"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:padding="10dp">
+    android:id="@+id/main"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="10dp" >
 
-    <RelativeLayout android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp">
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp" >
 
         <TextView
             android:id="@+id/header"
             style="@style/Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Past 7 days: "/>
+            android:text="@string/past_7_days" />
 
         <TextView
             android:id="@+id/rainfall_label"
@@ -23,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/header"
             android:layout_marginLeft="8dp"
-            android:text="Rainfall: "/>
+            android:text="@string/rainfall_label" />
 
         <TextView
             android:id="@+id/rainfall"
@@ -31,8 +32,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/header"
-            android:layout_toRightOf="@id/rainfall_label"
-            android:layout_marginLeft="8dp"/>
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@id/rainfall_label" />
 
         <TextView
             android:id="@+id/watering_label"
@@ -41,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/rainfall_label"
             android:layout_marginLeft="8dp"
-            android:text="Watering: "/>
+            android:text="@string/watering_label" />
 
         <TextView
             android:id="@+id/watering"
@@ -49,8 +50,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/rainfall_label"
-            android:layout_toRightOf="@id/watering_label"
-            android:layout_marginLeft="8dp"/>
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@id/watering_label" />
 
         <TextView
             android:id="@+id/balance_label"
@@ -59,7 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/watering_label"
             android:layout_marginLeft="8dp"
-            android:text="Balance: "/>
+            android:text="@string/balance_label" />
 
         <TextView
             android:id="@+id/balance"
@@ -67,8 +68,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/watering_label"
-            android:layout_toRightOf="@id/balance_label"
-            android:layout_marginLeft="8dp"/>
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@id/balance_label" />
 
         <RelativeLayout
             android:id="@+id/add_wrapper"
@@ -76,7 +77,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/balance"
             android:layout_marginTop="10dp"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical" >
 
             <EditText
                 android:id="@+id/watering_amount"
@@ -84,11 +85,10 @@
                 android:layout_width="88dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:hint="@string/watering_amount_hint"
                 android:inputType="numberDecimal"
                 android:maxLength="4"
-                android:singleLine="true"
-                android:hint="inches">
-
+                android:singleLine="true" >
             </EditText>
 
             <Button
@@ -98,7 +98,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="4dp"
                 android:layout_toRightOf="@id/watering_amount"
-                android:text="Water"/>
+                android:text="@string/water_button_label" />
         </RelativeLayout>
 
         <TextView
@@ -108,7 +108,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/add_wrapper"
             android:layout_marginTop="12dp"
-            android:text="Forecast"/>
+            android:text="@string/forecast_header" />
 
         <TextView
             android:id="@+id/day_forecast_label"
@@ -117,8 +117,8 @@
             android:layout_below="@id/forecast_label"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
-            android:textSize="16sp"
-            android:text="Today:"/>
+            android:text="@string/day_forecast_header"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/day_forecast"
@@ -128,7 +128,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/night_forecast_label"
@@ -137,8 +137,8 @@
             android:layout_below="@id/day_forecast"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
-            android:textSize="16sp"
-            android:text="Tonight:"/>
+            android:text="@string/night_forecast_header"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/night_forecast"
@@ -148,7 +148,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
-            android:textSize="16sp"/>
-
+            android:textSize="16sp" />
     </RelativeLayout>
+
 </ScrollView>

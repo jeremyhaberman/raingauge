@@ -9,8 +9,6 @@ import org.json.JSONObject;
 
 public class Observations implements Resource {
 
-	private static final String TAG = Observations.class.getSimpleName();
-
 	public static final String WEEKLY_RAINFALL = "com.jeremyhaberman.raingauge.WEEKLY_RAINFALL";
 	public static final String ZIP_CODE = "com.jeremyhaberman.raingauge.ZIP_CODE";
 	public static final String TODAYS_FORECAST = "todaysForecast";

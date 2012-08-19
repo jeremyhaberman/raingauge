@@ -48,6 +48,7 @@ public class ObservationsProcessorTest extends InstrumentationTestCase {
 		assertNotNull(mProcessor);
 	}
 
+	@SuppressWarnings("deprecation")
 	@MediumTest
 	public void testGetResource() throws InterruptedException {
 
@@ -133,8 +134,6 @@ public class ObservationsProcessorTest extends InstrumentationTestCase {
 	}
 
 	public class MyMockContext extends RenamingDelegatingContext {
-
-		private static final String TAG = "MyMockContext";
 
 		private static final String MOCK_FILE_PREFIX = "test.";
 
