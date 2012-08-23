@@ -29,6 +29,8 @@ public class ForecastTest extends TestCase {
 		assertFalse(forecast1.equals(new String()));
 		assertFalse(forecast1.equals(Forecast.newForecast(timestamp, "Clear", nightForecast)));
 		assertFalse(forecast1.equals(Forecast.newForecast(timestamp, dayForecast, "Thunderstorms")));
+		assertFalse(forecast1.equals(Forecast.newForecast(timestamp, null, nightForecast)));
+        assertFalse(forecast1.equals(Forecast.newForecast(timestamp, dayForecast, null)));
 
 		forecast1 = Forecast.newForecast(timestamp, dayForecast, nightForecast);
 		forecast2 = Forecast.newForecast(timestamp, dayForecast, nightForecast);

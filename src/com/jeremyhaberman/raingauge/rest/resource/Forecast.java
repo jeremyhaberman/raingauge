@@ -1,8 +1,5 @@
 package com.jeremyhaberman.raingauge.rest.resource;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import com.jeremyhaberman.raingauge.provider.RainGaugeProviderContract;
 
 public class Forecast implements Resource {
 
@@ -35,53 +32,6 @@ public class Forecast implements Resource {
 
 	public String getNightForecast() {
 		return mNightForecast;
-	}
-
-	@Override
-	public ContentValues toContentValues() {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(RainGaugeProviderContract.ForecastsTable.TIMESTAMP, mTimestamp);
-		contentValues.put(RainGaugeProviderContract.ForecastsTable.DAY_FORECAST, mDayForecast);
-		contentValues.put(RainGaugeProviderContract.ForecastsTable.NIGHT_FORECAST, mNightForecast);
-		return contentValues;
-	}
-
-	/**
-	 * Returns a new Observations object from the values in the given cursor.
-	 * <p>Assumptions:</p>
-	 * <ol>
-	 * <li>The cursor is currently on the row for which you want to create a new Observations</li>
-	 * <li>All Observations columns are present and in the order as-is in the DB</li>
-	 * </ol>
-	 * <p>WARNING: It does not close the cursor when finished.</p>
-	 *
-	 * @param cursor
-	 * @return new Observations object
-	 * @throws IllegalArgumentException if cursor is null or does not contain all ObservationsTable
-	 *                                  columns
-	 */
-	public static Forecast fromCursor(Cursor cursor) {
-
-		if (cursor == null) {
-			throw new IllegalArgumentException("cursor is null");
-		}
-
-		if (cursor.getColumnCount() !=
-				RainGaugeProviderContract.ForecastsTable.ALL_COLUMNS.length) {
-			throw new IllegalArgumentException("cursor does not contain all columns");
-		}
-
-
-		long timestamp =
-						cursor.getLong(RainGaugeProviderContract.ForecastsTable.TIMESTAMP_COLUMN_INDEX);
-		String dayForecast =
-				cursor.getString(RainGaugeProviderContract.ForecastsTable.DAY_FORECAST_COLUMN_INDEX);
-		String nightForecast =
-				cursor.getString(RainGaugeProviderContract.ForecastsTable.NIGHT_FORECAST_COLUMN_INDEX);
-
-
-
-		return newForecast(timestamp, dayForecast, nightForecast);
 	}
 
 	@Override

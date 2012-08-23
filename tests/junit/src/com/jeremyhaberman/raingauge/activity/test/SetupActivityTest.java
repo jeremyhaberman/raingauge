@@ -1,73 +1,85 @@
+
 package com.jeremyhaberman.raingauge.activity.test;
 
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.ViewAsserts;
-import android.view.View;
+import android.test.suitebuilder.annotation.MediumTest;
 import android.widget.Button;
 import android.widget.EditText;
+
 import com.jeremyhaberman.raingauge.R;
 import com.jeremyhaberman.raingauge.activity.SetupActivity;
 
+/**
+ * SetupActivityTest tests the {@link SetupActivity}.
+ */
 public class SetupActivityTest extends ActivityInstrumentationTestCase2<SetupActivity> {
 
-	public SetupActivityTest(Class<SetupActivity> activityClass) {
-		super(activityClass);
-	}
+    private SetupActivity mActivity;
+    private EditText mZipCode;
+    private Button mGoButton;
 
-	private SetupActivity mActivity;
-	private EditText mZipCode;
-	private Button mGoButton;
-	private View mRootView;
+    public SetupActivityTest(Class<SetupActivity> activityClass) {
+        super(activityClass);
+    }
 
-	
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+        // Allows sending keys and click events from the test
+        setActivityInitialTouchMode(false);
 
-		setActivityInitialTouchMode(false);
+        mActivity = getActivity();
 
-		mActivity = getActivity();
-		mRootView = mActivity.findViewById(R.id.setup);
-		mZipCode = (EditText) mActivity.findViewById(R.id.zip_code);
-		mGoButton = (Button) mActivity.findViewById(R.id.go);
-	}
+        mZipCode = (EditText) mActivity.findViewById(R.id.zip_code);
+        mGoButton = (Button) mActivity.findViewById(R.id.go);
+    }
 
-	public void testPreconditions() {
-		assertNotNull(mActivity);
-		assertNotNull(mZipCode);
-		assertNotNull(mGoButton);
-	}
+    @MediumTest
+    public void testPreconditions() {
+        assertNotNull(mActivity);
+        assertNotNull(mZipCode);
+        assertNotNull(mGoButton);
+    }
 
-	public void testZipInputOnScreen() {
-		ViewAsserts.assertOnScreen(mRootView, mZipCode);
-	}
+    @MediumTest
+    public void testViewsAreShown() {
+        assertTrue(mZipCode.isShown());
+    }
 
-	public void testGoButtonOnScreen() {
-		ViewAsserts.assertOnScreen(mRootView, mGoButton);
-	}
+    @MediumTest
+    public void testGoButton() {
+        assertTrue(mGoButton.isShown());
+        assertEquals(mGoButton.getText().toString(), "Go");
 
-	public void testGoRequiresZip() throws Throwable {
-		assertFalse(mGoButton.isEnabled());
+        // The button should not be clickable until numbers are added to the ZIP
+        // code field
+        assertFalse(mGoButton.isEnabled());
+    }
 
-		sendKeys("5");
-		assertFalse(mGoButton.isEnabled());
+    @MediumTest
+    public void testGoRequiresZip() throws Throwable {
+        assertFalse(mGoButton.isEnabled());
 
-		sendKeys("5 4 0 1");
-		assertTrue(mGoButton.isEnabled());
-	}
+        sendKeys("5");
+        assertFalse(mGoButton.isEnabled());
 
-	public void testZipOnlyAcceptsNumbers() {
-		sendKeys("A");
-		assertEquals(0, mZipCode.length());
+        sendKeys("5 4 0 1");
+        assertTrue(mGoButton.isEnabled());
+    }
 
-		sendKeys("1");
-		assertEquals(1, mZipCode.length());
-	}
+    @MediumTest
+    public void testZipOnlyAcceptsNumbers() {
+        sendKeys("A");
+        assertEquals(0, mZipCode.length());
 
-	public void testZipHasFiveDigitMax() {
-		sendKeys("1 2 3 4 5 6");
-		assertEquals(5, mZipCode.length());
-	}
+        sendKeys("1");
+        assertEquals(1, mZipCode.length());
+    }
+
+    @MediumTest
+    public void testZipHasFiveDigitMax() {
+        sendKeys("1 2 3 4 5 6");
+        assertEquals(5, mZipCode.length());
+    }
 }
-

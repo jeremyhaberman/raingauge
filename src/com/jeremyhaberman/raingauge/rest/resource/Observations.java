@@ -92,9 +92,6 @@ public class Observations implements Resource {
 		}
 	}
 
-
-
-	@Override
 	public ContentValues toContentValues() {
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(ObservationsTable.TIMESTAMP, mTimestamp);
