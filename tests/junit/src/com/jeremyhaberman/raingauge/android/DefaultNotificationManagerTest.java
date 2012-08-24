@@ -2,11 +2,16 @@
 package com.jeremyhaberman.raingauge.android;
 
 import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.test.InstrumentationTestCase;
 import android.test.suitebuilder.annotation.MediumTest;
 
 import com.jeremyhaberman.raingauge.ManualAssertionTest;
 import com.jeremyhaberman.raingauge.R;
+import com.jeremyhaberman.raingauge.activity.RainGaugeActivity;
 
 /**
  * Test for the {@link DefaultNotificationManager}.
@@ -35,19 +40,39 @@ public class DefaultNotificationManagerTest extends InstrumentationTestCase {
      * 
      * @throws InterruptedException
      */
-    @SuppressWarnings("deprecation")
     @MediumTest
     @ManualAssertionTest
     public void testNotify() throws InterruptedException {
 
-        Notification.Builder notificationBuilder = new Notification.Builder(getInstrumentation()
-                .getTargetContext());
-        notificationBuilder.setSmallIcon(R.drawable.icon);
-        notificationBuilder.setContentTitle("Title");
-        notificationBuilder.setContentText("Text");
-        notificationBuilder.setAutoCancel(true);
-
-        mNotificationManager.notify(1234, notificationBuilder.getNotification());
+        mNotificationManager.notify(1234, buildNotification());
     }
 
+    @SuppressWarnings("deprecation")
+    private Notification buildNotification() {
+        
+        Context context = getInstrumentation().getTargetContext();
+        
+        int icon = R.drawable.status_bar_icon_23;
+        String contentTitle = "Title";
+        CharSequence contentText = "Text";
+        Intent notificationIntent = new Intent(context, RainGaugeActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+        if (Build.VERSION.SDK_INT < 11) {
+            Notification notification = new Notification(icon, contentText,
+                    System.currentTimeMillis());
+            notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+            return notification;
+        } else {
+            Notification.Builder notificationBuilder = new Notification.Builder(context);
+            notificationBuilder.setContentTitle(contentTitle);
+            notificationBuilder.setContentText(contentText);
+            notificationBuilder.setSmallIcon(icon);
+            notificationBuilder.setAutoCancel(true);
+            notificationBuilder.setContentIntent(contentIntent);
+
+            return notificationBuilder.getNotification();
+        }
+    }
 }

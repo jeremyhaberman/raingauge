@@ -26,7 +26,7 @@ import com.jeremyhaberman.raingauge.util.TestUtil;
  */
 public class RainGaugeActivityTest extends ActivityInstrumentationTestCase2<RainGaugeActivity> {
 
-    private static final String TAG = RainGaugeActivityTest.class.getSimpleName();
+    private static final String TAG = "RainGaugeActivityTest";
     
     private static final String POSITIVE_AMOUNT_FORMAT = "%.2f in";
     private static final String NEGATIVE_AMOUNT_FORMAT = "-%.2f in";

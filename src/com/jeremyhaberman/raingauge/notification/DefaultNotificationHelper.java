@@ -58,16 +58,19 @@ public class DefaultNotificationHelper extends BroadcastReceiver implements Noti
     @SuppressWarnings("deprecation")
     private Notification buildNotification(Context context, double rainfall) {
         int icon = R.drawable.status_bar_icon_23;
+        String contentTitle = context.getString(R.string.app_name);
         CharSequence contentText = "Yesterday's Rainfall: " + rainfall + " in";
         Intent notificationIntent = new Intent(context, RainGaugeActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
         if (Build.VERSION.SDK_INT < 11) {
-            return new Notification(icon, contentText, System.currentTimeMillis());
+            Notification notification =  new Notification(icon, contentText, System.currentTimeMillis());
+            notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+            return notification;
         } else {
             Notification.Builder notificationBuilder = new Notification.Builder(context);
-            notificationBuilder.setContentTitle(context.getString(R.string.app_name));
+            notificationBuilder.setContentTitle(contentTitle);
             notificationBuilder.setContentText(contentText);
             notificationBuilder.setSmallIcon(icon);
             notificationBuilder.setAutoCancel(true);

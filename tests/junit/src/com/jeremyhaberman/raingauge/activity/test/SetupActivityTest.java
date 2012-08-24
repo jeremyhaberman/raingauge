@@ -18,8 +18,8 @@ public class SetupActivityTest extends ActivityInstrumentationTestCase2<SetupAct
     private EditText mZipCode;
     private Button mGoButton;
 
-    public SetupActivityTest(Class<SetupActivity> activityClass) {
-        super(activityClass);
+    public SetupActivityTest() {
+        super(SetupActivity.class);
     }
 
     @Override
