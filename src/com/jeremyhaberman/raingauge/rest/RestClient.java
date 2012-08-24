@@ -2,7 +2,9 @@ package com.jeremyhaberman.raingauge.rest;
 
 public interface RestClient {
 
-	/**
+	int STATUS_CODE_IO_ERROR = -1;
+
+    /**
 	 * Executes a {@link Request}.
 	 * @param request
 	 * @return the response

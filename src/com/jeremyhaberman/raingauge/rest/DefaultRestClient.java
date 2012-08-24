@@ -1,3 +1,4 @@
+
 package com.jeremyhaberman.raingauge.rest;
 
 import java.io.BufferedInputStream;
@@ -8,71 +9,91 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.jeremyhaberman.raingauge.util.Logger;
 
 public class DefaultRestClient implements RestClient {
 
-	private DefaultRestClient() {
-	}
+    private static final String TAG = DefaultRestClient.class.getSimpleName();
 
-	public static RestClient newInstance() {
-		return new DefaultRestClient();
-	}
+    // Timeout while reading input stream from resource
+    private static final int READ_TIMEOUT = 30000;
 
-	@Override
-	public Response execute(Request request) {
+    // Timeout for establishing connection to resource
+    private static final int CONNECT_TIMEOUT = 15000;
 
-		if (request == null) {
-			throw new IllegalArgumentException("request is null");
-		}
+    private DefaultRestClient() {
+        System.setProperty("http.keepAlive", "false");
+    }
 
-		HttpURLConnection conn = null;
-		Response response = null;
-		int status = -1;
-		try {
+    public static RestClient newInstance() {
+        return new DefaultRestClient();
+    }
 
-			URL url = request.getUri().toURL();
-			conn = (HttpURLConnection) url.openConnection();
-			if (request.getHeaders() != null) {
-				for (String header : request.getHeaders().keySet()) {
-					for (String value : request.getHeaders().get(header)) {
-						conn.addRequestProperty(header, value);
-					}
-				}
-			}
+    @Override
+    public Response execute(Request request) {
 
-			conn.setDoOutput(false);
+        if (request == null) {
+            throw new IllegalArgumentException("request is null");
+        }
 
-			status = conn.getResponseCode();
+        HttpURLConnection conn = null;
+        Response response = null;
+        int responseCode = -1;
+        Map<String, List<String>> headers = new HashMap<String, List<String>>();
+        byte[] body = new byte[] {};
 
-			if (conn.getContentLength() > 0) {
-				BufferedInputStream in = new BufferedInputStream(conn.getInputStream());
-				byte[] body = readStream(in);
-				response = new Response(conn.getResponseCode(), conn.getHeaderFields(), body);
-			} else {
-				response = new Response(status, conn.getHeaderFields(), new byte[]{});
-			}
+        try {
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (conn != null) {
-				conn.disconnect();
-			}
-		}
+            URL url = request.getUri().toURL();
+            conn = (HttpURLConnection) url.openConnection();
+            if (request.getHeaders() != null) {
+                for (String header : request.getHeaders().keySet()) {
+                    for (String value : request.getHeaders().get(header)) {
+                        conn.addRequestProperty(header, value);
+                    }
+                }
+            }
 
-		if (response == null) {
-			response = new Response(status, new HashMap<String, List<String>>(), new byte[]{});
-		}
+            conn.setConnectTimeout(CONNECT_TIMEOUT);
+            conn.setReadTimeout(READ_TIMEOUT);
 
-		return response;
-	}
+            conn.setDoOutput(false);
 
-	private static byte[] readStream(InputStream in) throws IOException {
-		byte[] buf = new byte[1024];
-		int count = 0;
-		ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
-		while ((count = in.read(buf)) != -1)
-			out.write(buf, 0, count);
-		return out.toByteArray();
-	}
+            BufferedInputStream in = null;
+            try {
+                in = new BufferedInputStream(conn.getInputStream());
+            } catch (IOException e) {
+                in = new BufferedInputStream(conn.getErrorStream());
+            }
+            body = readStream(in);
+
+            responseCode = conn.getResponseCode();
+            headers = conn.getHeaderFields();
+
+        } catch (IOException e) {
+            if (Logger.isEnabled(Logger.DEBUG)) {
+                Logger.error(TAG, "Error executing request", e);
+            }
+            responseCode = RestClient.STATUS_CODE_IO_ERROR;
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+
+        response = new Response(responseCode, headers, body);
+
+        return response;
+    }
+
+    private static byte[] readStream(InputStream in) throws IOException {
+        byte[] buf = new byte[1024];
+        int count = 0;
+        ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+        while ((count = in.read(buf)) != -1)
+            out.write(buf, 0, count);
+        return out.toByteArray();
+    }
 }
