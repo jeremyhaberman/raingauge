@@ -126,6 +126,9 @@ public class DefaultRestClientTest extends InstrumentationTestCase {
     public void testIOException() throws IOException {
         mNano.stop();
 
+        // DefaultRestClient should encounter an IOException while making the
+        // request because the web server is not running
+
         URI uri = buildURI("localhost", 4242, "/observations.json");
 
         Request request = new Request(uri);
