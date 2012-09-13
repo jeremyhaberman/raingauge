@@ -4,14 +4,15 @@ RainGauge is an Android application that monitors rainfall and manual watering t
 
 The app serves two purposes:  
 
-1. It helps the developer keep his lawn from dying.  
-2. It hopes to provide an example for how to write tests for Android applications.
+1. Helps the developer keep his lawn from dying
+2. Provides an example for how to write tests for Android applications
 
 ## Contents
 
 * [Setting up a dev environment](#devsetup)
 * [Building](#building)
 * [Testing](#testing)
+* [Appendix A: Testing Resources](#testing-resources)
 
 <a name="devsetup"></a>
 ## Setting up a dev environment
@@ -77,3 +78,16 @@ To run the monkeyrunner test:
     monkeyrunner test-notification.py
     
 The test should generate a `notification.png` file containing a screen shot of the test notification in the status bar.
+
+<a name="testing-resources"></a>
+## Appendix A: Testing Resources
+[Android Open-Source Project (AOSP)](http://source.android.com)
+[Activity Testing Tutorial](http://developer.android.com/tools/testing/activity_test.html)[Testing on Android Developers site](http://developer.android.com/tools/testing/index.html)
+[Android Application Testing Guide](http://www.packtpub.com/android-application-testing-guide/book)
+[JUnit](http://www.junit.org/)
+[Pragmatic Unit Testing in Java with JUnit](http://pragprog.com/book/utj/pragmatic-unit-testing-in-java-with-junit)
+[Android Mock](http://code.google.com/p/android-mock/)
+[EMMA](http://emma.sourceforge.net/)
+[Robotium](http://code.google.com/p/robotium/)
+[Robolectric](http://pivotal.github.com/robolectric/)
+[Test Sizes | Google Testing Blog](http://googletesting.blogspot.com/2010/12/test-sizes.html)
